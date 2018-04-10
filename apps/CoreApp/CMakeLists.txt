@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(CoreApp VERSION "0.1")
+project(CoreApp VERSION "0.0.1")
 set(PROJECT_DESCRIPTION "CoreApp for project FleXd")
 
 message(STATUS "***" )

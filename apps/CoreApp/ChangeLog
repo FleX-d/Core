@@ -1,0 +1,17 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+## [0.0.1] - 2018-04-10
+### Added
+- Initial version [Peter Kocity] 
+- Initialization database
+- Skeleton of app, reading and writing into database
+
+### Changed
+- None
+
+### Removed
+- None
+ 
