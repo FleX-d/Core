@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StopRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -41,9 +42,11 @@ namespace flexd {
 
         StopRequest::StopRequest(const std::string& name, const std::string& ver) :
         iCoreAppRequest(RqstType::Enum::stop, nullptr, nullptr, name, ver) {
+            FLEX_LOG_INIT("StopRequest");
         }
 
         void StopRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("StopRequest::accept()");
             v.visit(this);
         }
     }

@@ -69,7 +69,8 @@ namespace flexd {
             CoreAppManager operator=(const CoreAppManager& orig) = delete;
 
         private:
-            bool appExecute(const std::string cmd /*TODO*/); /*set private*/
+            bool appExecute(const std::string& cmd /*TODO*/); /*set private*/
+            std::string getDbKey(RqstType::Enum e);
             
             CoreAppExecutor m_exe;
             const std::string m_dbName;

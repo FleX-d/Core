@@ -34,15 +34,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "UnfreezRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 namespace flexd {
     namespace core {
 
         UnfreezRequest::UnfreezRequest(const std::string& name, const std::string& ver) :
         iCoreAppRequest(RqstType::Enum::unfreez, nullptr, nullptr, name, ver) {
+            FLEX_LOG_INIT("UnfreezRequest");
         }
 
         void UnfreezRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("UnfreezRequest::accept(): ");
             v.visit(this);
         }
     }

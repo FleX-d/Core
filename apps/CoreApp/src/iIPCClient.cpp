@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "iIPCClient.h"
+#include "FleXdLogger.h"
 
 namespace flexd {
     namespace core {
@@ -41,24 +42,30 @@ namespace flexd {
         iIPCClient::iIPCClient(const std::string& id)
         : rsm::conn::mqtt::iMosquittoClient(id, rsm::conn::mqtt::MosquittoSetting("127.0.0.1")) {
             subscribeTopic("coreapp/in");
+            FLEX_LOG_INIT("iIPCClient");
+            FLEX_LOG_TRACE("iIPCClient(): CLIENT ID: ",id);
         }
 
         bool iIPCClient::addClient(const std::string& request) {
             publishMessage(rsm::conn::mqtt::MqttMessage("testapp/in", request));
+            FLEX_LOG_TRACE("iIPCClient::addClient(): ", request);
             return true;
         }
 
         bool iIPCClient::sendRequest(const std::string& request) {
             publishMessage(rsm::conn::mqtt::MqttMessage("testapp/in", request));
+            FLEX_LOG_TRACE("iIPCClient::sendRequest(): ",request);
             return true;
         }
 
         bool iIPCClient::publish(const std::string& message) {
             publishMessage(rsm::conn::mqtt::MqttMessage("testapp/in", message));
+            FLEX_LOG_TRACE("iIPCClient::publish(): ",message);
             return true;
         }
 
         void iIPCClient::echo(const std::string& msg) const {
+            FLEX_LOG_TRACE("iIPCClient::echo(): ",msg);
             std::cout << "IPC: " << msg << std::endl;
         }
 

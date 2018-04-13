@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COREAPPTYPE_H
 #define COREAPPTYPE_H
 
+#include <iostream>
+
 
 namespace flexd {
     namespace core {
@@ -75,8 +77,7 @@ namespace flexd {
                 undefined = 0xFF
             };
         }
-
-
+        
     } // namespace core
 } // namespace flexd
 

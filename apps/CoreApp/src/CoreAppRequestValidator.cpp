@@ -33,17 +33,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CoreAppRequestValidator.h"
+#include "FleXdLogger.h"
+
 
 namespace flexd {
     namespace core {
 
         CoreAppRequestValidator::CoreAppRequestValidator() {
-
+            FLEX_LOG_INIT("CoreAppRequestValidator");
         }
 
         /*TODO verification request*/
         template<class T>
         bool CoreAppRequestValidator::validRequest(const T& rqt) {
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest()");
             return true;
         }
     }

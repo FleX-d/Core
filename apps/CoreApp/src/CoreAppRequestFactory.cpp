@@ -33,12 +33,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CoreAppRequestFactory.h"
+#include "FleXdLogger.h"
 
 namespace flexd {
     namespace core {
+        
+        CoreAppRequestFactory::CoreAppRequestFactory(){
+            FLEX_LOG_INIT("CoreAppRequestFactory");
+        }
 
         iCoreAppRequest_t CoreAppRequestFactory::makeRqst(flexd::icl::JsonObj& json) const {
-
+            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
+            
             /*TODO valid rqst*/
 
             base::BinStream b;
@@ -47,6 +53,7 @@ namespace flexd {
             json.get<std::string>("/AppID", appID);
             json.get<std::string>("/Message", message);
             json.get<std::string>("/Operation", operation);
+            FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",appID, " Message: ",message, " Operation: ",operation);
             if (appID.empty()) {
                 appID = "noID";
             }
@@ -55,34 +62,35 @@ namespace flexd {
                     path = path + appID;
                     b.setBase64(message);
                     b.write(path);
-                    std::cout << "INSTALL" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
                     return new InstallRequest(appID, appID, path);
                 } else if (operation == "Uninstall") {
-                    std::cout << "UNINSTALL" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
                     return new UninstallRequest(appID, appID);
                 } else if (operation == "Start") {
-                    std::cout << "START" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
                     return new StartRequest(appID, appID);
                 } else if (operation == "Stop") {
-                    std::cout << "STOP" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
                     return new StopRequest(appID, appID);
                 } else if (operation == "Freez") {
-                    std::cout << "FREEZ" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freez");
                     return new FreezRequest(appID, appID);
                 } else if (operation == "Unfreez") {
-                    std::cout << "UNFREEZ" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreez");
                     return new UnfreezRequest(appID, appID);
                 } else if (operation == "Update") {
                     path = path + appID;
                     b.setBase64(message);
                     b.write(path);
-                    std::cout << "UPDATE" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
                     return new UpdateRequest(appID, appID, path);
                 } else {
-                    std::cout << "INVALID" << std::endl;
+                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
                     return new InvalidRequest(appID, appID);
                 }
             }
+            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return null");
             return NULL;
         }
     }

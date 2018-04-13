@@ -55,7 +55,7 @@ namespace flexd {
 
         class CoreAppRequestFactory {
         public:
-            explicit CoreAppRequestFactory() = default;
+            explicit CoreAppRequestFactory();
             ~CoreAppRequestFactory() = default;
             
             iCoreAppRequest_t makeRqst(flexd::icl::JsonObj& json) const;

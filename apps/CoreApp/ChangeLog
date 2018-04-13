@@ -15,3 +15,16 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - None
  
+## [0.0.1] - 2018-04-13
+### Added
+- Lambda functionality for IPCClient
+- Manager functionality for tryprocess with labda function
+- Manager funtion for return keyWord for database from request type
+- Log function for all code
+
+### Changed
+- None
+
+### Removed
+- None
+ 

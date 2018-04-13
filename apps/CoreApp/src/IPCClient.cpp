@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IPCClient.h"
 #include "iCoreAppAck.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -40,42 +41,47 @@ namespace flexd {
 
         IPCClient::IPCClient(const std::string& id)
         : iIPCClient(id) {
+            FLEX_LOG_INIT("IPCClient");
         }
 
         void IPCClient::onMessage(const rsm::conn::mqtt::MqttMessage& msg) {
+            FLEX_LOG_TRACE("IPCClient::onMessage(): incoming message");
             flexd::icl::JsonObj j(msg.getMessage());
             iCoreAppRequest_t rqst = m_factory.makeRqst(j);
             
+            FLEX_LOG_TRACE("IPCClient::onMessage(): seting lamda function");
             std::function<void(const iCoreAppAck&) > onSuccess = std::bind(&IPCClient::sendSuccesAck, this, std::placeholders::_1);
             std::function<void(const iCoreAppAck&) > onError = std::bind(&IPCClient::sendErrorAck, this, std::placeholders::_1);
             rqst->setOnError(onError);
             rqst->setOnSucces(onSuccess);
-            
-            
-            
-            
+                   
+            /*check if request is not null or invalid, send error ack if is*/
+            if(rqst==NULL || rqst->getType()==flexd::core::RqstType::Enum::undefined){
+                FLEX_LOG_DEBUG("IPCClient::onMessage(): bad request");
+                rqst->onError(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+                return; /*TODO return or break ???? for exit onMessage*/
+            }
+            else{
+                FLEX_LOG_TRACE("IPCClient::onMessage(): send message to manager");
             /*TODO execute in manager creating order*/
             
-            
-            
-            
-            
+            }
         }
         
         void IPCClient::sendSuccesAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::succes){
                 std::string publishMsg="{\"Operation Result\": \"True\", \"Message\": \"\", \"AppID\": \""+ ack.getName() +"\"};";
-                std::cerr<<publishMsg<<std::endl;
+                FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", publishMsg);
                 publish(publishMsg);
-            }            
+            }
         }
         
         void IPCClient::sendErrorAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::fail){
                 std::string publishMsg = "{\"Operation Result\": \"False\", \"Message\": \"\", \"AppID\": \""+ ack.getName() +"\"};";
-                std::cerr<<publishMsg<<std::endl;
+                FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", publishMsg);
                 publish(publishMsg);
             }
         }

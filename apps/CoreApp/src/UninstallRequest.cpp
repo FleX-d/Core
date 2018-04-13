@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "UninstallRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -41,10 +42,11 @@ namespace flexd {
 
         UninstallRequest::UninstallRequest(const std::string& name, const std::string& ver)
         : iCoreAppRequest(RqstType::Enum::unintall, nullptr, nullptr, name, ver) {
-
+            FLEX_LOG_INIT("UninstallRequest");
         }
 
         void UninstallRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("UninstallRequest::accept(): ");
             v.visit(this);
         }
 

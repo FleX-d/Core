@@ -41,21 +41,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int main(int argc, char** argv) {
     
     /*TODO crate runable code*/
+    
     flexd::core::CoreAppManager m("./CoreAppDb.db");
-    flexd::core::IPCClient ipc("COREAPP");
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    flexd::core::IPCClient ipc("CORE");
+        
     while(true);
     
     return 0;
 }
-

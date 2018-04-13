@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StartRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -41,9 +42,11 @@ namespace flexd {
 
         StartRequest::StartRequest(const std::string& name, const std::string& ver)
         : iCoreAppRequest(RqstType::Enum::start, nullptr, nullptr, name, ver) {
+            FLEX_LOG_INIT("StartRequest");
         }
 
         void StartRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("StartRequest::accept(): Visiting");
             v.visit(this);
         }
 

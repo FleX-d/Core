@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "iCoreAppAck.h"
+#include "FleXdLogger.h"
 
 namespace flexd {
     namespace core {
@@ -41,18 +42,22 @@ namespace flexd {
         : m_ack(ack),
         m_name(name),
         m_version(ver) {
-
+            FLEX_LOG_INIT("iCoreAppAck");
+            FLEX_LOG_TRACE("iCoreAppAck: NAME: ",m_name, " VERSION: ", m_version, " Type: ", m_ack);
         }
 
         const RqstAck::Enum iCoreAppAck::getType() const {
+            FLEX_LOG_TRACE("iCoreAppAck::getType(): ",m_ack);
             return m_ack;
         }
 
         const std::string& iCoreAppAck::getName() const {
+            FLEX_LOG_TRACE("iCoreAppAck::getName(): ",m_name);
             return m_name;
         }
 
         const std::string& iCoreAppAck::getVersion() const {
+            FLEX_LOG_TRACE("iCoreAppAck::getVersion(): ",m_version);
             return m_version;
         }
 

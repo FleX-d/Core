@@ -8,7 +8,7 @@ endif()
 option(
     ENABLE_TESTS
     "Run Test?"
-    ON
+    OFF
     )
     
 message(STATUS "option ENABLE_TESTS=" ${ENABLE_TESTS})

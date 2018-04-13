@@ -32,18 +32,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 8, 2018, 10:42 AM
  */
 
+#include "FleXdLogger.h"
 #include "CoreAppExecutor.h"
+
 
 
 namespace flexd {
     namespace core {
 
         CoreAppExecutor::CoreAppExecutor() {
-            
+            FLEX_LOG_INIT("CoreAppExecutor");
         }
 
         void CoreAppExecutor::runOsCmd(const std::string& cmd) const {
             std::string newconsole = "konsole -e \"" + cmd + "\"";
+            FLEX_LOG_DEBUG("CoreAppExecutor::runOsCmd() executing command: ", newconsole);
             system(newconsole.c_str());
         }
 

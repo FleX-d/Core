@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InvalidRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -41,10 +42,11 @@ namespace flexd {
 
         InvalidRequest::InvalidRequest(const std::string& name, const std::string& ver)
         : iCoreAppRequest(RqstType::Enum::undefined, nullptr, nullptr, name, ver) {
-
+            FLEX_LOG_INIT("InvalidRequest");
         }
 
         void InvalidRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("InvalidRequest::accept(): Visiting");
             v.visit(this);
         }
 

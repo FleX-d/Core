@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InstallRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -43,14 +44,18 @@ namespace flexd {
         InstallRequest::InstallRequest(const std::string& name, const std::string& ver, const std::string& path)
         : iCoreAppRequest(RqstType::Enum::install, nullptr, nullptr, name, ver),
         m_path(path) {
+            FLEX_LOG_INIT("InstallRequest");
+            FLEX_LOG_TRACE("InstallRequest: ","path: ", m_path);
         }
 
         const std::string& InstallRequest::getBase64() const {
             base::BinStream b(m_path);
+            FLEX_LOG_TRACE("InstallRequest::getBase64():");
             return b.getBase64();
         }
 
         void InstallRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("InstallRequest::accept(): Visiting");
             v.visit(this);
         }
 

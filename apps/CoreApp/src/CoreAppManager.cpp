@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CoreAppManager.h"
 #include "iCoreAppAck.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -43,62 +44,161 @@ namespace flexd {
         : m_exe(),
         m_dbName("CoreAppDb"),
         m_db(dbPath, m_dbName) {
+            FLEX_LOG_INIT("CoreAppManager");
         }
-
+        
         bool CoreAppManager::tryProcesRequest(InstallRequest& rqst) {
-
-            std::string command, key = "Install";
-            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, key);
-
+            
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
+            
+            /*TODO check install file*/
+            
             if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
                 return true;
             }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending error");
             rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
             return false;
         }
 
         bool CoreAppManager::tryProcesRequest(UninstallRequest& rqst) {
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Uninstall):", command);
+            
+            /*TODO check if running then stop*/
+
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Uninstall): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Uninstall): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
         bool CoreAppManager::tryProcesRequest(StartRequest& rqst) {
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Start):", command);
+
+            /*TODO check if is running or freez*/
+            
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Start): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Start): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
         bool CoreAppManager::tryProcesRequest(StopRequest& rqst) {
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Stop):", command);
+            
+            /*TODO check if is stop*/
+
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Stop): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Stop): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
         bool CoreAppManager::tryProcesRequest(FreezRequest& rqst) {
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Freez):", command);
+            
+            /*TODO check if is running*/
+
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Freez): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Freez): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
         bool CoreAppManager::tryProcesRequest(UnfreezRequest& rqst) {
+            
+            /*TODO check if is freez*/
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Unfreez):", command);
+
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Unfreez): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Unfreez): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
         bool CoreAppManager::tryProcesRequest(UpdateRequest& rqst) {
 
-            return true;
+            std::string command;
+            m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Update):", command);
+
+            /*TODO*/
+            
+            if(appExecute(command)){
+                FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Update): sending ack");
+                rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
+                return true;
+            }
+            FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Update): sending error");
+            rqst.onError(iCoreAppAck(RqstAck::Enum::fail, rqst.getName(), rqst.getVersion()));
+            return false;
         }
 
-        bool CoreAppManager::appExecute(const std::string cmd) {
-
+        bool CoreAppManager::appExecute(const std::string& cmd) {
+            
+            FLEX_LOG_TRACE("CoreAppManager::appExecute():");
             /*TODO chceck if cmd run back true*/
-
-            m_exe.runOsCmd(cmd);
-
-
+            
+            try{
+                m_exe.runOsCmd(cmd);
+            }
+            catch(std::exception& e){
+                return false;
+            }
             return true;
         }
 
-
-
+        std::string CoreAppManager::getDbKey(RqstType::Enum e){
+            switch(e){
+                case 0: return "Install";
+                case 1: return "Uninstall";
+                case 2: return "Start";
+                case 3: return "Stop";
+                case 4: return "Freez";
+                case 5: return "Unfreez";
+                case 6: return "UpdateDB";
+                default: return "";
+            }
+        }
+        
     }
 }

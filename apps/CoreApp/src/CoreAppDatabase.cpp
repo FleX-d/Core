@@ -31,36 +31,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  * Created on Februar 7, 2018, 9:32 AM
  */
-
+#include "FleXdLogger.h"
 #include "CoreAppDatabase.h"
 
 namespace flexd {
     namespace core {
 
         CoreAppDatabase::CoreAppDatabase(const std::string& dbPath, const std::string& dbName) :
-        m_path(dbPath){
+        m_path(dbPath) {
+            FLEX_LOG_INIT("CoreAppDatabase");
+            FLEX_LOG_TRACE("Path for database: ", m_path);
         }
 
         bool CoreAppDatabase::getRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& dest, const std::string& key) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READONLY;
             const std::string queryString = "SELECT " + key + " FROM " + dbName + " WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
-
+            FLEX_LOG_TRACE("CoreAppDatabase::getRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
                 sqlite3pp::query query(db, queryString.c_str());
                 const auto rowCount = std::distance(query.begin(), query.end());
                 if (rowCount != 1) {
-                    std::cerr << "CoreAppDatabase::getRecord(): expected 1 entry for key='" << key << "' from table='" << dbName << "', got " << rowCount << " entries\n";
+                    FLEX_LOG_ERROR("CoreAppDatabase::getRecord(): expected 1 entry for key='", key, "' from table='", dbName, "', got ", rowCount, " entries\n");
                     return false;
                 }
                 auto it = query.begin();
                 dest = (*it).get<std::string>(0);
             } catch (const sqlite3pp::database_error& e) {
-                std::cerr << "CoreAppDatabase::getRecord(): database error: " << e.what() << std::endl;
+                FLEX_LOG_ERROR("CoreAppDatabase::getRecord(): database error: ", e.what());
                 db.disconnect();
                 return false;
             }
-
+            FLEX_LOG_TRACE("CoreAppDatabase::getRecord(): Success return record: ", dest);
             db.disconnect();
             return true;
         }
@@ -68,25 +70,25 @@ namespace flexd {
         bool CoreAppDatabase::editRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& val, const std::string& key) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
             const std::string queryString = "UPDATE " + dbName + " SET " + key + "=\"" + val + "\" WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
-
+            FLEX_LOG_TRACE("CoreAppDatabase::editRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
                 db.execute(queryString.c_str());
             } catch (const sqlite3pp::database_error& e) {
-                std::cerr << "CoreAppDatabase::editRecord(): database error: " << e.what() << std::endl;
+                FLEX_LOG_ERROR("CoreAppDatabase::editRecord(): database error: ", e.what());
                 db.disconnect();
                 return false;
             }
             std::string tmp;
             if (getRecord(dbName, name, ver, tmp, key)) {
                 db.disconnect();
-                if(val == tmp){
+                if (val == tmp) {
+                    FLEX_LOG_TRACE("CoreAppDatabase::editRecord(): Success Edit");
                     return true;
                 }
-                std::cerr << "CoreAppDatabase::editRecord(): Incorect write" << std::endl;
-            }
-            else{
-                std::cerr << "CoreAppDatabase::editRecord(): Cant read now write note" << std::endl;
+                FLEX_LOG_ERROR("CoreAppDatabase::editRecord(): Incorect Write");
+            } else {
+                FLEX_LOG_ERROR("CoreAppDatabase::editRecord(): Cant read now write note");
             }
             db.disconnect();
             return false;
@@ -97,15 +99,16 @@ namespace flexd {
             const std::string queryString = "INSERT INTO "
                     + dbName + "(AppName, AppVer, Install, Uninstall, Start, Stop, Freez, Unfreez, UpdateDB, MD5) VALUES"
                     " (\"" + name + "\", \"" + ver + "\",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \");";
-
+            FLEX_LOG_TRACE("CoreAppDatabase::addRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
                 db.execute(queryString.c_str());
             } catch (const sqlite3pp::database_error& e) {
-                std::cerr << "CoreAppDatabase::addRecord(): database error: " << e.what() << std::endl;
+                FLEX_LOG_ERROR("CoreAppDatabase::addRecord(): database error: ", e.what());
                 db.disconnect();
                 return false;
             }
+            FLEX_LOG_TRACE("CoreAppDatabase::addRecord(): Success Add");
             db.disconnect();
             return true;
         }
@@ -113,20 +116,22 @@ namespace flexd {
         bool CoreAppDatabase::eraseRecord(const std::string& dbName, const std::string& name, const std::string& ver) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
             const std::string queryString = "DELETE FROM " + dbName + " WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
-
+            FLEX_LOG_TRACE("CoreAppDatabase::eraseRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
                 db.execute(queryString.c_str());
             } catch (const sqlite3pp::database_error& e) {
-                std::cerr << "CoreAppDatabase::eraseRecord(): database error: " << e.what() << std::endl;
+                FLEX_LOG_ERROR("CoreAppDatabase::eraseRecord(): database error: ", e.what());
                 db.disconnect();
                 return false;
             }
+            FLEX_LOG_TRACE("CoreAppDatabase::eraseRecord(): Success erase");
             return true;
         }
 
         bool CoreAppDatabase::fileExists(const std::string& filename) {
             std::ifstream file(filename);
+            FLEX_LOG_TRACE("CoreAppDatabase::fileExists(): ", file.good());
             return file.good();
         }
     }

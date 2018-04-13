@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FreezRequest.h"
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 
 namespace flexd {
@@ -42,9 +43,11 @@ namespace flexd {
 
         FreezRequest::FreezRequest(const std::string& name, const std::string& ver) :
         iCoreAppRequest(RqstType::Enum::freez, nullptr, nullptr, name, ver) {
+            FLEX_LOG_INIT("FreezRequest::FreezRequest()");
         }
 
         void FreezRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("FreezRequest::accept(): Visiting");
             v.visit(this);
         }
     }

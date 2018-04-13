@@ -34,12 +34,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "Visitor.h"
+#include "FleXdLogger.h"
 
 namespace flexd {
     namespace core {
 
         Visitor::Visitor(){
-            
+            FLEX_LOG_INIT("Visitor");
+            FLEX_LOG_TRACE("Visitor: ");
         }
         /*TODO*/
         void Visitor::visit(InstallRequest_t r) {
