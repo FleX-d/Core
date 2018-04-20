@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IPCClient.h"
 #include "iCoreAppAck.h"
 #include "FleXdLogger.h"
+#include "iCoreAppRequest.h"
 
 
 namespace flexd {
@@ -56,15 +57,19 @@ namespace flexd {
             rqst->setOnSucces(onSuccess);
                    
             /*check if request is not null or invalid, send error ack if is*/
-            if(rqst==NULL || rqst->getType()==flexd::core::RqstType::Enum::undefined){
+            if(rqst->getType()==flexd::core::RqstType::Enum::undefined){
                 FLEX_LOG_DEBUG("IPCClient::onMessage(): bad request");
                 rqst->onError(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return; /*TODO return or break ???? for exit onMessage*/
             }
             else{
-                FLEX_LOG_TRACE("IPCClient::onMessage(): send message to manager");
-            /*TODO execute in manager creating order*/
-            
+                FLEX_LOG_TRACE("IPCClient::onMessage(): send message to manager to execute");
+                /*TODO execute in manager creating order*/
+                
+                
+                
+                
+                
+                
             }
         }
         

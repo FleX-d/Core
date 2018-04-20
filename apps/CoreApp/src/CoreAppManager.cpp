@@ -55,6 +55,10 @@ namespace flexd {
             
             /*TODO check install file*/
             
+            
+            
+            
+            
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
@@ -72,6 +76,10 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Uninstall):", command);
             
             /*TODO check if running then stop*/
+            
+            
+            
+            
 
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Uninstall): sending ack");
@@ -91,6 +99,10 @@ namespace flexd {
 
             /*TODO check if is running or freez*/
             
+            
+            
+            
+            
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Start): sending ack");
                 rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
@@ -108,6 +120,10 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Stop):", command);
             
             /*TODO check if is stop*/
+            
+            
+            
+            
 
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Stop): sending ack");
@@ -126,6 +142,10 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Freez):", command);
             
             /*TODO check if is running*/
+            
+            
+            
+            
 
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Freez): sending ack");
@@ -141,6 +161,10 @@ namespace flexd {
             
             /*TODO check if is freez*/
 
+            
+            
+            
+            
             std::string command;
             m_db.getRecord(m_dbName, rqst.getName(), rqst.getVersion(), command, getDbKey(rqst.getType()));
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Unfreez):", command);
@@ -163,6 +187,10 @@ namespace flexd {
 
             /*TODO*/
             
+            
+            
+            
+            
             if(appExecute(command)){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Update): sending ack");
                 rqst.onSccess(iCoreAppAck(RqstAck::Enum::succes, rqst.getName(), rqst.getVersion()));
@@ -177,6 +205,9 @@ namespace flexd {
             
             FLEX_LOG_TRACE("CoreAppManager::appExecute():");
             /*TODO chceck if cmd run back true*/
+            
+            
+            
             
             try{
                 m_exe.runOsCmd(cmd);

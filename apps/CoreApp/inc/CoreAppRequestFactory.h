@@ -61,7 +61,6 @@ namespace flexd {
             iCoreAppRequest_t makeRqst(flexd::icl::JsonObj& json) const;
             
         private:
-            
                 
         };
         

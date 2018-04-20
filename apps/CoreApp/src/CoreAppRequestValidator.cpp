@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
-
+        
         CoreAppRequestValidator::CoreAppRequestValidator() {
             FLEX_LOG_INIT("CoreAppRequestValidator");
         }
@@ -46,8 +46,94 @@ namespace flexd {
         /*TODO verification request*/
         template<class T>
         bool CoreAppRequestValidator::validRequest(const T& rqt) {
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest()");
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Type not found");
+            return false;
+        }
+        
+        
+        /*Function for template*/
+        bool CoreAppRequestValidator::validRequestInstall(const InstallRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Install");
+            if(rqt.getType()!=RqstType::Enum::install)
+                return false;
+            /*if(rqt.getBase64()=="")
+                return false;*/
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
             return true;
         }
+        
+        bool CoreAppRequestValidator::validRequestUninstall(const UninstallRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Uninstall");
+            if(rqt.getType()!=RqstType::Enum::unintall)
+                return false;
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        bool CoreAppRequestValidator::validRequestStart(const StartRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Start");
+            if(rqt.getType()!=RqstType::Enum::start)
+                return false;
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        bool CoreAppRequestValidator::validRequestStop(const StopRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Stop");
+            if(rqt.getType()!=RqstType::Enum::stop)
+                return false;
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        bool CoreAppRequestValidator::validRequestFreez(const FreezRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Freez");
+            if(rqt.getType()!=RqstType::Enum::freez)
+                return false;
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        bool CoreAppRequestValidator::validRequestUnfreez(const UnfreezRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Unfreez");
+            if(rqt.getType()!=RqstType::Enum::unfreez)
+                return false;
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        bool CoreAppRequestValidator::validRequestUpdate(const UpdateRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Update");
+            if(rqt.getType()!=RqstType::Enum::update)
+                return false;
+            /*if(rqt.getBase64()=="")
+                return false;*/
+            if(rqt.getName()=="")
+                return false;
+            if(rqt.getVersion()=="")
+                return false;
+            return true;
+        }
+        
+        
+        
     }
 }

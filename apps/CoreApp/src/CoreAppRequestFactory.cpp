@@ -44,11 +44,9 @@ namespace flexd {
 
         iCoreAppRequest_t CoreAppRequestFactory::makeRqst(flexd::icl::JsonObj& json) const {
             FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
-            
-            /*TODO valid rqst*/
 
             base::BinStream b;
-            std::string path = "./";
+            std::string path = ConstantString::workPath;
             std::string appID, message, operation;
             json.get<std::string>("/AppID", appID);
             json.get<std::string>("/Message", message);
@@ -58,28 +56,28 @@ namespace flexd {
                 appID = "noID";
             }
             if (!operation.empty()) {
-                if (operation == "Install") {
+                if (operation == ConstantString::operationInstall) {
                     path = path + appID;
                     b.setBase64(message);
                     b.write(path);
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
                     return new InstallRequest(appID, appID, path);
-                } else if (operation == "Uninstall") {
+                } else if (operation == ConstantString::operationUninstall) {
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
                     return new UninstallRequest(appID, appID);
-                } else if (operation == "Start") {
+                } else if (operation == ConstantString::operationStart) {
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
                     return new StartRequest(appID, appID);
-                } else if (operation == "Stop") {
+                } else if (operation == ConstantString::operationStop) {
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
                     return new StopRequest(appID, appID);
-                } else if (operation == "Freez") {
+                } else if (operation == ConstantString::operationFreez) {
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freez");
                     return new FreezRequest(appID, appID);
-                } else if (operation == "Unfreez") {
+                } else if (operation == ConstantString::operationUnfreez) {
                     FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreez");
                     return new UnfreezRequest(appID, appID);
-                } else if (operation == "Update") {
+                } else if (operation == ConstantString::operationUpdate) {
                     path = path + appID;
                     b.setBase64(message);
                     b.write(path);
@@ -90,8 +88,8 @@ namespace flexd {
                     return new InvalidRequest(appID, appID);
                 }
             }
-            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return null");
-            return NULL;
+            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
+            return new InvalidRequest(appID, appID);
         }
     }
 }

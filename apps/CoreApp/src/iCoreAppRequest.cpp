@@ -79,7 +79,6 @@ namespace flexd {
         }
 
         void iCoreAppRequest::setOnError(std::function<void(const iCoreAppAck&) > onError) {
-            
             FLEX_LOG_TRACE("iCoreAppRequest::setOnError(): set lambda");
             m_onError = onError;
         }
