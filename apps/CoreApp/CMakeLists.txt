@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(CoreApp VERSION "0.0.1")
+project(CoreApp VERSION "0.1")
 set(PROJECT_DESCRIPTION "CoreApp for project FleXd")
 
 message(STATUS "***" )
@@ -44,6 +44,7 @@ SET(privateHeaders
     inc/CoreAppRequestValidator.h
     inc/CoreAppTypes.h
     inc/FreezRequest.h
+    inc/iApp.h
     inc/iCoreAppAck.h
     inc/iCoreAppRequest.h
     inc/iIPCClient.h
@@ -51,6 +52,7 @@ SET(privateHeaders
     inc/InvalidRequest.h
     inc/IPCClient.h
     inc/StartRequest.h
+    inc/StateMachine.h
     inc/StopRequest.h
     inc/UnfreezRequest.h
     inc/UninstallRequest.h
@@ -69,6 +71,7 @@ SET(privateSources
     src/CoreAppRequestFactory.cpp
     src/CoreAppRequestValidator.cpp
     src/FreezRequest.cpp
+    src/iApp.cpp
     src/iCoreAppAck.cpp
     src/iCoreAppRequest.cpp
     src/iIPCClient.cpp
@@ -76,12 +79,14 @@ SET(privateSources
     src/InvalidRequest.cpp
     src/IPCClient.cpp
     src/StartRequest.cpp
+    src/StateMachine.cpp
     src/StopRequest.cpp
     src/UnfreezRequest.cpp
     src/UninstallRequest.cpp
     src/UpdateRequest.cpp
     src/Visitor.cpp
     src/main.cpp
+
 )
 
 SET(${PROJECT_NAME}PublicInc "${CoreApp_SOURCE_DIR}/inc")
@@ -95,6 +100,12 @@ target_link_libraries(${PROJECT_NAME}
     pthread
     sqlite3
 )
+
+option(
+    ENABLE_TESTS
+    "Run Test?"
+    ON
+    )
 
 if(ENABLE_TESTS)
   add_subdirectory(gtest)

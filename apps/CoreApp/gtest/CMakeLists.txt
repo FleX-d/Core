@@ -19,6 +19,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestValidator.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppTypes.h
     ${CoreApp_SOURCE_DIR}/inc/FreezRequest.h
+    ${CoreApp_SOURCE_DIR}/inc/iApp.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppAck.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppRequest.h
     ${CoreApp_SOURCE_DIR}/inc/iIPCClient.h
@@ -26,6 +27,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/InvalidRequest.h
     ${CoreApp_SOURCE_DIR}/inc/IPCClient.h
     ${CoreApp_SOURCE_DIR}/inc/StartRequest.h
+    ${CoreApp_SOURCE_DIR}/inc/StateMachine.h
     ${CoreApp_SOURCE_DIR}/inc/StopRequest.h
     ${CoreApp_SOURCE_DIR}/inc/UnfreezRequest.h
     ${CoreApp_SOURCE_DIR}/inc/UninstallRequest.h
@@ -44,6 +46,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestFactory.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestValidator.cpp
     ${CoreApp_SOURCE_DIR}/src/FreezRequest.cpp
+    ${CoreApp_SOURCE_DIR}/src/iApp.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppAck.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/iIPCClient.cpp
@@ -51,6 +54,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/InvalidRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/IPCClient.cpp
     ${CoreApp_SOURCE_DIR}/src/StartRequest.cpp
+    ${CoreApp_SOURCE_DIR}/src/StateMachine.cpp
     ${CoreApp_SOURCE_DIR}/src/StopRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UnfreezRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UninstallRequest.cpp
@@ -63,6 +67,7 @@ SET(privateSources
     FullRunTest.cpp
     Main.cpp
     ManagerTest.cpp
+    StateTest.cpp
     ValidatorTest.cpp
     VisitTest.cpp
 )

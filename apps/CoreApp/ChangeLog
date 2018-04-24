@@ -39,3 +39,14 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - None
+
+## [0.0.3] - 2018-04-24 
+### Added
+- Ading class for state of apps and iApp for change state with shared_ptr [Peter Kocity] 
+- Adding test for this new class
+
+### Changed
+- None
+
+### Removed
+- None
