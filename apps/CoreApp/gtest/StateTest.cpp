@@ -4,6 +4,7 @@
 
 #include "iApp.h"
 #include <map>
+#include <bits/stl_map.h>
 
     
 flexd::core::iApp appka;
@@ -42,6 +43,17 @@ TEST(AppState, Testing_with_Map){
 
     ASSERT_TRUE(listOfApp.at("dumy").starting());
     ASSERT_TRUE(listOfApp.at("dumy").freezing());
+    listOfApp.clear();
 }
 
+TEST(AppState, Testing_couting_and_erasing_sharedpointer){
+    flexd::core::iApp ppp;
+    listOfApp.insert(std::make_pair("a", ppp));
+    std::cout<<"deleting copy of make pair"<<std::endl;
+    ppp.~iApp();
+    std::cout<<"deleting copy of first object"<<std::endl;
+}
 
+TEST(AppState, Testing_erasing_map){
+    listOfApp.clear();
+}

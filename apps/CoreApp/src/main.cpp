@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc, char** argv) {
     
-    /*TODO ERASE only testig state machine*/
+    /*TODO ERASE only testig state machine
     flexd::core::iApp appka;
     flexd::core::iApp appka1;
     flexd::core::iApp a;
@@ -83,6 +83,14 @@ int main(int argc, char** argv) {
         std::cout << "Cant update" << std::endl;
 
     std::cout << listOfApp.at("dumy").freezing() << std::endl << std::endl;
+    
+    */
+    flexd::core::iApp b;
+    b.starting();
+    b.stoping();
+    b.stoping();
+    
+    std::cout<<"ending"<<std::endl;
     
     return 0;
 }

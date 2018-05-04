@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - None
  
+ 
 ## [0.0.1] - 2018-04-13
 ### Added
 - Lambda functionality for IPCClient
@@ -28,6 +29,7 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - None
  
+ 
 ## [0.0.2] - 2018-04-20
 ### Added
 - Validator of request with template
@@ -40,6 +42,7 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - None
 
+
 ## [0.0.3] - 2018-04-24 
 ### Added
 - Ading class for state of apps and iApp for change state with shared_ptr [Peter Kocity] 
@@ -50,3 +53,17 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - None
+
+
+## [0.0.4] - 2018-04-24 
+### Added
+- Add map of app in manager, create function for access in function [Peter Kocity] 
+- Add readme
+- Add executor function for return text from console 
+
+### Changed
+- None
+
+### Removed
+- None
+

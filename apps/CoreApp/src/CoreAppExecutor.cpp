@@ -34,8 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FleXdLogger.h"
 #include "CoreAppExecutor.h"
-
-
+#include <stdio.h>
 
 namespace flexd {
     namespace core {
@@ -50,5 +49,23 @@ namespace flexd {
             system(newconsole.c_str());
         }
 
+        std::string CoreAppExecutor::runOsCmdWithResult(const std::string& cmd) {
+            FLEX_LOG_DEBUG("CoreAppExecutor::runOsCmdWithResult() executing command: ", cmd);
+            std::string cmdHelp=cmd;
+            std::string data;
+            std::FILE * stream;
+            const int max_buffer = 256;
+            char buffer[max_buffer];
+            cmdHelp.append(" 2>&1"); //potlacenie error mesage
+
+            stream = popen(cmdHelp.c_str(), "r");
+            if (stream) {
+                while (!feof(stream))
+                    if (fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
+                pclose(stream);
+            }
+            return data;
+        }
     }
-} 
+}
+

@@ -32,6 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 8, 2018, 10:48 AM
  */
 
+#include <map>
+#include <bits/stl_map.h>
+
 #include "CoreAppManager.h"
 #include "iCoreAppAck.h"
 #include "FleXdLogger.h"
@@ -231,5 +234,29 @@ namespace flexd {
             }
         }
         
+        bool CoreAppManager::addInList(iApp& a, std::string mapName){
+            return m_listOfApp.insert(std::make_pair(mapName,a)).second;
+        }
+        bool CoreAppManager::eraseInList(std::string mapName){
+            return m_listOfApp.erase(mapName);
+        }
+        bool CoreAppManager::findInList(std::string mapName){
+            if (m_listOfApp.find(mapName) != m_listOfApp.end())
+                return true;
+            else 
+                return false;
+        }
+        bool CoreAppManager::changeStateInList(std::string mapName, RqstType::Enum e){
+            switch(e){
+                case 0:
+                case 1:
+                case 6:{return m_listOfApp.at(mapName).updating();}
+                case 2:{return m_listOfApp.at(mapName).starting();}
+                case 3:{return m_listOfApp.at(mapName).stoping();}
+                case 4:{return m_listOfApp.at(mapName).freezing();}
+                case 5:{return m_listOfApp.at(mapName).unfreezing();}
+                default:{return false;}
+            }
+        }
     }
 }

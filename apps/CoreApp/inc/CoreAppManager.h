@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UnfreezRequest.h"
 #include "UpdateRequest.h"
 #include "InvalidRequest.h"
+#include "iApp.h"
 
 
 #ifndef COREAPPMANAGER_H
@@ -69,12 +70,18 @@ namespace flexd {
             CoreAppManager operator=(const CoreAppManager& orig) = delete;
 
         private:
-            bool appExecute(const std::string& cmd /*TODO*/); /*set private*/
+            bool appExecute(const std::string& cmd /*TODO*/); 
             std::string getDbKey(RqstType::Enum e);
+            
+            bool addInList(iApp& a, std::string mapName);
+            bool eraseInList(std::string mapName);
+            bool findInList(std::string mapName);
+            bool changeStateInList(std::string mapName, RqstType::Enum e);
             
             CoreAppExecutor m_exe;
             const std::string m_dbName;
             CoreAppDatabase m_db;
+            std::map<std::string, iApp> m_listOfApp;
         };
     } // namespace core
 } // namespace flexd
