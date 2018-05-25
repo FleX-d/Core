@@ -11,5 +11,4 @@ Acknowledge
 
 ## An example of procesing is shown in the figure
 
-link/picture
 ![example of procesing](Readme/example.png)

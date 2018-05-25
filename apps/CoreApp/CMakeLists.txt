@@ -36,6 +36,13 @@ if (libsqlite3-dev_FOUND)
     message(STATUS "SQLITE3 inc was found: " ${libsqlite3-dev_INCLUDE_DIRS})
 endif (libsqlite3-dev_FOUND)
 
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FLEXD_LOGGER REQUIRED fleXdLoggerClient)
+if (FLEXD_LOGGER_FOUND)
+    message(STATUS "FLEXD_LOGGER libs was found: " ${FLEXD_LOGGER_LIBRARIES})
+    message(STATUS "FLEXD_LOGGER inc was found: " ${FLEXD_LOGGER_INCLUDE_DIRS})
+endif (FLEXD_LOGGER_FOUND)
+
 SET(privateHeaders
     inc/CoreAppDatabase.h
     inc/CoreAppExecutor.h
@@ -93,10 +100,11 @@ SET(${PROJECT_NAME}PublicInc "${CoreApp_SOURCE_DIR}/inc")
 
 add_executable(${PROJECT_NAME} ${privateSources} ${privateHeaders})
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++14 -Wall -Wfloat-conversion ${JSON_PARSER_CFLAGS_OTHER})
-target_include_directories(${PROJECT_NAME} PUBLIC inc ${JSON_PARSER_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC inc ${JSON_PARSER_INCLUDE_DIRS}  )
 target_link_libraries(${PROJECT_NAME}
     ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
+    ${FLEXD_LOGGER_LIBRARIES}
     pthread
     sqlite3
 )

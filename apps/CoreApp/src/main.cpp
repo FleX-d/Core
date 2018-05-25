@@ -84,13 +84,14 @@ int main(int argc, char** argv) {
 
     std::cout << listOfApp.at("dumy").freezing() << std::endl << std::endl;
     
-    */
+    
     flexd::core::iApp b;
     b.starting();
     b.stoping();
     b.stoping();
-    
+    */
     std::cout<<"ending"<<std::endl;
+    std::cout<<"Yocto is very good thing"<<std::endl;
     
     return 0;
 }

@@ -89,5 +89,6 @@ target_link_libraries(${PROJECT_NAME}
     ${GMOCK_LIBRARIES}
     ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
+    ${FLEXD_LOGGER_LIBRARIES}
     sqlite3
 )
