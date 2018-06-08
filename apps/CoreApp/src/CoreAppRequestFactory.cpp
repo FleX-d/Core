@@ -41,7 +41,7 @@ namespace flexd {
         CoreAppRequestFactory::CoreAppRequestFactory(){
         }
 
-        iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, std::string& AppID) const {
+        iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const {
             FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
 
             //base::BinStream b;

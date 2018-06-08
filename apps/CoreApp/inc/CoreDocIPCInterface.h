@@ -49,14 +49,14 @@ namespace flexd {
 	public:
 	    Interface (flexd::icl::ipc::FleXdEpoll& poller);
             virtual ~Interface();
-	    void sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, uint16_t AppID);
+	    void sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID);
         
 	
 	private:
             void send(std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> Msg);
             virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg Msg) override;
 	    
-	    virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, uint16_t AppID) = 0;
+	    virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) = 0;
             
 	    uint32_t getTimestamp();
 	private:

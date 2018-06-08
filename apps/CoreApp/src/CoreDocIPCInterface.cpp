@@ -60,7 +60,7 @@ namespace flexd {
         }
        
        
-       void Interface::sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, uint16_t AppID)
+       void Interface::sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID)
        {
 	   uint8_t msgtype = 1;
            uint8_t msgCounter = m_counter;
@@ -75,7 +75,7 @@ namespace flexd {
 	   json.add<int>("/id", id);
 	   json.add<bool>("/payload/OperationAck", OperationAck);
 	   json.add<std::string>("/payload/Message", Message);
-	   json.add<uint16_t>("/payload/AppID", AppID);
+	   json.add<std::string>("/payload/AppID", AppID);
 
 	   std::string tmp = json.getJson();
            std::vector<uint8_t> payload(tmp.begin(), tmp.end());
@@ -102,11 +102,11 @@ namespace flexd {
 	       case 1: {
 	          uint8_t Operation;
                   std::string Message;
-                  uint16_t AppID;
+                  std::string AppID;
                   
 	          json.get<uint8_t>("/payload/Operation", Operation);
 	          json.get<std::string>("/payload/Message", Message);
-	          json.get<uint16_t>("/payload/AppID", AppID);
+	          json.get<std::string>("/payload/AppID", AppID);
                   receiveRequestCoreMsg(Operation, Message, AppID);
                   break; }
 	    

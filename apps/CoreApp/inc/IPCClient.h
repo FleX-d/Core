@@ -57,7 +57,7 @@ namespace flexd {
             IPCClient& operator=(const IPCClient&) = delete;
 
         private:
-            virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, uint16_t AppID);
+            virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID);
             void sendSuccesAck(const iCoreAppAck& ack);
             void sendErrorAck(const iCoreAppAck& ack);
 

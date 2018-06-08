@@ -50,10 +50,10 @@ namespace flexd {
             m_onLambda=onLambda;
         }
 
-        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, uint16_t AppID){
-            FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): incoming message");
-            std::string id=std::to_string(AppID);
-            iCoreAppRequest_t rqst = m_factory.makeRqst(Operation, Message, id);
+        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID){
+            FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): incoming message ", Operation);
+
+            iCoreAppRequest_t rqst = m_factory.makeRqst(Operation, Message, AppID);
             
             FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): seting lamda function");
             std::function<void(const iCoreAppAck&) > onSuccess = std::bind(&IPCClient::sendSuccesAck, this, std::placeholders::_1);
@@ -80,7 +80,7 @@ namespace flexd {
         void IPCClient::sendSuccesAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::succes){
-                sendRequestCoreAckMsg(true, " ", (uint16_t)atoi(ack.getName().c_str()));
+                sendRequestCoreAckMsg(true, " ", ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", true, " ", ack.getName());
             }
         }
@@ -88,7 +88,7 @@ namespace flexd {
         void IPCClient::sendErrorAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::fail){
-                sendRequestCoreAckMsg(false, " ", (uint16_t)atoi(ack.getName().c_str()));
+                sendRequestCoreAckMsg(false, " ", ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", false, " ", ack.getName());
             }
         }
