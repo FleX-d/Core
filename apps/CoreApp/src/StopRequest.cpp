@@ -42,7 +42,6 @@ namespace flexd {
 
         StopRequest::StopRequest(const std::string& name, const std::string& ver) :
         iCoreAppRequest(RqstType::Enum::stop, nullptr, nullptr, name, ver) {
-            FLEX_LOG_INIT("StopRequest");
         }
 
         void StopRequest::accept(Visitor &v) {

@@ -67,3 +67,18 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - None
 
+
+## [0.0.5] - 2018-06-08 
+### Added
+- Add new IPCInterface CoreDocIPCInterface [Peter Kocity] 
+- Add Visitor functionaliti for manager
+
+### Changed
+- Edit current IPC functionality for new IPCInterface
+- Change appID from string to uint16_t
+- Edit Factory metod for uint16_t
+- Edit test for factory
+
+### Removed
+- Delete old IPCInterface iIPCclient
+

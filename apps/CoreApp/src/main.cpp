@@ -35,63 +35,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdlib>
 #include <iostream>
-#include "iApp.h"
-#include <map>
+#include "FleXdLogger.h"
+#include "FleXdEpoll.h"
+#include "IPCClient.h"
+#include "CoreAppManager.h"
+#include "iCoreAppRequest.h"
 
-int main(int argc, char** argv) {
-    
-    /*TODO ERASE only testig state machine
-    flexd::core::iApp appka;
-    flexd::core::iApp appka1;
-    flexd::core::iApp a;
+int main(int argc, char** argv) {    
+    flexd::icl::ipc::FleXdEpoll poller(10);
+    FLEX_LOG_INIT(poller, "CoreApp");
+    FLEX_LOG_TRACE("CoreApp starting");
 
-    std::cout << "Current state app1: " << appka.getState() << std::endl;
-    std::cout << "Current state app2: " << appka1.getState() << std::endl;
+    std::cout<<"     ****************"<<std::endl;
+    std::cout<<"     *              *"<<std::endl;
+    std::cout<<"     *   CORE APP   *"<<std::endl;
+    std::cout<<"     *   STARTING   *"<<std::endl;
+    std::cout<<"     *              *"<<std::endl;
+    std::cout<<"     ****************"<<std::endl;
 
-    std::cout << "Operation:Freez:   bool:" << appka.freezing() << std::endl;
-    std::cout << "Operation:Start:   bool:" << appka.starting() << std::endl;
-    std::cout << "Operation:Update:  bool:" << appka.updating() << std::endl;
-    std::cout << "Operation:Freez:   bool:" << appka.freezing() << std::endl;
-    std::cout << "Operation:Stop:    bool:" << appka.stoping() << std::endl;
-    std::cout << "Operation:Unfreez: bool:" << appka.unfreezing() << std::endl;
-    std::cout << "Operation:Start:   bool:" << appka.starting() << std::endl;
-    std::cout << "Operation:Freez:   bool:" << appka.freezing() << std::endl;
-    std::cout << "Operation:Start:   bool:" << appka.starting() << std::endl;
-    std::cout << "Operation:Unfreez: bool:" << appka.unfreezing() << std::endl;
-    std::cout << "Operation:Stop:    bool:" << appka.stoping() << std::endl;
-    std::cout << "Operation:Update:  bool:" << appka.updating() << std::endl;
-    std::cout << "Operation:Stop:    bool:" << appka.stoping() << std::endl;
-    
-    std::cout << "Current state app1: " << appka.getState() << std::endl;
-    std::cout << "Current state app2: " << appka1.getState() << std::endl;
-    
-    std::cout << "Operation:Stop:    bool:" << appka1.starting() << std::endl;
-    std::cout << "Current state app2: " << appka1.getState() << std::endl << std::endl;
-    
-    std::map<std::string, flexd::core::iApp> listOfApp;
-    listOfApp.insert(std::make_pair("snake", appka)); //move and return false if exist pair with snake
-    listOfApp.insert(std::make_pair("dumy", a));
-    listOfApp["earth"] = appka1; //copy and rewrite if exist pair with earth
-    if (listOfApp.insert(std::make_pair("earth", appka1)).second == false)
-        std::cout << "dont insert , pair exist" << std::endl;
+    flexd::core::CoreAppManager manager("./CoreAppDb.db");
+    flexd::core::IPCClient client(poller);
+    client.setOnLambda([&manager](flexd::core::iCoreAppRequest& rqst){manager.Lambda(rqst);});
 
-    if (listOfApp.find("earth") != listOfApp.end())
-        std::cout << "earth app is in list" << std::endl;
-
-    std::cout << listOfApp.at("dumy").starting() << std::endl;
-    if (listOfApp.at("dumy").updating() == false)
-        std::cout << "Cant update" << std::endl;
-
-    std::cout << listOfApp.at("dumy").freezing() << std::endl << std::endl;
     
-    
-    flexd::core::iApp b;
-    b.starting();
-    b.stoping();
-    b.stoping();
-    */
-    std::cout<<"ending"<<std::endl;
-    std::cout<<"Yocto is very good thing"<<std::endl;
-    
+    poller.loop();
     return 0;
 }

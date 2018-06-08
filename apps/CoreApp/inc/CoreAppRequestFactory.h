@@ -58,7 +58,7 @@ namespace flexd {
             explicit CoreAppRequestFactory();
             ~CoreAppRequestFactory() = default;
             
-            iCoreAppRequest_t makeRqst(flexd::icl::JsonObj& json) const;
+            iCoreAppRequest_t makeRqst(uint8_t& Operation, const std::string& Message, std::string& AppID) const;
             
         private:
                 

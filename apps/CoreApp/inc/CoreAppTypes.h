@@ -80,14 +80,6 @@ namespace flexd {
         
         namespace ConstantString{
             const std::string workPath= "./";
-            
-            const std::string operationInstall = "Install";
-            const std::string operationUninstall = "Uninstall";
-            const std::string operationStart = "Start";
-            const std::string operationStop = "Stop";
-            const std::string operationFreez = "Freez";
-            const std::string operationUnfreez = "Unfreez";
-            const std::string operationUpdate = "Update";
         }
         
     } // namespace core

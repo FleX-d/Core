@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "StateMachine.h"
+#include "CoreAppTypes.h"
 
 
 namespace flexd {
@@ -66,7 +67,7 @@ namespace flexd {
         }
         
         int StateMachine::getType(){
-            return 0;
+            return flexd::core::JobState::undefined;
         }
         
         Stop::Stop(){
@@ -82,7 +83,7 @@ namespace flexd {
         }
         
         int Stop::getType(){
-            return 1;
+            return flexd::core::JobState::busy;
         }
 
         Run::Run(){
@@ -98,7 +99,7 @@ namespace flexd {
         }
         
         int Run::getType(){
-            return 2;
+            return flexd::core::JobState::running;
         }
 
         Freez::Freez(){
@@ -114,7 +115,7 @@ namespace flexd {
         }
         
         int Freez::getType(){
-            return 3;
+            return flexd::core::JobState::peding;
         }
 
         Update::Update(){
@@ -126,7 +127,7 @@ namespace flexd {
         }
         
         int Update::getType(){
-            return 4;
+            return flexd::core::JobState::busy;
         }
 
     }

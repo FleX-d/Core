@@ -44,7 +44,6 @@ namespace flexd {
         m_onError(onError),
         m_name(name),
         m_version(ver) {
-            FLEX_LOG_INIT("iCoreAppRequest");
             FLEX_LOG_TRACE("iCoreAppRequest: TYPE: ", m_type, " NAME: ", m_name, " VERSION: ", m_version);
         }
 
@@ -69,7 +68,7 @@ namespace flexd {
         }
 
         void iCoreAppRequest::onError(const iCoreAppAck& ack) {
-            FLEX_LOG_TRACE("iCoreAppRequest::ononError(): sending error lambda");
+            FLEX_LOG_TRACE("iCoreAppRequest::onError(): sending error lambda");
             m_onError(ack);
         }
 

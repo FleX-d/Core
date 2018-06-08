@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UpdateRequest.h"
 #include "InvalidRequest.h"
 #include "iApp.h"
+#include "Visitor.h"
 
 
 #ifndef COREAPPMANAGER_H
@@ -52,32 +53,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        class CoreAppManager{
+        class CoreAppManager : public Visitor {
         public:
             CoreAppManager(const std::string& dbPath);
             virtual ~CoreAppManager() = default;
+            
+            void Lambda(iCoreAppRequest& rqst);
 
-            bool tryProcesRequest(InstallRequest& rqst);
-            bool tryProcesRequest(UninstallRequest& rqst);
-            bool tryProcesRequest(StartRequest& rqst);
-            bool tryProcesRequest(StopRequest& rqst);
-            bool tryProcesRequest(FreezRequest& rqst);
-            bool tryProcesRequest(UnfreezRequest& rqst);
-            bool tryProcesRequest(UpdateRequest& rqst);
-            bool tryProcesRequest(InvalidRequest& rqst);
+            virtual void visit(InstallRequest_t rqst);
+            virtual void visit(UninstallRequest_t rqst);
+            virtual void visit(StartRequest_t rqst);
+            virtual void visit(StopRequest_t rqst);
+            virtual void visit(FreezRequest_t rqst);
+            virtual void visit(UnfreezRequest_t rqst);
+            virtual void visit(UpdateRequest_t rqst);
+            //virtual void visit(InvalidRequest_t rqst);
 
             CoreAppManager(const CoreAppManager& orig) = delete;
             CoreAppManager operator=(const CoreAppManager& orig) = delete;
 
         private:
-            bool appExecute(const std::string& cmd /*TODO*/); 
+            bool appExecute(const std::string& cmd /*TODO*/);
             std::string getDbKey(RqstType::Enum e);
-            
-            bool addInList(iApp& a, std::string mapName);
+
+            bool addInList(std::string mapName);
             bool eraseInList(std::string mapName);
             bool findInList(std::string mapName);
             bool changeStateInList(std::string mapName, RqstType::Enum e);
-            
+
             CoreAppExecutor m_exe;
             const std::string m_dbName;
             CoreAppDatabase m_db;

@@ -11,9 +11,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 
-message(STATUS "mosquittoClientPublicInc: " ${mosquittoClientPublicInc})
-message(STATUS "mosquittoClientLib: " ${mosquittoClientLib})
-
 include(FindPkgConfig)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(JSON_PARSER REQUIRED jsonParser)
@@ -43,6 +40,27 @@ if (FLEXD_LOGGER_FOUND)
     message(STATUS "FLEXD_LOGGER inc was found: " ${FLEXD_LOGGER_INCLUDE_DIRS})
 endif (FLEXD_LOGGER_FOUND)
 
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FLEXD_EPOLL REQUIRED fleXdEpoll)
+if (FLEXD_EPOLL_FOUND)
+    message(STATUS "FLEXD_LOGGER libs was found: " ${FLEXD_EPOLL_LIBRARIES})
+    message(STATUS "FLEXD_LOGGER inc was found: " ${FLEXD_EPOLL_INCLUDE_DIRS})
+endif (FLEXD_EPOLL_FOUND)
+
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FLEXD_CONECTOR REQUIRED fleXdIPCConnector)
+if (FLEXD_CONECTOR_FOUND)
+    message(STATUS "FLEXD_LOGGER libs was found: " ${FLEXD_CONECTOR_LIBRARIES})
+    message(STATUS "FLEXD_LOGGER inc was found: " ${FLEXD_CONECTOR_INCLUDE_DIRS})
+endif (FLEXD_CONECTOR_FOUND)
+
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FLEXD_IPCCOMMON REQUIRED fleXdIPCCommon)
+if (FLEXD_IPCCOMMON_FOUND)
+    message(STATUS "FLEXD_LOGGER libs was found: " ${FLEXD_IPCCOMMON_LIBRARIES})
+    message(STATUS "FLEXD_LOGGER inc was found: " ${FLEXD_IPCCOMMON_INCLUDE_DIRS})
+endif (FLEXD_IPCCOMMON_FOUND)
+
 SET(privateHeaders
     inc/CoreAppDatabase.h
     inc/CoreAppExecutor.h
@@ -54,7 +72,6 @@ SET(privateHeaders
     inc/iApp.h
     inc/iCoreAppAck.h
     inc/iCoreAppRequest.h
-    inc/iIPCClient.h
     inc/InstallRequest.h
     inc/InvalidRequest.h
     inc/IPCClient.h
@@ -69,6 +86,7 @@ SET(privateHeaders
     inc/sqlite3pp.ipp
     inc/sqlite3ppext.h
     inc/sqlite3ppext.ipp
+    inc/CoreDocIPCInterface.h
 )
 
 SET(privateSources
@@ -81,7 +99,6 @@ SET(privateSources
     src/iApp.cpp
     src/iCoreAppAck.cpp
     src/iCoreAppRequest.cpp
-    src/iIPCClient.cpp
     src/InstallRequest.cpp
     src/InvalidRequest.cpp
     src/IPCClient.cpp
@@ -92,6 +109,7 @@ SET(privateSources
     src/UninstallRequest.cpp
     src/UpdateRequest.cpp
     src/Visitor.cpp
+    src/CoreDocIPCInterface.cpp
     src/main.cpp
 
 )
@@ -100,11 +118,15 @@ SET(${PROJECT_NAME}PublicInc "${CoreApp_SOURCE_DIR}/inc")
 
 add_executable(${PROJECT_NAME} ${privateSources} ${privateHeaders})
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++14 -Wall -Wfloat-conversion ${JSON_PARSER_CFLAGS_OTHER})
-target_include_directories(${PROJECT_NAME} PUBLIC inc ${JSON_PARSER_INCLUDE_DIRS}  )
+target_include_directories(${PROJECT_NAME} PUBLIC inc ${JSON_PARSER_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE inc ${FLEXD_EPOLL_INCLUDE_DIRS} ${FLEXD_CONECTOR_INCLUDE_DIRS} ${FLEXD_IPCCOMMON_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}
     ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
     ${FLEXD_LOGGER_LIBRARIES}
+    ${FLEXD_EPOLL_LIBRARIES}
+    ${FLEXD_CONECTOR_LIBRARIES}
+    ${FLEXD_IPCCOMMON_LIBRARIES}
     pthread
     sqlite3
 )

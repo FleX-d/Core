@@ -46,7 +46,7 @@ namespace flexd {
             explicit FreezRequest(const std::string& name, const std::string& ver);
             virtual ~FreezRequest() = default;
 
-            void virtual accept(Visitor &v);
+            virtual void accept(Visitor &v);
 
             FreezRequest(const FreezRequest&) = default;
             FreezRequest& operator=(const FreezRequest&) = default;

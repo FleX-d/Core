@@ -39,57 +39,45 @@ namespace flexd {
     namespace core {
         
         CoreAppRequestFactory::CoreAppRequestFactory(){
-            FLEX_LOG_INIT("CoreAppRequestFactory");
         }
 
-        iCoreAppRequest_t CoreAppRequestFactory::makeRqst(flexd::icl::JsonObj& json) const {
+        iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, std::string& AppID) const {
             FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
 
-            base::BinStream b;
+            //base::BinStream b;
             std::string path = ConstantString::workPath;
-            std::string appID, message, operation;
-            json.get<std::string>("/AppID", appID);
-            json.get<std::string>("/Message", message);
-            json.get<std::string>("/Operation", operation);
-            FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",appID, " Message: ",message, " Operation: ",operation);
-            if (appID.empty()) {
-                appID = "noID";
+            FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",AppID, " Message: ",Message, " Operation: ",Operation);
+            if (Operation == RqstType::Enum::install) {
+                path = path + AppID;
+                //b.setBase64(message);
+                //b.write(path);
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
+                return new InstallRequest(AppID, AppID, path);
+            } else if (Operation == RqstType::Enum::unintall) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
+                return new UninstallRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::start) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
+                return new StartRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::stop) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
+                return new StopRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::freez) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freez");
+                return new FreezRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::unfreez) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreez");
+                return new UnfreezRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::update) {
+                path = path + AppID;
+                //b.setBase64(message);
+                //b.write(path);
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
+                return new UpdateRequest(AppID, AppID, path);
+            } else {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
+                return new InvalidRequest(AppID, AppID);
             }
-            if (!operation.empty()) {
-                if (operation == ConstantString::operationInstall) {
-                    path = path + appID;
-                    b.setBase64(message);
-                    b.write(path);
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
-                    return new InstallRequest(appID, appID, path);
-                } else if (operation == ConstantString::operationUninstall) {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
-                    return new UninstallRequest(appID, appID);
-                } else if (operation == ConstantString::operationStart) {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
-                    return new StartRequest(appID, appID);
-                } else if (operation == ConstantString::operationStop) {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
-                    return new StopRequest(appID, appID);
-                } else if (operation == ConstantString::operationFreez) {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freez");
-                    return new FreezRequest(appID, appID);
-                } else if (operation == ConstantString::operationUnfreez) {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreez");
-                    return new UnfreezRequest(appID, appID);
-                } else if (operation == ConstantString::operationUpdate) {
-                    path = path + appID;
-                    b.setBase64(message);
-                    b.write(path);
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
-                    return new UpdateRequest(appID, appID, path);
-                } else {
-                    FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
-                    return new InvalidRequest(appID, appID);
-                }
-            }
-            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
-            return new InvalidRequest(appID, appID);
         }
     }
 }

@@ -42,7 +42,6 @@ namespace flexd {
         : m_ack(ack),
         m_name(name),
         m_version(ver) {
-            FLEX_LOG_INIT("iCoreAppAck");
             FLEX_LOG_TRACE("iCoreAppAck: NAME: ",m_name, " VERSION: ", m_version, " Type: ", m_ack);
         }
 

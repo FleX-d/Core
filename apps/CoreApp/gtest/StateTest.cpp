@@ -27,8 +27,8 @@ TEST(AppState, State)
     ASSERT_TRUE(appka.stoping());
     ASSERT_TRUE(appka.updating());
     
-    ASSERT_EQ(appka.getState(),4);
-    ASSERT_EQ(appka1.getState(),1);  
+    ASSERT_EQ(appka.getState(),3);
+    ASSERT_EQ(appka1.getState(),3);  
 }
 
 TEST(AppState, Testing_with_Map){

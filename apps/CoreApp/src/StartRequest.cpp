@@ -42,7 +42,6 @@ namespace flexd {
 
         StartRequest::StartRequest(const std::string& name, const std::string& ver)
         : iCoreAppRequest(RqstType::Enum::start, nullptr, nullptr, name, ver) {
-            FLEX_LOG_INIT("StartRequest");
         }
 
         void StartRequest::accept(Visitor &v) {

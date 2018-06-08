@@ -22,7 +22,6 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/iApp.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppAck.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppRequest.h
-    ${CoreApp_SOURCE_DIR}/inc/iIPCClient.h
     ${CoreApp_SOURCE_DIR}/inc/InstallRequest.h
     ${CoreApp_SOURCE_DIR}/inc/InvalidRequest.h
     ${CoreApp_SOURCE_DIR}/inc/IPCClient.h
@@ -37,6 +36,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/sqlite3pp.ipp
     ${CoreApp_SOURCE_DIR}/inc/sqlite3ppext.h
     ${CoreApp_SOURCE_DIR}/inc/sqlite3ppext.ipp
+    ${CoreApp_SOURCE_DIR}/inc/CoreDocIPCInterface.h
 )
 
 SET(privateSources
@@ -49,7 +49,6 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/iApp.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppAck.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppRequest.cpp
-    ${CoreApp_SOURCE_DIR}/src/iIPCClient.cpp
     ${CoreApp_SOURCE_DIR}/src/InstallRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/InvalidRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/IPCClient.cpp
@@ -60,6 +59,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/UninstallRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UpdateRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/Visitor.cpp
+    ${CoreApp_SOURCE_DIR}/src/CoreDocIPCInterface.cpp
     AckTest.cpp
     DatabaseTest.cpp
     ExecutorTest.cpp
@@ -90,5 +90,8 @@ target_link_libraries(${PROJECT_NAME}
     ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
     ${FLEXD_LOGGER_LIBRARIES}
+    ${FLEXD_EPOLL_LIBRARIES}
+    ${FLEXD_CONECTOR_LIBRARIES}
+    ${FLEXD_IPCCOMMON_LIBRARIES}
     sqlite3
 )

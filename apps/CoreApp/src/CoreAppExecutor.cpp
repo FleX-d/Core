@@ -40,7 +40,6 @@ namespace flexd {
     namespace core {
 
         CoreAppExecutor::CoreAppExecutor() {
-            FLEX_LOG_INIT("CoreAppExecutor");
         }
 
         void CoreAppExecutor::runOsCmd(const std::string& cmd) const {

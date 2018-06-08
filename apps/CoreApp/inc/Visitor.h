@@ -46,24 +46,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "InvalidRequest.h"
 
 namespace flexd{
-    namespace core{
+    namespace core{        
         class Visitor{
         public:
             explicit Visitor();
             ~Visitor() = default;
-            void visit(InstallRequest_t r);
-            void visit(UninstallRequest_t r);
-            void visit(StartRequest_t r);
-            void visit(StopRequest_t r);
-            void visit(FreezRequest_t r);
-            void visit(UnfreezRequest_t r);
-            void visit(UpdateRequest_t r);
-            void visit(InvalidRequest_t r);
+            virtual void visit(InstallRequest_t r);
+            virtual void visit(UninstallRequest_t r);
+            virtual void visit(StartRequest_t r);
+            virtual void visit(StopRequest_t r);
+            virtual void visit(FreezRequest_t r);
+            virtual void visit(UnfreezRequest_t r);
+            virtual void visit(UpdateRequest_t r);
+            virtual void visit(InvalidRequest_t r);
             
             Visitor(Visitor&) = default;
             Visitor& operator=(Visitor&) = default;
         private:
-                
         };   
     }
 }

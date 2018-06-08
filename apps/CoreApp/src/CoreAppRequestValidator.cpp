@@ -40,7 +40,6 @@ namespace flexd {
     namespace core {
         
         CoreAppRequestValidator::CoreAppRequestValidator() {
-            FLEX_LOG_INIT("CoreAppRequestValidator");
         }
 
         /*TODO verification request*/

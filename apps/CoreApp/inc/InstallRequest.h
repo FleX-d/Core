@@ -49,7 +49,7 @@ namespace flexd {
             virtual ~InstallRequest() = default;
 
             const std::string& getBase64() const;
-            void accept(Visitor &v);
+            virtual void accept(Visitor &v);
 
             InstallRequest(const InstallRequest&) = default;
             InstallRequest& operator=(const InstallRequest&) = default;

@@ -34,29 +34,37 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IPCCLIENT_H
 #define IPCCLIENT_H
 
-#include "iIPCClient.h"
+
+#include "CoreDocIPCInterface.h"
 #include "Base64.h"
 #include "CoreAppRequestFactory.h"
 #include "iCoreAppAck.h"
+#include "FleXdLogger.h"
+#include "iCoreAppRequest.h"
 
 namespace flexd {
     namespace core {
 
-        class IPCClient : public iIPCClient {
+        class IPCClient : public flexd::gen::Interface {
         public:
-            IPCClient(const std::string& id);
+            IPCClient(flexd::icl::ipc::FleXdEpoll& poller);
             virtual ~IPCClient() = default;
 
-            virtual void onMessage(const rsm::conn::mqtt::MqttMessage& msg);
-
+            void onLambda(iCoreAppRequest& rqst);
+            void setOnLambda(std::function<void(iCoreAppRequest&) > onLambda);
+            
             IPCClient(const IPCClient&) = delete;
             IPCClient& operator=(const IPCClient&) = delete;
 
         private:
-            CoreAppRequestFactory m_factory;
+            virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, uint16_t AppID);
+            void sendSuccesAck(const iCoreAppAck& ack);
+            void sendErrorAck(const iCoreAppAck& ack);
+
+            virtual void onConnectPeer(uint32_t peerID) override;
             
-            void sendSuccesAck(const iCoreAppAck& ack);/*TODO*/
-            void sendErrorAck(const iCoreAppAck& ack);/*TODO*/
+            std::function<void(iCoreAppRequest&) > m_onLambda;
+            CoreAppRequestFactory m_factory;
         };
 
     }//namespace core

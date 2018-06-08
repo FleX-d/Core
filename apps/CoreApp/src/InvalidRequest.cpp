@@ -42,7 +42,6 @@ namespace flexd {
 
         InvalidRequest::InvalidRequest(const std::string& name, const std::string& ver)
         : iCoreAppRequest(RqstType::Enum::undefined, nullptr, nullptr, name, ver) {
-            FLEX_LOG_INIT("InvalidRequest");
         }
 
         void InvalidRequest::accept(Visitor &v) {

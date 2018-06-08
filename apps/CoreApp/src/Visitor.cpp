@@ -39,8 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        Visitor::Visitor(){
-            FLEX_LOG_INIT("Visitor");
+        Visitor::Visitor()
+        {
             FLEX_LOG_TRACE("Visitor: ");
         }
         /*TODO*/

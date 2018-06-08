@@ -39,7 +39,6 @@ namespace flexd {
 
         CoreAppDatabase::CoreAppDatabase(const std::string& dbPath, const std::string& dbName) :
         m_path(dbPath) {
-            FLEX_LOG_INIT("CoreAppDatabase");
             FLEX_LOG_TRACE("Path for database: ", m_path);
         }
 
