@@ -38,7 +38,11 @@ namespace flexd {
     namespace core {
 
         IPCClient::IPCClient(flexd::icl::ipc::FleXdEpoll& poller)
-        : Interface(poller)
+        : IPCInterface(poller)
+        {
+        }
+        
+        IPCClient::~IPCClient()
         {
         }
         
@@ -50,7 +54,8 @@ namespace flexd {
             m_onLambda=onLambda;
         }
 
-        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID){
+        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) 
+        {
             FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): incoming message ", Operation);
 
             iCoreAppRequest_t rqst = m_factory.makeRqst(Operation, Message, AppID);
@@ -70,6 +75,37 @@ namespace flexd {
                 onLambda(*rqst);
             }
         }
+        
+//******************************************TODO - Temporary solution *************************************************  
+
+        void IPCClient::receiveRequestCoreSegmented(uint8_t segment, uint8_t count, const std::string& PayloadMsg)
+        {
+           FLEX_LOG_TRACE("IPCClient::receiveRequestCoreSegmented(): incoming message segment ", segment, "/", count);
+
+           m_segmentBuffer += PayloadMsg;
+           if(segment == count){               
+               flexd::icl::JsonObj json(m_segmentBuffer);
+               uint8_t Operation;
+               std::string Message;
+               std::string AppID;
+
+               if(json.exist("/Operation")){
+                   json.get<uint8_t>("Operation", Operation);
+               }
+               if(json.exist("/Message")){
+                   json.get<std::string>("/Message", Message);
+               }
+               if(json.exist("/AppID")){
+                   json.get<std::string>("/AppID", AppID);
+               }
+
+               receiveRequestCoreMsg(Operation, Message, AppID);
+
+               m_segmentBuffer.clear();
+           }
+       }
+ //**************************************************************************************************************************       
+        
         void IPCClient::onConnectPeer(uint32_t peerID) 
         {
         }

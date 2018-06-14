@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-#ifndef INTERFACE_H
-#define INTERFACE_H
+#ifndef IPCINTERFACE_H
+#define IPCINTERFACE_H
 
 #include "FleXdIPCConnector.h"
 #include "FleXdEpoll.h"
@@ -45,10 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
    namespace gen {
-    class Interface : public flexd::icl::ipc::IPCConnector {
+    class IPCInterface : public flexd::icl::ipc::IPCConnector {
 	public:
-	    Interface (flexd::icl::ipc::FleXdEpoll& poller);
-            virtual ~Interface();
+	    IPCInterface (flexd::icl::ipc::FleXdEpoll& poller);
+            virtual ~IPCInterface();
 	    void sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID);
         
 	
@@ -57,6 +57,7 @@ namespace flexd {
             virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg Msg) override;
 	    
 	    virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) = 0;
+            virtual void receiveRequestCoreSegmented(uint8_t Segment, uint8_t Count, const std::string& PayloadMsg) = 0;
             
 	    uint32_t getTimestamp();
 	private:
@@ -65,4 +66,3 @@ namespace flexd {
   }
 }
 #endif
-

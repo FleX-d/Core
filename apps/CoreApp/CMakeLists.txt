@@ -74,7 +74,7 @@ SET(privateHeaders
     inc/sqlite3pp.ipp
     inc/sqlite3ppext.h
     inc/sqlite3ppext.ipp
-    inc/CoreDocIPCInterface.h
+    inc/IPCInterface.h
 )
 
 SET(privateSources
@@ -97,7 +97,7 @@ SET(privateSources
     src/UninstallRequest.cpp
     src/UpdateRequest.cpp
     src/Visitor.cpp
-    src/CoreDocIPCInterface.cpp
+    src/IPCInterface.cpp
     src/main.cpp
 
 )

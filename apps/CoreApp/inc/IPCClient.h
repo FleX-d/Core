@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IPCCLIENT_H
 
 
-#include "CoreDocIPCInterface.h"
+#include "IPCInterface.h"
 #include "Base64.h"
 #include "CoreAppRequestFactory.h"
 #include "iCoreAppAck.h"
@@ -45,10 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        class IPCClient : public flexd::gen::Interface {
+        class IPCClient : public flexd::gen::IPCInterface {
         public:
             IPCClient(flexd::icl::ipc::FleXdEpoll& poller);
-            virtual ~IPCClient() = default;
+            virtual ~IPCClient();
 
             void onLambda(iCoreAppRequest& rqst);
             void setOnLambda(std::function<void(iCoreAppRequest&) > onLambda);
@@ -58,12 +58,14 @@ namespace flexd {
 
         private:
             virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID);
+            virtual void receiveRequestCoreSegmented(uint8_t segment, uint8_t count, const std::string& PayloadMsg) override;
             void sendAck(const iCoreAppAck& ack);
 
             virtual void onConnectPeer(uint32_t peerID) override;
             
-            std::function<void(iCoreAppRequest&) > m_onLambda;
+            std::function<void(iCoreAppRequest&) > m_onLambda = nullptr;
             CoreAppRequestFactory m_factory;
+            std::string m_segmentBuffer;
         };
 
     }//namespace core

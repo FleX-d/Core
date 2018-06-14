@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FleXdIPCConnector.h"
 #include "FleXdEpoll.h"
 #include "FleXdIPCMsg.h"
-#include "CoreDocIPCInterface.h"
+#include "IPCInterface.h"
 #include <string>
 #include <vector>
 #include <ctime>
@@ -46,8 +46,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     
 namespace flexd {
   namespace gen {
-
-	Interface::Interface (flexd::icl::ipc::FleXdEpoll& poller)
+  
+	IPCInterface::IPCInterface (flexd::icl::ipc::FleXdEpoll& poller)
 	:IPCConnector(11111, poller),
 	 m_counter(0)
 	{     
@@ -55,12 +55,12 @@ namespace flexd {
 	  addPeer(12345);
 	}
 	
-        Interface::~Interface()
+        IPCInterface::~IPCInterface()
         {
         }
        
        
-       void Interface::sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID)
+       void IPCInterface::sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID)
        {
 	   uint8_t msgtype = 1;
            uint8_t msgCounter = m_counter;
@@ -91,30 +91,80 @@ namespace flexd {
            send(msg);
        }
        
-        void Interface::receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg msg)
+        void IPCInterface::receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg msg)
         {
-	    std::string str(msg->getPayload().begin(),msg->getPayload().end());
-	    flexd::icl::JsonObj json(str);
-	    int id; 
-	    json.get<int>("/id", id);
-	    switch(id)
-	    {
-	       case 1: {
-	          uint8_t Operation;
-                  std::string Message;
-                  std::string AppID;
-                  
-	          json.get<uint8_t>("/payload/Operation", Operation);
-	          json.get<std::string>("/payload/Message", Message);
-	          json.get<std::string>("/payload/AppID", AppID);
-                  receiveRequestCoreMsg(Operation, Message, AppID);
-                  break; }
+            try{
+		std::string str(msg->getPayload().begin(),msg->getPayload().end());
+		flexd::icl::JsonObj json(str);
+		if(json.exist("/id"))
+		{
+		    int id; 
+		    json.get<int>("/id", id);
+		    switch(id)
+		    {
+			case 1: {
+			    uint8_t Operation;
+                            std::string Message;
+                            std::string AppID;
+                            
+			    bool tmp = true;
+			    
+			    if(json.exist("/payload/Operation")){
+				json.get<uint8_t>("/payload/Operation", Operation); 
+			    } else {
+				tmp = false;}
+			    
+			    if(json.exist("/payload/Message")){
+				json.get<std::string>("/payload/Message", Message); 
+			    } else {
+				tmp = false;}
+			    
+			    if(json.exist("/payload/AppID")){
+				json.get<std::string>("/payload/AppID", AppID); 
+			    } else {
+				tmp = false;}
+			    
+                            
+			    if(tmp){
+			       receiveRequestCoreMsg(Operation, Message, AppID);}
+			    break; }
 	    
-	    }
+			case 6: {
+			    uint8_t Segment;
+                            uint8_t Count;
+                            std::string PayloadMsg;
+                            
+			    bool tmp = true;
+			    
+			    if(json.exist("/payload/Segment")){
+				json.get<uint8_t>("/payload/Segment", Segment); 
+			    } else {
+				tmp = false;}
+			    
+			    if(json.exist("/payload/Count")){
+				json.get<uint8_t>("/payload/Count", Count); 
+			    } else {
+				tmp = false;}
+			    
+			    if(json.exist("/payload/PayloadMsg")){
+				json.get<std::string>("/payload/PayloadMsg", PayloadMsg); 
+			    } else {
+				tmp = false;}
+			    
+                            
+			    if(tmp){
+			       receiveRequestCoreSegmented(Segment, Count, PayloadMsg);}
+			    break; }
+	    
+	           }
+	        }
+	   }catch(...){
+		return;
+	   }
         }
         
        
-	void Interface::send(std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> Msg)
+	void IPCInterface::send(std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> Msg)
         {
 	   if(sendMsg(Msg))
 	   {
@@ -122,7 +172,7 @@ namespace flexd {
 	   }
         }
         
-        uint32_t Interface::getTimestamp()
+        uint32_t IPCInterface::getTimestamp()
         {
 	    std::chrono::time_point<std::chrono::system_clock> p;
 	    p = std::chrono::system_clock::now();
@@ -132,4 +182,3 @@ namespace flexd {
         
      }
 }
-

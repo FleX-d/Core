@@ -44,7 +44,7 @@ namespace flexd {
         iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const {
             FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
 
-            base::BinStream b("./");
+            base::BinStream b;
             std::string path = ConstantString::workPath;
             FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",AppID, " Message: ",Message, " Operation: ",Operation);
             if (Operation == RqstType::Enum::install) {
