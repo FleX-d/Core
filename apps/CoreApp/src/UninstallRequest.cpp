@@ -41,7 +41,7 @@ namespace flexd {
     namespace core {
 
         UninstallRequest::UninstallRequest(const std::string& name, const std::string& ver)
-        : iCoreAppRequest(RqstType::Enum::unintall, nullptr, nullptr, name, ver) {
+        : iCoreAppRequest(RqstType::Enum::unintall, nullptr, name, ver) {
         }
 
         void UninstallRequest::accept(Visitor &v) {

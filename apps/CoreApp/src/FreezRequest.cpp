@@ -42,7 +42,7 @@ namespace flexd {
     namespace core {
 
         FreezRequest::FreezRequest(const std::string& name, const std::string& ver) :
-        iCoreAppRequest(RqstType::Enum::freez, nullptr, nullptr, name, ver) {
+        iCoreAppRequest(RqstType::Enum::freez, nullptr, name, ver) {
         }
 
         void FreezRequest::accept(Visitor &v) {

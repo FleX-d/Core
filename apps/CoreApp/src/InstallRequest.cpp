@@ -42,7 +42,7 @@ namespace flexd {
     namespace core {
 
         InstallRequest::InstallRequest(const std::string& name, const std::string& ver, const std::string& path)
-        : iCoreAppRequest(RqstType::Enum::install, nullptr, nullptr, name, ver),
+        : iCoreAppRequest(RqstType::Enum::install, nullptr, name, ver),
         m_path(path) {
             FLEX_LOG_TRACE("InstallRequest: ","path: ", m_path);
         }

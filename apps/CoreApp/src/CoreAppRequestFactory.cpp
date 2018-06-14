@@ -44,13 +44,13 @@ namespace flexd {
         iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const {
             FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
 
-            //base::BinStream b;
+            base::BinStream b("./");
             std::string path = ConstantString::workPath;
             FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",AppID, " Message: ",Message, " Operation: ",Operation);
             if (Operation == RqstType::Enum::install) {
                 path = path + AppID;
-                //b.setBase64(message);
-                //b.write(path);
+                b.setBase64(Message);
+                b.write(path);
                 FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
                 return new InstallRequest(AppID, AppID, path);
             } else if (Operation == RqstType::Enum::unintall) {
@@ -70,8 +70,8 @@ namespace flexd {
                 return new UnfreezRequest(AppID, AppID);
             } else if (Operation == RqstType::Enum::update) {
                 path = path + AppID;
-                //b.setBase64(message);
-                //b.write(path);
+                b.setBase64(Message);
+                b.write(path);
                 FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
                 return new UpdateRequest(AppID, AppID, path);
             } else {

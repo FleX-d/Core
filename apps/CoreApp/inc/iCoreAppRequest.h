@@ -49,27 +49,24 @@ namespace flexd {
          example /RSM/curl -> RSM-lxc container + curl app name */
         class iCoreAppRequest {
         public:
-            explicit iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onSccess, std::function<void(const iCoreAppAck&) > onError, const std::string& name, const std::string& ver);
+            explicit iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onAck, const std::string& name, const std::string& ver);
             virtual ~iCoreAppRequest() = default;
 
             const RqstType::Enum getType() const;
             const std::string& getName() const;
             const std::string& getVersion() const;
            
-            void onSccess(const iCoreAppAck& ack);
-            void onError(const iCoreAppAck& ack);
+            void onAck(const iCoreAppAck& ack);
 
             virtual void accept(Visitor& v)=0; /*TODO*/
 
-            void setOnSucces(std::function<void(const iCoreAppAck&) > onSucces);
-            void setOnError(std::function<void(const iCoreAppAck&) > onError);
+            void setOnAck(std::function<void(const iCoreAppAck&) > onAck);
 
             iCoreAppRequest(const iCoreAppRequest&) = default;
             iCoreAppRequest& operator=(const iCoreAppRequest&) = default;
         private:
             const RqstType::Enum m_type;
-            std::function<void(const iCoreAppAck&) > m_onSuccess;
-            std::function<void(const iCoreAppAck&) > m_onError;
+            std::function<void(const iCoreAppAck&) > m_onAck;
             const std::string m_name;
             const std::string m_version;
         };

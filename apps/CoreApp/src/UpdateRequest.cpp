@@ -42,7 +42,7 @@ namespace flexd {
     namespace core {
 
         UpdateRequest::UpdateRequest(const std::string& name, const std::string& ver, const std::string& path)
-        : iCoreAppRequest(RqstType::Enum::update, nullptr, nullptr, name, ver),
+        : iCoreAppRequest(RqstType::Enum::update, nullptr, name, ver),
         m_path(path) {
             FLEX_LOG_TRACE("UpdateRequest: Request path: ",m_path);
         }

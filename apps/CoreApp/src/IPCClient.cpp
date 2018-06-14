@@ -56,15 +56,13 @@ namespace flexd {
             iCoreAppRequest_t rqst = m_factory.makeRqst(Operation, Message, AppID);
             
             FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): seting lamda function");
-            std::function<void(const iCoreAppAck&) > onSuccess = std::bind(&IPCClient::sendSuccesAck, this, std::placeholders::_1);
-            std::function<void(const iCoreAppAck&) > onError = std::bind(&IPCClient::sendErrorAck, this, std::placeholders::_1);
-            rqst->setOnError(onError);
-            rqst->setOnSucces(onSuccess);
+            std::function<void(const iCoreAppAck&) > onAck = std::bind(&IPCClient::sendAck, this, std::placeholders::_1);
+            rqst->setOnAck(onAck);
                    
             /*check if request is not null or invalid, send error ack if is*/
             if(rqst->getType()==flexd::core::RqstType::Enum::undefined){
                 FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): bad request");
-                rqst->onError(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
             }
             else{
                 FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): send message to manager to execute");
@@ -77,16 +75,13 @@ namespace flexd {
         }
         
         
-        void IPCClient::sendSuccesAck(const iCoreAppAck& ack){
+        void IPCClient::sendAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::succes){
                 sendRequestCoreAckMsg(true, " ", ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", true, " ", ack.getName());
             }
-        }
-        
-        void IPCClient::sendErrorAck(const iCoreAppAck& ack){
-            /*Read from ACK name app and ver and create publis message*/
+            
             if(ack.getType()==RqstAck::Enum::fail){
                 sendRequestCoreAckMsg(false, " ", ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", false, " ", ack.getName());

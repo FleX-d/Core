@@ -38,10 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        iCoreAppRequest::iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onSucces, std::function<void(const iCoreAppAck&) > onError, const std::string& name, const std::string& ver)
+        iCoreAppRequest::iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onAck, const std::string& name, const std::string& ver)
         : m_type(type),
-        m_onSuccess(onSucces),
-        m_onError(onError),
+        m_onAck(onAck),
         m_name(name),
         m_version(ver) {
             FLEX_LOG_TRACE("iCoreAppRequest: TYPE: ", m_type, " NAME: ", m_name, " VERSION: ", m_version);
@@ -62,24 +61,15 @@ namespace flexd {
             return m_version;
         }
 
-        void iCoreAppRequest::onSccess(const iCoreAppAck& ack) {
-            FLEX_LOG_TRACE("iCoreAppRequest::onSccess(): sending succes lambda");
-            m_onSuccess(ack);
+        void iCoreAppRequest::onAck(const iCoreAppAck& ack) {
+            FLEX_LOG_TRACE("iCoreAppRequest::onAck(): sending lambda");
+            m_onAck(ack);
         }
 
-        void iCoreAppRequest::onError(const iCoreAppAck& ack) {
-            FLEX_LOG_TRACE("iCoreAppRequest::onError(): sending error lambda");
-            m_onError(ack);
+        void iCoreAppRequest::setOnAck(std::function<void(const iCoreAppAck&) > onAck) {
+            FLEX_LOG_TRACE("iCoreAppRequest::setOnAck(): set lambda");
+            m_onAck = onAck;
         }
 
-        void iCoreAppRequest::setOnSucces(std::function<void(const iCoreAppAck&) > onSucces) {
-            FLEX_LOG_TRACE("iCoreAppRequest::setOnSuces(): set lambda");
-            m_onSuccess = onSucces;
-        }
-
-        void iCoreAppRequest::setOnError(std::function<void(const iCoreAppAck&) > onError) {
-            FLEX_LOG_TRACE("iCoreAppRequest::setOnError(): set lambda");
-            m_onError = onError;
-        }
     }
 }
