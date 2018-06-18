@@ -75,36 +75,7 @@ namespace flexd {
                 onLambda(*rqst);
             }
         }
-        
-//******************************************TODO - Temporary solution *************************************************  
-
-        void IPCClient::receiveRequestCoreSegmented(uint8_t segment, uint8_t count, const std::string& PayloadMsg)
-        {
-           FLEX_LOG_TRACE("IPCClient::receiveRequestCoreSegmented(): incoming message segment ", segment, "/", count);
-
-           m_segmentBuffer += PayloadMsg;
-           if(segment == count){               
-               flexd::icl::JsonObj json(m_segmentBuffer);
-               uint8_t Operation;
-               std::string Message;
-               std::string AppID;
-
-               if(json.exist("/Operation")){
-                   json.get<uint8_t>("Operation", Operation);
-               }
-               if(json.exist("/Message")){
-                   json.get<std::string>("/Message", Message);
-               }
-               if(json.exist("/AppID")){
-                   json.get<std::string>("/AppID", AppID);
-               }
-
-               receiveRequestCoreMsg(Operation, Message, AppID);
-
-               m_segmentBuffer.clear();
-           }
-       }
- //**************************************************************************************************************************       
+         
         
         void IPCClient::onConnectPeer(uint32_t peerID) 
         {

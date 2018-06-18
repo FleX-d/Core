@@ -57,7 +57,6 @@ namespace flexd {
             virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg Msg) override;
 	    
 	    virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) = 0;
-            virtual void receiveRequestCoreSegmented(uint8_t Segment, uint8_t Count, const std::string& PayloadMsg) = 0;
             
 	    uint32_t getTimestamp();
 	private:

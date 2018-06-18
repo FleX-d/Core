@@ -129,33 +129,6 @@ namespace flexd {
 			       receiveRequestCoreMsg(Operation, Message, AppID);}
 			    break; }
 	    
-			case 6: {
-			    uint8_t Segment;
-                            uint8_t Count;
-                            std::string PayloadMsg;
-                            
-			    bool tmp = true;
-			    
-			    if(json.exist("/payload/Segment")){
-				json.get<uint8_t>("/payload/Segment", Segment); 
-			    } else {
-				tmp = false;}
-			    
-			    if(json.exist("/payload/Count")){
-				json.get<uint8_t>("/payload/Count", Count); 
-			    } else {
-				tmp = false;}
-			    
-			    if(json.exist("/payload/PayloadMsg")){
-				json.get<std::string>("/payload/PayloadMsg", PayloadMsg); 
-			    } else {
-				tmp = false;}
-			    
-                            
-			    if(tmp){
-			       receiveRequestCoreSegmented(Segment, Count, PayloadMsg);}
-			    break; }
-	    
 	           }
 	        }
 	   }catch(...){

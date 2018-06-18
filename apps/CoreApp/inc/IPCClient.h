@@ -58,7 +58,6 @@ namespace flexd {
 
         private:
             virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID);
-            virtual void receiveRequestCoreSegmented(uint8_t segment, uint8_t count, const std::string& PayloadMsg) override;
             void sendAck(const iCoreAppAck& ack);
 
             virtual void onConnectPeer(uint32_t peerID) override;

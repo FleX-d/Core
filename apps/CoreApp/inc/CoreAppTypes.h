@@ -78,9 +78,6 @@ namespace flexd {
             };
         }
         
-        namespace ConstantString{
-            const std::string workPath= "./";
-        }
         
     } // namespace core
 } // namespace flexd
