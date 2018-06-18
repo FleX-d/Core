@@ -85,13 +85,13 @@ namespace flexd {
         void IPCClient::sendAck(const iCoreAppAck& ack){
             /*Read from ACK name app and ver and create publis message*/
             if(ack.getType()==RqstAck::Enum::succes){
-                sendRequestCoreAckMsg(true, " ", ack.getName());
-                FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", true, " ", ack.getName());
+                sendRequestCoreAckMsg(true, ack.getMessage(), ack.getName());
+                FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", true, " ", ack.getMessage(), " ", ack.getName());
             }
             
             if(ack.getType()==RqstAck::Enum::fail){
-                sendRequestCoreAckMsg(false, " ", ack.getName());
-                FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", false, " ", ack.getName());
+                sendRequestCoreAckMsg(false, ack.getMessage(), ack.getName());
+                FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", false, " ", ack.getMessage(), " ", ack.getName());
             }
         }
     }

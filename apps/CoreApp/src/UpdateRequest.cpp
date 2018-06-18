@@ -47,10 +47,9 @@ namespace flexd {
             FLEX_LOG_TRACE("UpdateRequest: Request path: ",m_path);
         }
 
-        const std::string& UpdateRequest::getBase64() {
-            base::BinStream b(m_path);
-            FLEX_LOG_TRACE("UpdateRequest::getBase64(): ");
-            return b.getBase64();
+        const std::string& UpdateRequest::getPath() {
+            FLEX_LOG_TRACE("UpdateRequest::getPath(): ");
+            return m_path;
         }
 
         void UpdateRequest::accept(Visitor &v) {

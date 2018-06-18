@@ -33,8 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "iCoreAppRequest.h"
-#include "Base64.h"
-#include <string>
 
 
 #ifndef INSTALLREQUEST_H
@@ -48,7 +46,7 @@ namespace flexd {
             explicit InstallRequest(const std::string& name, const std::string& ver, const std::string& path);
             virtual ~InstallRequest() = default;
 
-            const std::string& getBase64() const;
+            const std::string& getPath() const;
             virtual void accept(Visitor &v);
 
             InstallRequest(const InstallRequest&) = default;

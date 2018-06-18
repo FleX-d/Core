@@ -16,6 +16,21 @@ CREATE TABLE CoreAppDb (
 	MD5		TEXT NOT NULL
 );
 
+INSERT INTO CoreAppDb(
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freez,Unfreez,UpdateDB,MD5) 
+VALUES (
+NULL,
+'test',
+'test',
+'echo install',
+'echo uninstall',
+'echo start',
+'echo stop',
+'echo freez',
+'echo unfreez',
+'echo update; echo example of error; apt-get install ',
+'');
+
 .save CoreAppDb.db
 .exit
 EOF

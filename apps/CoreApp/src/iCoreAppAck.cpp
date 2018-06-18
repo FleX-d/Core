@@ -38,10 +38,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        iCoreAppAck::iCoreAppAck(RqstAck::Enum ack, const std::string& name, const std::string& ver)
+        iCoreAppAck::iCoreAppAck(RqstAck::Enum ack, const std::string& name, const std::string& ver, const std::string& msg)
         : m_ack(ack),
         m_name(name),
-        m_version(ver) {
+        m_version(ver),
+        m_message(msg)
+        {
             FLEX_LOG_TRACE("iCoreAppAck: NAME: ",m_name, " VERSION: ", m_version, " Type: ", m_ack);
         }
 
@@ -58,6 +60,11 @@ namespace flexd {
         const std::string& iCoreAppAck::getVersion() const {
             FLEX_LOG_TRACE("iCoreAppAck::getVersion(): ",m_version);
             return m_version;
+        }
+        
+        const std::string& iCoreAppAck::getMessage() const {
+            FLEX_LOG_TRACE("iCoreAppAck::getMessage(): ",m_message);
+            return m_message;
         }
 
     }

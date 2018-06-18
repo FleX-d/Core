@@ -47,10 +47,9 @@ namespace flexd {
             FLEX_LOG_TRACE("InstallRequest: ","path: ", m_path);
         }
 
-        const std::string& InstallRequest::getBase64() const {
-            base::BinStream b(m_path);
-            FLEX_LOG_TRACE("InstallRequest::getBase64():");
-            return b.getBase64();
+        const std::string& InstallRequest::getPath() const {
+            FLEX_LOG_TRACE("InstallRequest::getPath():");
+            return m_path;
         }
 
         void InstallRequest::accept(Visitor &v) {

@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define UPDATEREQUEST_H
 
 #include "iCoreAppRequest.h"
-#include "Base64.h"
 
 
 namespace flexd {
@@ -47,7 +46,7 @@ namespace flexd {
             explicit UpdateRequest(const std::string& name, const std::string& ver, const std::string& path);
             virtual ~UpdateRequest() = default;
 
-            const std::string& getBase64();
+            const std::string& getPath();
             void virtual accept(Visitor &v);
 
             UpdateRequest(const UpdateRequest&) = default;

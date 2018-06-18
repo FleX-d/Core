@@ -36,7 +36,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/sqlite3pp.ipp
     ${CoreApp_SOURCE_DIR}/inc/sqlite3ppext.h
     ${CoreApp_SOURCE_DIR}/inc/sqlite3ppext.ipp
-    ${CoreApp_SOURCE_DIR}/inc/CoreDocIPCInterface.h
+    ${CoreApp_SOURCE_DIR}/inc/IPCInterface.h
 )
 
 SET(privateSources
@@ -59,7 +59,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/UninstallRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UpdateRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/Visitor.cpp
-    ${CoreApp_SOURCE_DIR}/src/CoreDocIPCInterface.cpp
+    ${CoreApp_SOURCE_DIR}/src/IPCInterface.cpp
     AckTest.cpp
     DatabaseTest.cpp
     ExecutorTest.cpp

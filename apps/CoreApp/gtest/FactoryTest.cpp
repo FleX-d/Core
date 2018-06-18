@@ -18,7 +18,6 @@ TEST(Factory, Create_Install)
     ASSERT_EQ(ir.getType(),r->getType());
     ASSERT_EQ(ir.getName(),r->getName());
     ASSERT_EQ(ir.getVersion(),r->getVersion());
-    std::cout<<ir.getBase64()<<std::endl;
 }
 
 TEST(Factory, Create_Uninstall)
@@ -95,7 +94,6 @@ TEST(Factory, Create_Update)
     ASSERT_EQ(upr.getType(), r->getType());
     ASSERT_EQ(upr.getName(), r->getName());
     ASSERT_EQ(upr.getVersion(),r->getVersion());
-    std::cout<<upr.getBase64()<<std::endl;
 }
 
 TEST(Factory, Create_Invalid)
