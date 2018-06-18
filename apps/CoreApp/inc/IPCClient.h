@@ -60,7 +60,7 @@ namespace flexd {
             virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID);
             void sendAck(const iCoreAppAck& ack);
 
-            virtual void onConnectPeer(uint32_t peerID) override;
+            virtual void onConnectPeer(uint32_t peerID, bool genericPeer) override;
             
             std::function<void(iCoreAppRequest&) > m_onLambda = nullptr;
             CoreAppRequestFactory m_factory;
