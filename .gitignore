@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Files
+.directory
+
+# Developmnent
+*.kdev4
+build
+nbproject
