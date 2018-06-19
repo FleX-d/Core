@@ -93,3 +93,14 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - Remove segmeted mesage
+
+## [0.0.6] - 2018-06-18 
+### Added
+- None
+
+### Changed
+- Edit to using path als last parameter in command 
+- Edit tool db initDB for create db in /etc/CoreApp
+- Edit main for new database path
+
+### Removed

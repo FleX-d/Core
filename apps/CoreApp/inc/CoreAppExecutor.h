@@ -50,7 +50,7 @@ namespace flexd {
             virtual ~CoreAppExecutor() = default;
 
             void runOsCmd(const std::string& cmd) const;
-            std::string runOsCmdWithResult(const std::string& cmd);
+            std::string runOsCmdWithResult(const std::string& cmd, const std::string& path);
 
             CoreAppExecutor(const CoreAppExecutor& orig) = delete;
             CoreAppExecutor operator=(const CoreAppExecutor& orig) = delete;

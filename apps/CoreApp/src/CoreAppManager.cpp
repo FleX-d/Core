@@ -75,7 +75,7 @@ namespace flexd {
             }
             
             std::string msg;
-            if (appExecute(command, msg)) {
+            if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion(), msg));
@@ -247,7 +247,7 @@ namespace flexd {
             }
 
             std::string msg;
-            if (appExecute(command, msg)) {
+            if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion(), msg));
@@ -271,11 +271,11 @@ namespace flexd {
             return true;
         }
         
-        bool CoreAppManager::appExecute(const std::string& cmd, std::string& message){
+        bool CoreAppManager::appExecute(const std::string& cmd, std::string& message, const std::string& path){
             FLEX_LOG_TRACE("CoreAppManager::appExecute():");
             /*TODO chceck if cmd run back true*/
             try {
-                message=m_exe.runOsCmdWithResult(cmd);
+                message=m_exe.runOsCmdWithResult(cmd, path);
             }            
             catch (std::exception& e) {
                 return false;

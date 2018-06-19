@@ -11,6 +11,6 @@ TEST(Executor, run_without_output) {
 }
 
 TEST(Executor, Test) {
-    std::cout<<exe.runOsCmdWithResult("echo Test executor export text")<<std::endl;
+    std::cout<<exe.runOsCmdWithResult("echo Test executor export text", "./")<<std::endl;
     ASSERT_NO_THROW(HasFailure());
 }

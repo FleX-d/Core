@@ -77,7 +77,7 @@ namespace flexd {
         }
          
         
-        void IPCClient::onConnectPeer(uint32_t peerID, bool genericPeer) 
+        void IPCClient::onConnectPeer(uint32_t peerID , bool genericPeer) 
         {
         }
         

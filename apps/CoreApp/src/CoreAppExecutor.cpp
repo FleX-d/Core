@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CoreAppExecutor.h"
 #include <stdio.h>
 
+
 namespace flexd {
     namespace core {
 
@@ -48,15 +49,17 @@ namespace flexd {
             system(newconsole.c_str());
         }
 
-        std::string CoreAppExecutor::runOsCmdWithResult(const std::string& cmd) {
+        std::string CoreAppExecutor::runOsCmdWithResult(const std::string& cmd, const std::string& path) {
             FLEX_LOG_DEBUG("CoreAppExecutor::runOsCmdWithResult() executing command: ", cmd);
             std::string cmdHelp=cmd;
+            if(path != "./")
+                cmdHelp=cmdHelp + path;
+            FLEX_LOG_DEBUG("command+path ", cmdHelp);
             std::string data;
             std::FILE * stream;
             const int max_buffer = 256;
             char buffer[max_buffer];
             cmdHelp.append(" 2>&1"); //potlacenie error mesage
-
             stream = popen(cmdHelp.c_str(), "r");
             if (stream) {
                 while (!feof(stream))
@@ -67,4 +70,5 @@ namespace flexd {
         }
     }
 }
+    
 

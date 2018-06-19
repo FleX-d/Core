@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
         std::cout<<"     *              *"<<std::endl;
         std::cout<<"     ****************"<<std::endl;
 
-        flexd::core::CoreAppManager manager("./CoreAppDb.db");
+        flexd::core::CoreAppManager manager("/etc/CoreApp/CoreAppDb.db");
         flexd::core::IPCClient client(poller);
         client.setOnLambda([&manager](flexd::core::iCoreAppRequest& rqst){manager.Lambda(rqst);});
         poller.loop();

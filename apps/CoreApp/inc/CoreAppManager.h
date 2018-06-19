@@ -74,7 +74,7 @@ namespace flexd {
 
         private:
             bool appExecute(const std::string& cmd);
-            bool appExecute(const std::string& cmd, std::string& message);
+            bool appExecute(const std::string& cmd, std::string& message, const std::string& path = "./");
             std::string getDbKey(RqstType::Enum e);
 
             bool addInList(std::string mapName);

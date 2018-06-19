@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p /etc/CoreApp
+
 sqlite3 << EOF
 
 CREATE TABLE CoreAppDb (
@@ -20,17 +22,54 @@ INSERT INTO CoreAppDb(
 ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freez,Unfreez,UpdateDB,MD5) 
 VALUES (
 NULL,
-'test',
-'test',
-'echo install',
-'echo uninstall',
-'echo start',
-'echo stop',
-'echo freez',
-'echo unfreez',
-'echo update; echo example of error; apt-get install ',
+'test1',
+'test1',
+'echo install; dpkg -i ',
+'echo uninstall; dpkg -r test1 ',
+'echo start; echo lxc or docker command',
+'echo stop; echo lxc or docker command',
+'echo freez; echo lxc or docker command',
+'echo unfreez; echo lxc or docker command',
+'echo update; dpkg -i ',
 '');
 
-.save CoreAppDb.db
+INSERT INTO CoreAppDb(
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freez,Unfreez,UpdateDB,MD5) 
+VALUES (
+NULL,
+'test2',
+'test2',
+'echo install; dpkg -i ',
+'echo uninstall; dpkg -r test2 ',
+'echo start; echo lxc or docker command',
+'echo stop; echo lxc or docker command',
+'echo freez; echo lxc or docker command',
+'echo unfreez; echo lxc or docker command',
+'echo update; dpkg -i ',
+'');
+
+INSERT INTO CoreAppDb(
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freez,Unfreez,UpdateDB,MD5) 
+VALUES (
+NULL,
+'test3',
+'test3',
+'echo install; dpkg -i ',
+'echo uninstall; dpkg -r test3 ',
+'echo start; echo lxc or docker command',
+'echo stop; echo lxc or docker command',
+'echo freez; echo lxc or docker command',
+'echo unfreez; echo lxc or docker command',
+'echo update; dpkg -i ',
+'');
+
+.save /etc/CoreApp/CoreAppDb.db
 .exit
 EOF
+
+if(touch /etc/CoreApp/CoreAppDb.db)
+then
+  echo Database inicilized!!
+else
+  echo Error run als root
+fi
