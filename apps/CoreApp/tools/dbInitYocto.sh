@@ -61,6 +61,6 @@ NULL,
 'echo update; dpkg -i ',
 '');
 
-.save /etc/CoreApp/CoreAppDb.db
+.save ./CoreAppDb.db
 .exit
 EOF
