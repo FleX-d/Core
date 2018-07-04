@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   InvalidRequest.h
  * Author: Peter Kocity
  *
@@ -46,7 +46,7 @@ namespace flexd {
             explicit InvalidRequest(const std::string& name, const std::string& ver);
             virtual ~InvalidRequest() = default;
 
-            void virtual accept(Visitor &v);
+            virtual void accept(Visitor &v) override;
 
             InvalidRequest(const InvalidRequest&) = default;
             InvalidRequest& operator=(const InvalidRequest&) = default;

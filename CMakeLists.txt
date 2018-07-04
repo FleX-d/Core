@@ -7,10 +7,10 @@ endif()
 
 option(
     ENABLE_TESTS
-    "Run Test?"
+    "Build tests?"
     OFF
-    )
-    
+)
+
 message(STATUS "option ENABLE_TESTS=" ${ENABLE_TESTS})
 
 add_subdirectory(apps)

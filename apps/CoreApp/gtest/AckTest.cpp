@@ -5,14 +5,14 @@
 #include "iCoreAppAck.h"
 
 
-flexd::core::iCoreAppAck acks(flexd::core::RqstAck::succes, "Snake", "Snake");
-flexd::core::iCoreAppAck acke(flexd::core::RqstAck::fail, "Snake", "Snake");
+flexd::core::iCoreAppAck ackSuccess(flexd::core::RqstAck::success, "Snake", "Snake");
+flexd::core::iCoreAppAck ackFail(flexd::core::RqstAck::fail, "Snake", "Snake");
 
 TEST(Ack, Testing_creating_ack)
 {
-    ASSERT_EQ(acks.getName(), acke.getName());
-    ASSERT_EQ(acks.getVersion(), acke.getVersion());
-    ASSERT_NE(acks.getType(), acke.getType());
-    std::cout<< acks.getType() <<std::endl;
+    ASSERT_EQ(ackSuccess.getName(), ackFail.getName());
+    ASSERT_EQ(ackSuccess.getVersion(), ackFail.getVersion());
+    ASSERT_NE(ackSuccess.getType(), ackFail.getType());
+    std::cout<< ackSuccess.getType() <<std::endl;
 }
 

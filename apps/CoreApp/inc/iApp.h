@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   iApp.h
  * Author: Peter Kocity
  *
@@ -40,19 +40,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
-        
+
         class iApp {
         public:
             iApp();
             virtual ~iApp();
-            
+
             int getState();
 
-            virtual bool starting();
-            virtual bool updating();
-            virtual bool stoping();
-            virtual bool freezing();
-            virtual bool unfreezing();
+            virtual bool start();
+            virtual bool update();
+            virtual bool stop();
+            virtual bool freeze();
+            virtual bool unfreeze();
 
             iApp(const iApp& orig) = default;
             iApp& operator=(const iApp& orig) = default;

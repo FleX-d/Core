@@ -41,19 +41,19 @@ TEST(Validator, ValidingStopRequest)
     ASSERT_FALSE(valid.validRequest(r1));
 }
 
-TEST(Validator, ValidingFreezRequest)
+TEST(Validator, ValidingFreezeRequest)
 {
-    flexd::core::FreezRequest r("Snake", "Snake");
+    flexd::core::FreezeRequest r("Snake", "Snake");
     ASSERT_TRUE(valid.validRequest(r));
-    flexd::core::FreezRequest r1("S", "Snake");
+    flexd::core::FreezeRequest r1("S", "Snake");
     ASSERT_TRUE(valid.validRequest(r1));
 }
 
-TEST(Validator, ValidingUnfreezRequest)
+TEST(Validator, ValidingUnfreezeRequest)
 {
-    flexd::core::UnfreezRequest r("Snake", "Snake");
+    flexd::core::UnfreezeRequest r("Snake", "Snake");
     ASSERT_TRUE(valid.validRequest(r));
-    flexd::core::UnfreezRequest r1("", "");
+    flexd::core::UnfreezeRequest r1("", "");
     ASSERT_FALSE(valid.validRequest(r1));
 }
 

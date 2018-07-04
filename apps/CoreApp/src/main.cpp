@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   main.cpp
  * Author: Peter Kocity
  *
@@ -42,24 +42,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iCoreAppRequest.h"
 #include "FleXdEvent.h"
 
-int main(int argc, char** argv) {    
+int main(int argc, char** argv) {
     flexd::icl::ipc::FleXdEpoll poller(10);
     flexd::icl::ipc::FleXdTermEvent e(poller);
-       
+
     if( e.init()){
         FLEX_LOG_INIT(poller, "CoreApp");
         FLEX_LOG_TRACE("CoreApp starting");
 
-        std::cout<<"     ****************"<<std::endl;
-        std::cout<<"     *              *"<<std::endl;
-        std::cout<<"     *   CORE APP   *"<<std::endl;
-        std::cout<<"     *   STARTING   *"<<std::endl;
-        std::cout<<"     *              *"<<std::endl;
-        std::cout<<"     ****************"<<std::endl;
+        std::cout<<"   ▓    ▒     ╔══════════════╗"<<std::endl;
+        std::cout<<"  ▓▓▓  ▒▒▒    ║              ║"<<std::endl;
+        std::cout<<" ▓▓▓▓▓▒▒▒▒▒   ║              ║"<<std::endl;
+        std::cout<<"  ▓▓▓  ▒▒▒    ║              ║"<<std::endl;
+        std::cout<<"   ▓    ▒     ║   CORE APP   ║"<<std::endl;
+        std::cout<<"   ▒    ▓     ║   STARTING   ║"<<std::endl;
+        std::cout<<"  ▒▒▒  ▓▓▓    ║              ║"<<std::endl;
+        std::cout<<" ▒▒▒▒▒▓▓▓▓▓   ║              ║"<<std::endl;
+        std::cout<<"  ▒▒▒  ▓▓▓    ║              ║"<<std::endl;
+        std::cout<<"   ▒    ▓     ╚══════════════╝"<<std::endl;
 
         flexd::core::CoreAppManager manager("/etc/CoreApp/CoreAppDb.db");
         flexd::core::IPCClient client(poller);
-        client.setOnLambda([&manager](flexd::core::iCoreAppRequest& rqst){manager.Lambda(rqst);});
+        client.setOnRequest([&manager](flexd::core::iCoreAppRequest& rqst){manager.onRequest(rqst);});
         poller.loop();
     }
     return 0;

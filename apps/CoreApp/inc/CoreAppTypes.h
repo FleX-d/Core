@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppType.h
  * Author: Peter Kocity
  *
@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
-        
+
         namespace RqstType {
 
             enum Enum {
@@ -50,8 +50,8 @@ namespace flexd {
                 unintall,
                 start,
                 stop,
-                freez,
-                unfreez,
+                freeze,
+                unfreeze,
                 update,
                 undefined = 0xFF
             };
@@ -60,7 +60,7 @@ namespace flexd {
         namespace RqstAck {
 
             enum Enum {
-                succes = 0x00,
+                success = 0x00,
                 fail,
                 undefined = 0xFF,
             };
@@ -69,16 +69,16 @@ namespace flexd {
         namespace JobState {
 
             enum Enum {
-                jobNotExist = 0x00,
+                stopped = 0x00,
                 running,
-                peding,
+                pending,
                 busy,
                 /*...*/
                 undefined = 0xFF
             };
         }
-        
-        
+
+
     } // namespace core
 } // namespace flexd
 

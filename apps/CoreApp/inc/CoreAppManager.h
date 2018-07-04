@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppManager.h
  * Author: Peter Kocity
  *
@@ -39,8 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UninstallRequest.h"
 #include "StartRequest.h"
 #include "StopRequest.h"
-#include "FreezRequest.h"
-#include "UnfreezRequest.h"
+#include "FreezeRequest.h"
+#include "UnfreezeRequest.h"
 #include "UpdateRequest.h"
 #include "InvalidRequest.h"
 #include "iApp.h"
@@ -57,16 +57,16 @@ namespace flexd {
         public:
             CoreAppManager(const std::string& dbPath);
             virtual ~CoreAppManager() = default;
-            
-            void Lambda(iCoreAppRequest& rqst);
 
-            virtual void visit(InstallRequest_t rqst);
-            virtual void visit(UninstallRequest_t rqst);
-            virtual void visit(StartRequest_t rqst);
-            virtual void visit(StopRequest_t rqst);
-            virtual void visit(FreezRequest_t rqst);
-            virtual void visit(UnfreezRequest_t rqst);
-            virtual void visit(UpdateRequest_t rqst);
+            void onRequest(iCoreAppRequest& rqst);
+
+            virtual void visit(InstallRequest_t rqst) override;
+            virtual void visit(UninstallRequest_t rqst) override;
+            virtual void visit(StartRequest_t rqst) override;
+            virtual void visit(StopRequest_t rqst) override;
+            virtual void visit(FreezeRequest_t rqst) override;
+            virtual void visit(UnfreezeRequest_t rqst) override;
+            virtual void visit(UpdateRequest_t rqst) override;
             //virtual void visit(InvalidRequest_t rqst);
 
             CoreAppManager(const CoreAppManager& orig) = delete;
@@ -77,15 +77,15 @@ namespace flexd {
             bool appExecute(const std::string& cmd, std::string& message, const std::string& path = "./");
             std::string getDbKey(RqstType::Enum e);
 
-            bool addInList(std::string mapName);
-            bool eraseInList(std::string mapName);
-            bool findInList(std::string mapName);
-            bool changeStateInList(std::string mapName, RqstType::Enum e);
+            bool addToList(std::string appName);
+            bool eraseFromList(std::string appName);
+            bool findInList(std::string appName);
+            bool changeStateInList(std::string appName, RqstType::Enum e);
 
             CoreAppExecutor m_exe;
             const std::string m_dbName;
             CoreAppDatabase m_db;
-            std::map<std::string, iApp> m_listOfApp;
+            std::map<std::string, iApp> m_apps;
         };
     } // namespace core
 } // namespace flexd

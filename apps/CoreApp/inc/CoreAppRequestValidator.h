@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreApRequestValidator.h
  * Author: Peter Kocity
  *
@@ -40,8 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UninstallRequest.h"
 #include "StartRequest.h"
 #include "StopRequest.h"
-#include "FreezRequest.h"
-#include "UnfreezRequest.h"
+#include "FreezeRequest.h"
+#include "UnfreezeRequest.h"
 #include "UpdateRequest.h"
 
 
@@ -55,54 +55,52 @@ namespace flexd {
 
             /*TODO validation*/
             template<class T> bool validRequest(const T& rqt);
-            
-            
+
         private:
             bool validRequestInstall(const InstallRequest& rqt);
             bool validRequestUninstall(const UninstallRequest& rqt);
             bool validRequestStart(const StartRequest& rqt);
             bool validRequestStop(const StopRequest& rqt);
-            bool validRequestFreez(const FreezRequest& rqt);
-            bool validRequestUnfreez(const UnfreezRequest& rqt);
+            bool validRequestFreeze(const FreezeRequest& rqt);
+            bool validRequestUnfreeze(const UnfreezeRequest& rqt);
             bool validRequestUpdate(const UpdateRequest& rqt);
         };
-        
+
         template<>
         inline bool CoreAppRequestValidator::validRequest<InstallRequest>(const InstallRequest& rqt) {
             return validRequestInstall(rqt);
         }
-        
+
         template<>
         inline bool CoreAppRequestValidator::validRequest<UninstallRequest>(const UninstallRequest& rqt) {
             return validRequestUninstall(rqt);
         }
-        
+
         template<>
         inline bool CoreAppRequestValidator::validRequest<StartRequest>(const StartRequest& rqt) {
             return validRequestStart(rqt);
         }
-        
+
         template<>
         inline bool CoreAppRequestValidator::validRequest<StopRequest>(const StopRequest& rqt) {
             return validRequestStop(rqt);
         }
-        
+
         template<>
-        inline bool CoreAppRequestValidator::validRequest<FreezRequest>(const FreezRequest& rqt) {
-            return validRequestFreez(rqt);
+        inline bool CoreAppRequestValidator::validRequest<FreezeRequest>(const FreezeRequest& rqt) {
+            return validRequestFreeze(rqt);
         }
-        
+
         template<>
-        inline bool CoreAppRequestValidator::validRequest<UnfreezRequest>(const UnfreezRequest& rqt) {
-            return validRequestUnfreez(rqt);
+        inline bool CoreAppRequestValidator::validRequest<UnfreezeRequest>(const UnfreezeRequest& rqt) {
+            return validRequestUnfreeze(rqt);
         }
-        
+
         template<>
         inline bool CoreAppRequestValidator::validRequest<UpdateRequest>(const UpdateRequest& rqt) {
             return validRequestUpdate(rqt);
         }
-        
-        
+
     }
 }
 

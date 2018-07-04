@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   iApp.cpp
  * Author: Peter Kocity
- * 
+ *
  * Created on April 20, 2018, 9:19 AM
  */
 
@@ -38,7 +38,7 @@ namespace flexd {
     namespace core {
 
         iApp::iApp() {
-            m_state=std::shared_ptr<StateMachine>(new Stop);
+            m_state=std::shared_ptr<StateMachine>(new StoppedState);
         }
 
         iApp::~iApp() {
@@ -47,57 +47,57 @@ namespace flexd {
             /*TODO verifi corect funcionality*/
             FLEX_LOG_TRACE("delete iApp: count of m_state:", m_state.use_count());
         }
-        
+
         int iApp::getState(){
-            return m_state->getType();
+            return m_state->getState();
         }
 
-        bool iApp::starting() {
-            StateMachine_t s = m_state->starting();
-            if (m_state!=s) {
-                m_state.swap(s);
-                s.reset();
+        bool iApp::start() {
+            StateMachine_t running(m_state->start());
+            if (m_state != running) {
+                m_state.swap(running);
+                running.reset();
                 return true;
             }
-            s.reset();
+            running.reset();
             return false;
         }
 
-        bool iApp::updating() {
-            StateMachine_t u = m_state->updating();
-            if (m_state!=u) {
-                m_state.swap(u);
-                u.reset();
+        bool iApp::update() {
+            StateMachine_t updating(m_state->update());
+            if (m_state != updating) {
+                m_state.swap(updating);
+                updating.reset();
                 return true;
             }
-            u.reset();
+            updating.reset();
             return false;
         }
 
-        bool iApp::stoping() {
-            StateMachine_t st = m_state->stoping();
-            if (m_state!=st) {
-                m_state.swap(st);
-                st.reset();
+        bool iApp::stop() {
+            StateMachine_t stopped(m_state->stop());
+            if (m_state != stopped) {
+                m_state.swap(stopped);
+                stopped.reset();
                 return true;
             }
-            st.reset();
+            stopped.reset();
             return false;
         }
 
-        bool iApp::freezing() {
-            StateMachine_t f = m_state->freezing();
-            if (m_state!=f) {
-                m_state.swap(f);
-                f.reset();
+        bool iApp::freeze() {
+            StateMachine_t frozen(m_state->freeze());
+            if (m_state != frozen) {
+                m_state.swap(frozen);
+                frozen.reset();
                 return true;
             }
-            f.reset();
+            frozen.reset();
             return false;
         }
 
-        bool iApp::unfreezing() {
-            StateMachine_t uf = m_state->unfreezing();
+        bool iApp::unfreeze() {
+            StateMachine_t uf = m_state->unfreeze();
             if (m_state!=uf) {
                 m_state.swap(uf);
                 uf.reset();

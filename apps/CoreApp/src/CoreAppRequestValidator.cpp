@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreApRequestValidator.h
  * Author: Peter Kocity
  *
@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
-        
+
         CoreAppRequestValidator::CoreAppRequestValidator() {
         }
 
@@ -48,8 +48,8 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Type not found");
             return false;
         }
-        
-        
+
+
         /*Function for template*/
         bool CoreAppRequestValidator::validRequestInstall(const InstallRequest& rqt){
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Install");
@@ -63,7 +63,7 @@ namespace flexd {
                 return false;
             return true;
         }
-        
+
         bool CoreAppRequestValidator::validRequestUninstall(const UninstallRequest& rqt){
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Uninstall");
             if(rqt.getType()!=RqstType::Enum::unintall)
@@ -74,7 +74,7 @@ namespace flexd {
                 return false;
             return true;
         }
-        
+
         bool CoreAppRequestValidator::validRequestStart(const StartRequest& rqt){
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Start");
             if(rqt.getType()!=RqstType::Enum::start)
@@ -85,7 +85,7 @@ namespace flexd {
                 return false;
             return true;
         }
-        
+
         bool CoreAppRequestValidator::validRequestStop(const StopRequest& rqt){
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Stop");
             if(rqt.getType()!=RqstType::Enum::stop)
@@ -96,10 +96,10 @@ namespace flexd {
                 return false;
             return true;
         }
-        
-        bool CoreAppRequestValidator::validRequestFreez(const FreezRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Freez");
-            if(rqt.getType()!=RqstType::Enum::freez)
+
+        bool CoreAppRequestValidator::validRequestFreeze(const FreezeRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Freeze");
+            if(rqt.getType()!=RqstType::Enum::freeze)
                 return false;
             if(rqt.getName()=="")
                 return false;
@@ -107,10 +107,10 @@ namespace flexd {
                 return false;
             return true;
         }
-        
-        bool CoreAppRequestValidator::validRequestUnfreez(const UnfreezRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Unfreez");
-            if(rqt.getType()!=RqstType::Enum::unfreez)
+
+        bool CoreAppRequestValidator::validRequestUnfreeze(const UnfreezeRequest& rqt){
+            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Unfreeze");
+            if(rqt.getType()!=RqstType::Enum::unfreeze)
                 return false;
             if(rqt.getName()=="")
                 return false;
@@ -118,7 +118,7 @@ namespace flexd {
                 return false;
             return true;
         }
-        
+
         bool CoreAppRequestValidator::validRequestUpdate(const UpdateRequest& rqt){
             FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Update");
             if(rqt.getType()!=RqstType::Enum::update)
@@ -131,8 +131,8 @@ namespace flexd {
                 return false;
             return true;
         }
-        
-        
-        
+
+
+
     }
 }

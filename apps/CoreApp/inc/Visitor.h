@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   Visitor.h
  * Author: Peter Kocity
  *
@@ -37,16 +37,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define VISITOR_H
 
 #include "InstallRequest.h"
-#include "UninstallRequest.h"  
+#include "UninstallRequest.h"
 #include "StartRequest.h"
 #include "StopRequest.h"
-#include "FreezRequest.h"
-#include "UnfreezRequest.h"
+#include "FreezeRequest.h"
+#include "UnfreezeRequest.h"
 #include "UpdateRequest.h"
 #include "InvalidRequest.h"
 
 namespace flexd{
-    namespace core{        
+    namespace core{
         class Visitor{
         public:
             explicit Visitor();
@@ -55,15 +55,15 @@ namespace flexd{
             virtual void visit(UninstallRequest_t r);
             virtual void visit(StartRequest_t r);
             virtual void visit(StopRequest_t r);
-            virtual void visit(FreezRequest_t r);
-            virtual void visit(UnfreezRequest_t r);
+            virtual void visit(FreezeRequest_t r);
+            virtual void visit(UnfreezeRequest_t r);
             virtual void visit(UpdateRequest_t r);
             virtual void visit(InvalidRequest_t r);
-            
+
             Visitor(Visitor&) = default;
             Visitor& operator=(Visitor&) = default;
         private:
-        };   
+        };
     }
 }
 

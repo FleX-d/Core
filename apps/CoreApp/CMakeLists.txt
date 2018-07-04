@@ -37,11 +37,11 @@ if (FLEXD_EPOLL_FOUND)
     message(STATUS "FLEXD_EPOLL inc was found: " ${FLEXD_EPOLL_INCLUDE_DIRS})
 endif (FLEXD_EPOLL_FOUND)
 
-pkg_search_module(FLEXD_CONECTOR REQUIRED fleXdIPCConnector)
-if (FLEXD_CONECTOR_FOUND)
-    message(STATUS "FLEXD_CONECTOR libs was found: " ${FLEXD_CONECTOR_LIBRARIES})
-    message(STATUS "FLEXD_CONECTOR inc was found: " ${FLEXD_CONECTOR_INCLUDE_DIRS})
-endif (FLEXD_CONECTOR_FOUND)
+pkg_search_module(FLEXD_CONNECTOR REQUIRED fleXdIPCConnector)
+if (FLEXD_CONNECTOR_FOUND)
+    message(STATUS "FLEXD_CONNECTOR libs was found: " ${FLEXD_CONNECTOR_LIBRARIES})
+    message(STATUS "FLEXD_CONNECTOR inc was found: " ${FLEXD_CONNECTOR_INCLUDE_DIRS})
+endif (FLEXD_CONNECTOR_FOUND)
 
 pkg_search_module(FLEXD_IPCCOMMON REQUIRED fleXdIPCCommon)
 if (FLEXD_IPCCOMMON_FOUND)
@@ -56,7 +56,7 @@ SET(privateHeaders
     inc/CoreAppRequestFactory.h
     inc/CoreAppRequestValidator.h
     inc/CoreAppTypes.h
-    inc/FreezRequest.h
+    inc/FreezeRequest.h
     inc/iApp.h
     inc/iCoreAppAck.h
     inc/iCoreAppRequest.h
@@ -66,7 +66,7 @@ SET(privateHeaders
     inc/StartRequest.h
     inc/StateMachine.h
     inc/StopRequest.h
-    inc/UnfreezRequest.h
+    inc/UnfreezeRequest.h
     inc/UninstallRequest.h
     inc/UpdateRequest.h
     inc/Visitor.h
@@ -83,7 +83,7 @@ SET(privateSources
     src/CoreAppManager.cpp
     src/CoreAppRequestFactory.cpp
     src/CoreAppRequestValidator.cpp
-    src/FreezRequest.cpp
+    src/FreezeRequest.cpp
     src/iApp.cpp
     src/iCoreAppAck.cpp
     src/iCoreAppRequest.cpp
@@ -93,7 +93,7 @@ SET(privateSources
     src/StartRequest.cpp
     src/StateMachine.cpp
     src/StopRequest.cpp
-    src/UnfreezRequest.cpp
+    src/UnfreezeRequest.cpp
     src/UninstallRequest.cpp
     src/UpdateRequest.cpp
     src/Visitor.cpp
@@ -106,24 +106,24 @@ SET(${PROJECT_NAME}PublicInc "${CoreApp_SOURCE_DIR}/inc")
 
 add_executable(${PROJECT_NAME} ${privateSources} ${privateHeaders})
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++14 -Wall -Wfloat-conversion ${JSON_PARSER_CFLAGS_OTHER})
-target_include_directories(${PROJECT_NAME} PUBLIC inc ${JSON_PARSER_INCLUDE_DIRS})
-target_include_directories(${PROJECT_NAME} PRIVATE inc ${FLEXD_EPOLL_INCLUDE_DIRS} ${FLEXD_CONECTOR_INCLUDE_DIRS} ${FLEXD_IPCCOMMON_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC inc)
+target_include_directories(${PROJECT_NAME} PRIVATE inc
+    ${JSON_PARSER_INCLUDE_DIRS}
+    ${libsqlite3-dev_INCLUDE_DIRS}
+    ${FLEXD_LOGGER_INCLUDE_DIRS}
+    ${FLEXD_EPOLL_INCLUDE_DIRS}
+    ${FLEXD_CONNECTOR_INCLUDE_DIRS}
+    ${FLEXD_IPCCOMMON_INCLUDE_DIRS}
+)
 target_link_libraries(${PROJECT_NAME}
-    ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
+    ${libsqlite3-dev_LIBRARIES}
     ${FLEXD_LOGGER_LIBRARIES}
     ${FLEXD_EPOLL_LIBRARIES}
-    ${FLEXD_CONECTOR_LIBRARIES}
+    ${FLEXD_CONNECTOR_LIBRARIES}
     ${FLEXD_IPCCOMMON_LIBRARIES}
     pthread
-    sqlite3
 )
-
-option(
-    ENABLE_TESTS
-    "Run Test?"
-    ON
-    )
 
 if(ENABLE_TESTS)
   add_subdirectory(gtest)

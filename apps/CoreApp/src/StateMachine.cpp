@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   StateMachine.cpp
  * Author: Peter Kocity
- * 
+ *
  * Created on April 20, 2018, 8:50 AM
  */
 
@@ -39,94 +39,107 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        StateMachine::StateMachine(){
-        }
-        
-        StateMachine::~StateMachine(){
-            FLEX_LOG_TRACE("delete stateMachine");
+        StateMachine::StateMachine() {
+            FLEX_LOG_TRACE("StateMachine ctor");
         }
 
-        StateMachine_t StateMachine::starting() {
+        StateMachine::~StateMachine() {
+            FLEX_LOG_TRACE("StateMachine dtor");
+        }
+
+        StateMachine_t StateMachine::start() {
             return shared_from_this();
         }
 
-        StateMachine_t StateMachine::updating() {
+        StateMachine_t StateMachine::stop() {
             return shared_from_this();
         }
 
-        StateMachine_t StateMachine::stoping() {
+        StateMachine_t StateMachine::update() {
             return shared_from_this();
         }
 
-        StateMachine_t StateMachine::freezing() {
+        StateMachine_t StateMachine::freeze() {
             return shared_from_this();
         }
 
-        StateMachine_t StateMachine::unfreezing() {
+        StateMachine_t StateMachine::unfreeze() {
             return shared_from_this();
         }
-        
-        int StateMachine::getType(){
+
+        int StateMachine::getState() {
             return flexd::core::JobState::undefined;
         }
-        
-        Stop::Stop(){
-            FLEX_LOG_TRACE("Stop::Stop()");
+
+        /*
+         * StoppedState
+         */
+        StoppedState::StoppedState() {
+            FLEX_LOG_TRACE("StoppedState::StoppedState()");
         }
 
-        StateMachine_t Stop::starting() {
-            return std::shared_ptr<StateMachine>(new Run);
+        StateMachine_t StoppedState::start() {
+            return std::shared_ptr<StateMachine>(new RunningState);
         }
 
-        StateMachine_t Stop::updating() {
-            return std::shared_ptr<StateMachine>(new Update);
-        }
-        
-        int Stop::getType(){
-            return flexd::core::JobState::busy;
+        StateMachine_t StoppedState::update() {
+            return std::shared_ptr<StateMachine>(new UpdatingState);
         }
 
-        Run::Run(){
-            FLEX_LOG_TRACE("Run::Run()");
+        int StoppedState::getState() {
+            return flexd::core::JobState::stopped;
         }
 
-        StateMachine_t Run::stoping() {
-            return std::shared_ptr<StateMachine>(new Stop);
+        /*
+         * RunningState
+         */
+        RunningState::RunningState() {
+            FLEX_LOG_TRACE("RunningState::RunningState()");
         }
 
-        StateMachine_t Run::freezing() {
-            return std::shared_ptr<StateMachine>(new Freez);
+        StateMachine_t RunningState::stop() {
+            return std::shared_ptr<StateMachine>(new StoppedState);
         }
-        
-        int Run::getType(){
+
+        StateMachine_t RunningState::freeze() {
+            return std::shared_ptr<StateMachine>(new FrozenState);
+        }
+
+        int RunningState::getState() {
             return flexd::core::JobState::running;
         }
 
-        Freez::Freez(){
-            FLEX_LOG_TRACE("Freez::Freez()");
+        /*
+         * FrozenState
+         */
+        FrozenState::FrozenState() {
+            FLEX_LOG_TRACE("FrozenState::FrozenState()");
         }
 
-        StateMachine_t Freez::stoping() {
-            return std::shared_ptr<StateMachine>(new Stop);
+        StateMachine_t FrozenState::stop() {
+            return std::shared_ptr<StateMachine>(new StoppedState);
         }
 
-        StateMachine_t Freez::unfreezing() {
-            return std::shared_ptr<StateMachine>(new Run);
-        }
-        
-        int Freez::getType(){
-            return flexd::core::JobState::peding;
+        StateMachine_t FrozenState::unfreeze() {
+            return std::shared_ptr<StateMachine>(new RunningState);
         }
 
-        Update::Update(){
-            FLEX_LOG_TRACE("Update::Update()");
+        int FrozenState::getState() {
+            return flexd::core::JobState::pending;
         }
 
-        StateMachine_t Update::stoping() {
-            return std::shared_ptr<StateMachine>(new Stop);
+        /*
+         * UpdatingState
+         */
+        UpdatingState::UpdatingState() {
+            FLEX_LOG_TRACE("UpdatingState::UpdatingState()");
         }
-        
-        int Update::getType(){
+
+        StateMachine_t UpdatingState::stop() {
+            return std::shared_ptr<StateMachine>(new StoppedState);
+        }
+
+        int UpdatingState::getState(){
             return flexd::core::JobState::busy;
         }
 

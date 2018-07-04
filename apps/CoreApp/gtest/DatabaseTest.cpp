@@ -5,9 +5,9 @@
 #include "CoreAppDatabase.h"
 
 std::string name = "CoreAppDb";
-flexd::core::CoreAppDatabase data("./CoreAppDb.db", name);
+flexd::core::CoreAppDatabase data("/etc/CoreApp/CoreAppDb.db", name);
 
-/*SQLite structure, ID,AppName, AppVer, Install, Uninstall, Start, Stop, Freez, Unfreez, UpdateDB, MD5*/
+/*SQLite structure, ID,AppName, AppVer, Install, Uninstall, Start, Stop, Freeze, Unfreeze, UpdateDB, MD5*/
 /*ID- int autoincremental other text not Null*/
 
 std::string val = "docker install";
@@ -23,9 +23,9 @@ std::string ver1 = "2.00";
 std::string ver2 = "1.02";
 std::string temp, temp1, ID = "ID";
 
-TEST(Database, Fileexist) {
-    ASSERT_TRUE(data.fileExists("./CoreAppDb.db"));
-    ASSERT_FALSE(data.fileExists("./Core.db"));
+TEST(Database, fileExists) {
+    ASSERT_TRUE(data.fileExists("/etc/CoreApp/CoreAppDb.db"));
+    ASSERT_FALSE(data.fileExists("/etc/CoreApp/CoreDb.db"));
 }
 
 TEST(Database, add_record_to_db) {

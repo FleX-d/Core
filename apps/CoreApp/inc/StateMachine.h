@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   StateMachine.h
  * Author: Peter Kocity
  *
@@ -40,87 +40,76 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
+
         class StateMachine: public std::enable_shared_from_this<StateMachine> {
         public:
             StateMachine();
             virtual ~StateMachine();
-            
-            virtual std::shared_ptr<StateMachine> starting();
-            virtual std::shared_ptr<StateMachine> updating();
-            virtual std::shared_ptr<StateMachine> stoping();
-            virtual std::shared_ptr<StateMachine> freezing();
-            virtual std::shared_ptr<StateMachine> unfreezing();
-            
-            virtual int getType();
-            
+
+            virtual std::shared_ptr<StateMachine> start();
+            virtual std::shared_ptr<StateMachine> stop();
+            virtual std::shared_ptr<StateMachine> update();
+            virtual std::shared_ptr<StateMachine> freeze();
+            virtual std::shared_ptr<StateMachine> unfreeze();
+
+            virtual int getState();
+
             StateMachine(const StateMachine& orig) = default;
             StateMachine& operator=(const StateMachine& orig) = default;
-        private:
-            
         };
         typedef std::shared_ptr<StateMachine> StateMachine_t;
-        
-        
-        class Stop : public StateMachine {
+
+        class StoppedState : public StateMachine {
         public:
-            Stop();
-            ~Stop() = default;
+            StoppedState();
+            virtual ~StoppedState() = default;
 
-            StateMachine_t starting();
-            StateMachine_t updating();
-            int getType();
+            virtual StateMachine_t start() override;
+            virtual StateMachine_t update() override;
+            virtual int getState() override;
 
-            Stop(const Stop& orig) = default;
-            Stop& operator=(const Stop& orig) = default;
-        private:       
+            StoppedState(const StoppedState& orig) = default;
+            StoppedState& operator=(const StoppedState& orig) = default;
         };
-        
-        
-        
-        class Run : public StateMachine {
+
+        class RunningState : public StateMachine {
         public:
-            Run();
-            ~Run() = default;
+            RunningState();
+            virtual ~RunningState() = default;
 
-            StateMachine_t stoping();
-            StateMachine_t freezing();
-            int getType();
+            virtual StateMachine_t stop() override;
+            virtual StateMachine_t freeze() override;
+            virtual int getState() override;
 
-            Run(const Run& orig) = default;
-            Run& operator=(const Run& orig) = default;
-        private:
+            RunningState(const RunningState& orig) = default;
+            RunningState& operator=(const RunningState& orig) = default;
         };
-        
-        
-        
-        class Freez : public StateMachine {
+
+        class FrozenState : public StateMachine {
         public:
-            Freez();
-            ~Freez() = default;
+            FrozenState();
+            virtual ~FrozenState() = default;
 
-            StateMachine_t stoping();
-            StateMachine_t unfreezing();
-            int getType();
+            virtual StateMachine_t stop() override;
+            virtual StateMachine_t unfreeze() override;
+            virtual int getState() override;
 
-            Freez(const Freez& orig) = default;
-            Freez& operator=(const Freez& orig) = default;
-        private:
+            FrozenState(const FrozenState& orig) = default;
+            FrozenState& operator=(const FrozenState& orig) = default;
         };
-        
-        
-        
-        class Update : public StateMachine {
+
+        class UpdatingState : public StateMachine {
         public:
-            Update();
-            ~Update() = default;
+            UpdatingState();
+            virtual ~UpdatingState() = default;
 
-            StateMachine_t stoping();
-            int getType();
+            virtual StateMachine_t stop() override;
+            virtual int getState() override;
 
-            Update(const Update& orig) = default;
-            Update& operator=(const Update& orig) = default;
-        private:
+            UpdatingState(const UpdatingState& orig) = default;
+            UpdatingState& operator=(const UpdatingState& orig) = default;
         };
+
     }
 }
 

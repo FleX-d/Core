@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(CoreAppTest VERSION "0.0.1")
 
+message(STATUS "***" )
+message(STATUS "* " ${PROJECT_NAME})
+message(STATUS "***")
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTEST REQUIRED gtest>=1.7.0)
 pkg_check_modules(GMOCK REQUIRED gmock>=1.7.0)
@@ -18,7 +22,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestFactory.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestValidator.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppTypes.h
-    ${CoreApp_SOURCE_DIR}/inc/FreezRequest.h
+    ${CoreApp_SOURCE_DIR}/inc/FreezeRequest.h
     ${CoreApp_SOURCE_DIR}/inc/iApp.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppAck.h
     ${CoreApp_SOURCE_DIR}/inc/iCoreAppRequest.h
@@ -28,7 +32,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/StartRequest.h
     ${CoreApp_SOURCE_DIR}/inc/StateMachine.h
     ${CoreApp_SOURCE_DIR}/inc/StopRequest.h
-    ${CoreApp_SOURCE_DIR}/inc/UnfreezRequest.h
+    ${CoreApp_SOURCE_DIR}/inc/UnfreezeRequest.h
     ${CoreApp_SOURCE_DIR}/inc/UninstallRequest.h
     ${CoreApp_SOURCE_DIR}/inc/UpdateRequest.h
     ${CoreApp_SOURCE_DIR}/inc/Visitor.h
@@ -45,7 +49,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/CoreAppManager.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestFactory.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestValidator.cpp
-    ${CoreApp_SOURCE_DIR}/src/FreezRequest.cpp
+    ${CoreApp_SOURCE_DIR}/src/FreezeRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/iApp.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppAck.cpp
     ${CoreApp_SOURCE_DIR}/src/iCoreAppRequest.cpp
@@ -55,7 +59,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/StartRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/StateMachine.cpp
     ${CoreApp_SOURCE_DIR}/src/StopRequest.cpp
-    ${CoreApp_SOURCE_DIR}/src/UnfreezRequest.cpp
+    ${CoreApp_SOURCE_DIR}/src/UnfreezeRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UninstallRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/UpdateRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/Visitor.cpp
@@ -76,6 +80,12 @@ include_directories(
     ${GTEST_INCLUDE_DIRS}
     ${GMOCK_INCLUDE_DIRS}
     ${CoreAppPublicInc}
+    ${JSON_PARSER_INCLUDE_DIRS}
+    ${libsqlite3-dev_INCLUDE_DIRS}
+    ${FLEXD_LOGGER_INCLUDE_DIRS}
+    ${FLEXD_EPOLL_INCLUDE_DIRS}
+    ${FLEXD_CONNECTOR_INCLUDE_DIRS}
+    ${FLEXD_IPCCOMMON_INCLUDE_DIRS}
 )
 
 
@@ -85,13 +95,12 @@ add_executable(${PROJECT_NAME} Main.cpp ${privateSources} ${privateHeaders})
 
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++14 -Wall -Wfloat-conversion)
 target_link_libraries(${PROJECT_NAME}
-    ${GTEST_LIBRARIES} 
+    ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}
-    ${MQQT_CLIENT_LIBRARIES}
     ${JSON_PARSER_LIBRARIES}
+    ${libsqlite3-dev_LIBRARIES}
     ${FLEXD_LOGGER_LIBRARIES}
     ${FLEXD_EPOLL_LIBRARIES}
-    ${FLEXD_CONECTOR_LIBRARIES}
+    ${FLEXD_CONNECTOR_LIBRARIES}
     ${FLEXD_IPCCOMMON_LIBRARIES}
-    sqlite3
 )

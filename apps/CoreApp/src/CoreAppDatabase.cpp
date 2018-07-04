@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppDatabase.cpp
  * Author: Peter Kocity
- * 
+ *
  * Created on Februar 7, 2018, 9:32 AM
  */
 #include "FleXdLogger.h"
@@ -96,7 +96,7 @@ namespace flexd {
         bool CoreAppDatabase::addRecord(const std::string& dbName, const std::string& name, const std::string& ver) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
             const std::string queryString = "INSERT INTO "
-                    + dbName + "(AppName, AppVer, Install, Uninstall, Start, Stop, Freez, Unfreez, UpdateDB, MD5) VALUES"
+                    + dbName + "(AppName, AppVer, Install, Uninstall, Start, Stop, Freeze, Unfreeze, UpdateDB, MD5) VALUES"
                     " (\"" + name + "\", \"" + ver + "\",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \");";
             FLEX_LOG_TRACE("CoreAppDatabase::addRecord(): ", queryString);
             try {

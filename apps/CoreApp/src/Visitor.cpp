@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   Visitor.cpp
  * Author: Peter Kocity
  *
@@ -46,7 +46,7 @@ namespace flexd {
         /*TODO*/
         void Visitor::visit(InstallRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): installrequest ");
-            
+
         }
 
         void Visitor::visit(UninstallRequest_t r) {
@@ -64,13 +64,13 @@ namespace flexd {
 
         }
 
-        void Visitor::visit(FreezRequest_t r) {
-            FLEX_LOG_TRACE("Visitor::visit(): freezrequest ");
+        void Visitor::visit(FreezeRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::visit(): freezerequest ");
 
         }
 
-        void Visitor::visit(UnfreezRequest_t r) {
-            FLEX_LOG_TRACE("Visitor::visit(): unfreezrequest ");
+        void Visitor::visit(UnfreezeRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::visit(): unfreezerequest ");
 
         }
 

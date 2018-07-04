@@ -25,28 +25,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
- * File:   FreezRequest.cpp
+/*
+ * File:   UnfreezeRequest.cpp
  * Author: Peter Kocity
  *
- * Created on February 16, 2018, 2:40 PM
+ * Created on February 16, 2018, 2:43 PM
  */
 
-
-#include "FreezRequest.h"
+#include "UnfreezeRequest.h"
 #include "Visitor.h"
 #include "FleXdLogger.h"
-
 
 namespace flexd {
     namespace core {
 
-        FreezRequest::FreezRequest(const std::string& name, const std::string& ver) :
-        iCoreAppRequest(RqstType::Enum::freez, nullptr, name, ver) {
+        UnfreezeRequest::UnfreezeRequest(const std::string& name, const std::string& ver) :
+        iCoreAppRequest(RqstType::Enum::unfreeze, nullptr, name, ver) {
         }
 
-        void FreezRequest::accept(Visitor &v) {
-            FLEX_LOG_TRACE("FreezRequest::accept(): Visiting");
+        void UnfreezeRequest::accept(Visitor &v) {
+            FLEX_LOG_TRACE("UnfreezeRequest::accept(): ");
             v.visit(this);
         }
     }

@@ -47,18 +47,16 @@ namespace flexd {
    namespace gen {
     class IPCInterface : public flexd::icl::ipc::IPCConnector {
 	public:
-	    IPCInterface (flexd::icl::ipc::FleXdEpoll& poller);
-            virtual ~IPCInterface();
+        IPCInterface (flexd::icl::ipc::FleXdEpoll& poller);
+        virtual ~IPCInterface();
 	    void sendRequestCoreAckMsg(bool OperationAck, const std::string& Message, const std::string& AppID);
 
-
 	private:
-            void send(std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> Msg, uint32_t peerID);
-            virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg Msg) override;
-
+        void send(std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> Msg, uint32_t peerID);
+        virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg Msg) override;
 	    virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) = 0;
-
 	    uint32_t getTimestamp();
+
 	private:
 	    uint8_t m_counter;
     };

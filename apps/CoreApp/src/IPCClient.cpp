@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* 
+/*
  * File:   IPCClient.cpp
  * Author: Peter Kocity
  *
@@ -38,58 +38,57 @@ namespace flexd {
     namespace core {
 
         IPCClient::IPCClient(flexd::icl::ipc::FleXdEpoll& poller)
-        : IPCInterface(poller)
-        {
-        }
-        
-        IPCClient::~IPCClient()
-        {
-        }
-        
-        void IPCClient::onLambda(iCoreAppRequest& rqst){
-            m_onLambda(rqst);
-        }
-        
-        void IPCClient::setOnLambda(std::function<void(iCoreAppRequest&) > onLambda){
-            m_onLambda=onLambda;
+        : IPCInterface(poller) {
         }
 
-        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) 
-        {
+        IPCClient::~IPCClient() {
+        }
+
+        void IPCClient::onRequest(iCoreAppRequest& rqst) {
+            if (m_onRequest) {
+                m_onRequest(rqst);
+            }
+        }
+
+        void IPCClient::setOnRequest(std::function<void(iCoreAppRequest&)> onRqst) {
+            m_onRequest = onRqst;
+        }
+
+        void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) {
             FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): incoming message ", Operation);
 
-            iCoreAppRequest_t rqst = m_factory.makeRqst(Operation, Message, AppID);
-            
-            FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): seting lamda function");
-            std::function<void(const iCoreAppAck&) > onAck = std::bind(&IPCClient::sendAck, this, std::placeholders::_1);
+            iCoreAppRequest_t rqst(m_factory.makeRqst(Operation, Message, AppID));
+
+            FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): setting onAck lambda function");
+            std::function<void(const iCoreAppAck&)> onAck = std::bind(&IPCClient::sendAck, this, std::placeholders::_1);
             rqst->setOnAck(onAck);
-                   
+
             /*check if request is not null or invalid, send error ack if is*/
-            if(rqst->getType()==flexd::core::RqstType::Enum::undefined){
+            if (rqst->getType() == flexd::core::RqstType::Enum::undefined) {
                 FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): bad request");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-            }
-            else{
+            } else {
                 FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): send message to manager to execute");
                 /*execute in manager using sending lambda*/
-                onLambda(*rqst);
+                if (m_onRequest) {
+                    m_onRequest(*rqst);
+                } else {
+                    onRequest(*rqst);
+                }
             }
         }
-         
-        
-        void IPCClient::onConnectPeer(uint32_t peerID , bool genericPeer) 
-        {
+
+        void IPCClient::onConnectPeer(uint32_t peerID , bool genericPeer) {
         }
-        
-        
-        void IPCClient::sendAck(const iCoreAppAck& ack){
+
+        void IPCClient::sendAck(const iCoreAppAck& ack) {
             /*Read from ACK name app and ver and create publis message*/
-            if(ack.getType()==RqstAck::Enum::succes){
+            if (ack.getType()==RqstAck::Enum::success) {
                 sendRequestCoreAckMsg(true, ack.getMessage(), ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendSuccesAck(): ", true, " ", ack.getMessage(), " ", ack.getName());
             }
-            
-            if(ack.getType()==RqstAck::Enum::fail){
+
+            if (ack.getType()==RqstAck::Enum::fail) {
                 sendRequestCoreAckMsg(false, ack.getMessage(), ack.getName());
                 FLEX_LOG_TRACE("IPCClient::sendErrorAck(): ", false, " ", ack.getMessage(), " ", ack.getName());
             }

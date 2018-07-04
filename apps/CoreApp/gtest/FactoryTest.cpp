@@ -45,7 +45,7 @@ TEST(Factory, Create_Start)
 }
 
 TEST(Factory, Create_Stop)
-{    
+{
     op=3;
     msg="AHOJ";
     id="SNAKE";
@@ -57,27 +57,27 @@ TEST(Factory, Create_Stop)
     ASSERT_EQ(tr.getVersion(), r->getVersion());
 }
 
-TEST(Factory, Create_Freez)
+TEST(Factory, Create_Freeze)
 {
     op=4;
     msg="AHOJ";
     id="SNAKE";
-    flexd::icl::JsonObj o("{\"Operation\": \"Freez\", \"Message\": \"AHOJ\", \"AppID\": \"SNAKE\"}");
+    flexd::icl::JsonObj o("{\"Operation\": \"Freeze\", \"Message\": \"AHOJ\", \"AppID\": \"SNAKE\"}");
     flexd::core::iCoreAppRequest_t r=rf.makeRqst(op, msg, id);
-    flexd::core::FreezRequest fr("SNAKE", "SNAKE");
+    flexd::core::FreezeRequest fr("SNAKE", "SNAKE");
     ASSERT_EQ(fr.getType(), r->getType());
     ASSERT_EQ(fr.getName(), r->getName());
     ASSERT_EQ(fr.getVersion(), r->getVersion());
 }
 
-TEST(Factory, Create_Unfreez)
+TEST(Factory, Create_Unfreeze)
 {
     op=5;
     msg="AHOJ";
     id="SNAKE";
-    flexd::icl::JsonObj o("{\"Operation\": \"Unfreez\", \"Message\": \"AHOJ\", \"AppID\": \"SNAKE\"}");
+    flexd::icl::JsonObj o("{\"Operation\": \"Unfreeze\", \"Message\": \"AHOJ\", \"AppID\": \"SNAKE\"}");
     flexd::core::iCoreAppRequest_t r=rf.makeRqst(op, msg, id);
-    flexd::core::UnfreezRequest ufr("SNAKE", "SNAKE");
+    flexd::core::UnfreezeRequest ufr("SNAKE", "SNAKE");
     ASSERT_EQ(ufr.getType(), r->getType());
     ASSERT_EQ(ufr.getName(), r->getName());
     ASSERT_EQ(ufr.getVersion(), r->getVersion());

@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [0.0.6] - 2018-07-04
+### Added
+- None
+
+### Changed
+- Refactoring [Martin Strenger]
+
+### Removed
+- None
+
 ## [0.0.6] - 2018-06-21
 ### Added
 - None

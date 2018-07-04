@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   InstallRequest.h
  * Author: Peter Kocity
  *
@@ -47,7 +47,7 @@ namespace flexd {
             virtual ~InstallRequest() = default;
 
             const std::string& getPath() const;
-            virtual void accept(Visitor &v);
+            virtual void accept(Visitor &v) override;
 
             InstallRequest(const InstallRequest&) = default;
             InstallRequest& operator=(const InstallRequest&) = default;

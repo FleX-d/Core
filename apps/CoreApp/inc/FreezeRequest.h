@@ -25,15 +25,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
- * File:   UnfreezRequest.h
+/*
+ * File:   FreezeRequest.h
  * Author: Peter Kocity
  *
- * Created on February 16, 2018, 2:43 PM
+ * Created on February 16, 2018, 2:40 PM
  */
 
-#ifndef UNFREEZREQUEST_H
-#define UNFREEZREQUEST_H
+#ifndef FREEZEREQUEST_H
+#define FREEZEREQUEST_H
 
 #include "iCoreAppRequest.h"
 
@@ -41,22 +41,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
-        class UnfreezRequest : public iCoreAppRequest {
+        class FreezeRequest : public iCoreAppRequest {
         public:
-            explicit UnfreezRequest(const std::string& name, const std::string& ver);
-            virtual ~UnfreezRequest() = default;
+            explicit FreezeRequest(const std::string& name, const std::string& ver);
+            virtual ~FreezeRequest() = default;
 
-            void virtual accept(Visitor &v);
+            virtual void accept(Visitor &v) override;
 
-            UnfreezRequest(const UnfreezRequest&) = default;
-            UnfreezRequest& operator=(const UnfreezRequest&) = default;
-        private:
-
+            FreezeRequest(const FreezeRequest&) = default;
+            FreezeRequest& operator=(const FreezeRequest&) = default;
+        public:
 
         };
-        typedef UnfreezRequest* UnfreezRequest_t;
+        typedef FreezeRequest* FreezeRequest_t;
 
     }
 }
-#endif /* UNFREEZREQUEST_H */
+#endif /* FREEZEREQUEST_H */
 

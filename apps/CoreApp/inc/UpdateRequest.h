@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   UpdateRequest.h
  * Author: Peter Kocity
  *
@@ -47,7 +47,7 @@ namespace flexd {
             virtual ~UpdateRequest() = default;
 
             const std::string& getPath();
-            void virtual accept(Visitor &v);
+            virtual void accept(Visitor &v) override;
 
             UpdateRequest(const UpdateRequest&) = default;
             UpdateRequest& operator=(const UpdateRequest&) = default;
@@ -56,7 +56,7 @@ namespace flexd {
         };
         typedef UpdateRequest* UpdateRequest_t;
     } // namespace core
-} // namespace flexd 
+} // namespace flexd
 
 #endif /* UPDATEREQUEST_H */
 

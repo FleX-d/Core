@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppRequest.h
  * Author: Peter Kocity
  *
@@ -55,10 +55,10 @@ namespace flexd {
             const RqstType::Enum getType() const;
             const std::string& getName() const;
             const std::string& getVersion() const;
-           
+
             void onAck(const iCoreAppAck& ack);
 
-            virtual void accept(Visitor& v)=0; /*TODO*/
+            virtual void accept(Visitor& v) = 0; /*TODO*/
 
             void setOnAck(std::function<void(const iCoreAppAck&) > onAck);
 

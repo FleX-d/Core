@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* 
+/*
  * File:   IPCClient.h
  * Author: Peter Kocity
  *
@@ -50,21 +50,20 @@ namespace flexd {
             IPCClient(flexd::icl::ipc::FleXdEpoll& poller);
             virtual ~IPCClient();
 
-            void onLambda(iCoreAppRequest& rqst);
-            void setOnLambda(std::function<void(iCoreAppRequest&) > onLambda);
-            
+            virtual void onRequest(iCoreAppRequest& rqst);
+            void setOnRequest(std::function<void(iCoreAppRequest&)> onRqst);
+
             IPCClient(const IPCClient&) = delete;
             IPCClient& operator=(const IPCClient&) = delete;
 
         private:
-            virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID);
+            virtual void receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) override;
+            virtual void onConnectPeer(uint32_t peerID, bool genericPeer) override;
             void sendAck(const iCoreAppAck& ack);
 
-            virtual void onConnectPeer(uint32_t peerID, bool genericPeer) override;
-            
-            std::function<void(iCoreAppRequest&) > m_onLambda = nullptr;
+        private:
+            std::function<void(iCoreAppRequest&) > m_onRequest = nullptr;
             CoreAppRequestFactory m_factory;
-            std::string m_segmentBuffer;
         };
 
     }//namespace core

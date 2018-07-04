@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppRequestFactory.h
  * Author: Peter Kocity
  *
@@ -41,8 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CoreAppTypes.h"
 #include "InstallRequest.h"
 #include "UpdateRequest.h"
-#include "UnfreezRequest.h"
-#include "FreezRequest.h"
+#include "UnfreezeRequest.h"
+#include "FreezeRequest.h"
 #include "StopRequest.h"
 #include "StartRequest.h"
 #include "UninstallRequest.h"
@@ -57,15 +57,15 @@ namespace flexd {
         public:
             explicit CoreAppRequestFactory();
             ~CoreAppRequestFactory() = default;
-            
+
             iCoreAppRequest_t makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const;
-            
+
         private:
-                
+
         };
-        
+
     } // namespace core
-} // namespace flexd 
+} // namespace flexd
 
 #endif /* COREAPPREQUESTFACTORY_H */
 

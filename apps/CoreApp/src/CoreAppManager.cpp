@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppManager.cpp
  * Author: Peter Kocity
  *
@@ -49,12 +49,12 @@ namespace flexd {
         m_db(dbPath, m_dbName)
         {
         }
-        
-        void CoreAppManager::Lambda(iCoreAppRequest& rqst){
-            FLEX_LOG_TRACE("CoreAppManager::Lambda(iCoreAppRequest& rqst):");
+
+        void CoreAppManager::onRequest(iCoreAppRequest& rqst){
+            FLEX_LOG_TRACE("CoreAppManager::onRequest(iCoreAppRequest& rqst):");
             rqst.accept(*this);
             //using visitor design patern for check type of request
-        }        
+        }
 
         void CoreAppManager::visit(InstallRequest_t rqst) {
 
@@ -67,18 +67,18 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
                 return;
             }
-            
+
             std::string msg;
             if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion(), msg));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -97,7 +97,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -106,9 +106,9 @@ namespace flexd {
 
             std::string msg;
             if (appExecute(command, msg)) {
-                eraseInList(rqst->getName());
+                eraseFromList(rqst->getName());
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion(), msg));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -127,7 +127,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -136,7 +136,7 @@ namespace flexd {
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion()));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -155,7 +155,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -164,7 +164,7 @@ namespace flexd {
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion()));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -172,7 +172,7 @@ namespace flexd {
             rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
         }
 
-        void CoreAppManager::visit(FreezRequest_t rqst) {
+        void CoreAppManager::visit(FreezeRequest_t rqst) {
 
             std::string command;
             if (!m_db.getRecord(m_dbName, rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
@@ -183,7 +183,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -192,7 +192,7 @@ namespace flexd {
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion()));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -200,7 +200,7 @@ namespace flexd {
             rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
         }
 
-        void CoreAppManager::visit(UnfreezRequest_t rqst) {
+        void CoreAppManager::visit(UnfreezeRequest_t rqst) {
 
             std::string command;
             if (!m_db.getRecord(m_dbName, rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
@@ -211,7 +211,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -220,7 +220,7 @@ namespace flexd {
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion()));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -239,7 +239,7 @@ namespace flexd {
             FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install):", command);
 
             if (!findInList(rqst->getName()))
-                addInList(rqst->getName());
+                addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
                 rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
@@ -250,7 +250,7 @@ namespace flexd {
             if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcesRequest(Install): sending ack");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::succes, rqst->getName(), rqst->getVersion(), msg));
+                rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
                 return;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
@@ -264,24 +264,24 @@ namespace flexd {
             /*TODO chceck if cmd run back true*/
             try {
                 m_exe.runOsCmd(cmd);
-            }            
+            }
             catch (std::exception& e) {
                 return false;
             }
             return true;
         }
-        
+
         bool CoreAppManager::appExecute(const std::string& cmd, std::string& message, const std::string& path){
             FLEX_LOG_TRACE("CoreAppManager::appExecute():");
             /*TODO chceck if cmd run back true*/
             try {
                 message=m_exe.runOsCmdWithResult(cmd, path);
-            }            
+            }
             catch (std::exception& e) {
                 return false;
             }
             return true;
-            
+
         }
 
         std::string CoreAppManager::getDbKey(RqstType::Enum e) {
@@ -290,53 +290,53 @@ namespace flexd {
                 case 1: return "Uninstall";
                 case 2: return "Start";
                 case 3: return "Stop";
-                case 4: return "Freez";
-                case 5: return "Unfreez";
+                case 4: return "Freeze";
+                case 5: return "Unfreeze";
                 case 6: return "UpdateDB";
                 default: return " ";
             }
         }
 
-        bool CoreAppManager::addInList(std::string mapName) {
+        bool CoreAppManager::addToList(std::string appName) {
             iApp a;
-            return m_listOfApp.insert(std::make_pair(mapName, a)).second;
+            return m_apps.insert(std::make_pair(appName, a)).second;
         }
 
-        bool CoreAppManager::eraseInList(std::string mapName) {
-            return m_listOfApp.erase(mapName);
+        bool CoreAppManager::eraseFromList(std::string appName) {
+            return m_apps.erase(appName);
         }
 
-        bool CoreAppManager::findInList(std::string mapName) {
-            if (m_listOfApp.find(mapName) != m_listOfApp.end())
+        bool CoreAppManager::findInList(std::string appName) {
+            if (m_apps.find(appName) != m_apps.end())
                 return true;
             else {
                 return false;
             }
         }
 
-        bool CoreAppManager::changeStateInList(std::string mapName, RqstType::Enum e) {
-            switch (e) {
-                case 0:
-                case 1:
-                case 6:
+        bool CoreAppManager::changeStateInList(std::string appName, RqstType::Enum rqstType) {
+            switch (rqstType) {
+                case RqstType::install:
+                case RqstType::unintall:
+                case RqstType::update:
                 {
-                    return m_listOfApp.at(mapName).updating();
+                    return m_apps.at(appName).update();
                 }
-                case 2:
+                case RqstType::start:
                 {
-                    return m_listOfApp.at(mapName).starting();
+                    return m_apps.at(appName).start();
                 }
-                case 3:
+                case RqstType::stop:
                 {
-                    return m_listOfApp.at(mapName).stoping();
+                    return m_apps.at(appName).stop();
                 }
-                case 4:
+                case RqstType::freeze:
                 {
-                    return m_listOfApp.at(mapName).freezing();
+                    return m_apps.at(appName).freeze();
                 }
-                case 5:
+                case RqstType::unfreeze:
                 {
-                    return m_listOfApp.at(mapName).unfreezing();
+                    return m_apps.at(appName).unfreeze();
                 }
                 default:
                 {

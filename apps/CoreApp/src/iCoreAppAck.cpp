@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   iCoreAppAck.cpp
  * Author: Peter Kocity
  *
@@ -61,7 +61,7 @@ namespace flexd {
             FLEX_LOG_TRACE("iCoreAppAck::getVersion(): ",m_version);
             return m_version;
         }
-        
+
         const std::string& iCoreAppAck::getMessage() const {
             FLEX_LOG_TRACE("iCoreAppAck::getMessage(): ",m_message);
             return m_message;

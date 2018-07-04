@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppRequestFactory.cpp
  * Author: Peter Kocity
  *
@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace flexd {
     namespace core {
-        
+
         CoreAppRequestFactory::CoreAppRequestFactory(){
         }
 
@@ -56,12 +56,12 @@ namespace flexd {
             } else if (Operation == RqstType::Enum::stop) {
                 FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
                 return new StopRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::freez) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freez");
-                return new FreezRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::unfreez) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreez");
-                return new UnfreezRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::freeze) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freeze");
+                return new FreezeRequest(AppID, AppID);
+            } else if (Operation == RqstType::Enum::unfreeze) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreeze");
+                return new UnfreezeRequest(AppID, AppID);
             } else if (Operation == RqstType::Enum::update) {
                 FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
                 return new UpdateRequest(AppID, AppID, Message);
