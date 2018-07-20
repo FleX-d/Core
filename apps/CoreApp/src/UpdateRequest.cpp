@@ -25,25 +25,24 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   UpdateRequest.cpp
  * Author: Peter Kocity
  *
  * Created on February 16, 2018, 2:47 PM
  */
 
-
 #include "UpdateRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        UpdateRequest::UpdateRequest(const std::string& name, const std::string& ver, const std::string& path)
-        : iCoreAppRequest(RqstType::Enum::update, nullptr, name, ver),
-        m_path(path) {
+        UpdateRequest::UpdateRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, const std::string& path, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::update, name, ver, timeout),
+          m_path(path) {
             FLEX_LOG_TRACE("UpdateRequest: Request path: ",m_path);
         }
 
@@ -55,6 +54,11 @@ namespace flexd {
         void UpdateRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("UpdateRequest::accept(): Visiting");
             v.visit(this);
+        }
+
+        bool UpdateRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("UpdateRequest::validate(): Validating");
+            return v.validate(this);
         }
 
     }

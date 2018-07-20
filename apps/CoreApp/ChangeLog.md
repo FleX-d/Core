@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ## [0.0.6] - 2018-07-04
 ### Added
+- CoreAppRequestQueue [Martin Strenger]
+- All requests are performed in a separate thread
+
+### Changed
+- Refactoring [Martin Strenger]
+- Fixed memory leakes [Martin Strenger]
+
+### Removed
+- None
+
+## [0.0.6] - 2018-07-04
+### Added
 - None
 
 ### Changed

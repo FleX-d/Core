@@ -37,21 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "iCoreAppRequest.h"
 
-
 namespace flexd {
     namespace core {
 
         class FreezeRequest : public iCoreAppRequest {
         public:
-            explicit FreezeRequest(const std::string& name, const std::string& ver);
+            explicit FreezeRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~FreezeRequest() = default;
 
             virtual void accept(Visitor &v) override;
+            virtual bool validate(Visitor &v) override;
 
             FreezeRequest(const FreezeRequest&) = default;
             FreezeRequest& operator=(const FreezeRequest&) = default;
-        public:
-
         };
         typedef FreezeRequest* FreezeRequest_t;
 

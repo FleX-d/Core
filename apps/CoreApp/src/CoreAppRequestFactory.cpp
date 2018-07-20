@@ -33,42 +33,53 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CoreAppRequestFactory.h"
-#include "FleXdLogger.h"
+#include "CoreAppTypes.h"
+#include "InstallRequest.h"
+#include "UpdateRequest.h"
+#include "UnfreezeRequest.h"
+#include "FreezeRequest.h"
+#include "StopRequest.h"
+#include "StartRequest.h"
+#include "UninstallRequest.h"
+#include "InvalidRequest.h"
+#include <FleXdLogger.h>
 
 namespace flexd {
     namespace core {
+        namespace CoreAppRequestFactory {
 
-        CoreAppRequestFactory::CoreAppRequestFactory(){
-        }
-
-        iCoreAppRequest_t CoreAppRequestFactory::makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const {
-            FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
-            FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",AppID, " Message: ",Message, " Operation: ",Operation);
-            if (Operation == RqstType::Enum::install) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
-                return new InstallRequest(AppID, AppID, Message);
-            } else if (Operation == RqstType::Enum::unintall) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
-                return new UninstallRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::start) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
-                return new StartRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::stop) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
-                return new StopRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::freeze) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freeze");
-                return new FreezeRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::unfreeze) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreeze");
-                return new UnfreezeRequest(AppID, AppID);
-            } else if (Operation == RqstType::Enum::update) {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
-                return new UpdateRequest(AppID, AppID, Message);
-            } else {
-                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
-                return new InvalidRequest(AppID, AppID);
+            pSharediCoreAppRequest_t makeRqst(flexd::icl::ipc::FleXdEpoll& rqstPoller, uint8_t& Operation, const std::string& Message, const std::string& AppID, time_t timeout /*= 0L*/) {
+                FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): Creating Request");
+                FLEX_LOG_DEBUG("CoreAppRequestFactory::makeRqst(): parsing Json: AppID: ",AppID, " Message: ",Message, " Operation: ",Operation);
+                //TODO versions
+                switch (Operation) {
+                    case RqstType::Enum::install:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return install");
+                        return std::make_shared<InstallRequest>(rqstPoller, AppID, AppID, Message, timeout);
+                    case RqstType::Enum::uninstall:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return uninstall");
+                        return std::make_shared<UninstallRequest>(rqstPoller, AppID, AppID, timeout);
+                    case RqstType::Enum::start:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return start");
+                        return std::make_shared<StartRequest>(rqstPoller, AppID, AppID, timeout);
+                    case RqstType::Enum::stop:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return stop");
+                        return std::make_shared<StopRequest>(rqstPoller, AppID, AppID, timeout);
+                    case RqstType::Enum::freeze:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return freeze");
+                        return std::make_shared<FreezeRequest>(rqstPoller, AppID, AppID, timeout);
+                    case RqstType::Enum::unfreeze:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return unfreeze");
+                        return std::make_shared<UnfreezeRequest>(rqstPoller, AppID, AppID, timeout);
+                    case RqstType::Enum::update:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return update");
+                        return std::make_shared<UpdateRequest>(rqstPoller, AppID, AppID, Message, timeout);
+                    default:
+                        FLEX_LOG_TRACE("CoreAppRequestFactory::makeRqst(): return invalid");
+                        return std::make_shared<InvalidRequest>(rqstPoller, AppID, AppID);
+                }
             }
+
         }
     }
 }

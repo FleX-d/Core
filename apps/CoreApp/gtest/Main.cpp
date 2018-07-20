@@ -25,21 +25,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   Main.cpp
  * Author: Peter Kocity
  *
  * Created on March 27, 2018, 11:10 AM
  */
 
-#include <cstdlib>
-#include <iostream>
 #include <gtest/gtest.h>
-#include "iCoreAppAck.h"
-
-
 
 int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);   
-    return RUN_ALL_TESTS(); 
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -37,23 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "iCoreAppRequest.h"
 
-
 namespace flexd {
     namespace core {
 
         class UninstallRequest : public iCoreAppRequest {
         public:
-            explicit UninstallRequest(const std::string& name, const std::string& ver);
+            explicit UninstallRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~UninstallRequest() = default;
 
             virtual void accept(Visitor &v) override;
+            virtual bool validate(Visitor &v) override;
 
             UninstallRequest(const UninstallRequest&) = default;
             UninstallRequest& operator=(const UninstallRequest&) = default;
-
-        private:
-
-
         };
         typedef UninstallRequest* UninstallRequest_t;
 

@@ -31,27 +31,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Created on Februar 7, 2018, 9:32 AM
  */
-#include "FleXdLogger.h"
+
 #include "CoreAppDatabase.h"
+#include <FleXdLogger.h>
 
 namespace flexd {
     namespace core {
 
-        CoreAppDatabase::CoreAppDatabase(const std::string& dbPath, const std::string& dbName) :
-        m_path(dbPath) {
-            FLEX_LOG_TRACE("Path for database: ", m_path);
+        CoreAppDatabase::CoreAppDatabase(const std::string& dbPath, const std::string& dbName)
+        : m_path(dbPath),
+          m_name(dbName) {
+            FLEX_LOG_TRACE("Path for database: ", m_path, " Name for database: ", m_name);
         }
 
-        bool CoreAppDatabase::getRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& dest, const std::string& key) {
+        bool CoreAppDatabase::getRecord(const std::string& appName, const std::string& appVer, std::string& dest, const std::string& key) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READONLY;
-            const std::string queryString = "SELECT " + key + " FROM " + dbName + " WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
+            const std::string queryString = "SELECT " + key + " FROM " + m_name + " WHERE AppName=\"" + appName + "\" AND AppVer=\"" + appVer + "\";";
             FLEX_LOG_TRACE("CoreAppDatabase::getRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
                 sqlite3pp::query query(db, queryString.c_str());
                 const auto rowCount = std::distance(query.begin(), query.end());
                 if (rowCount != 1) {
-                    FLEX_LOG_ERROR("CoreAppDatabase::getRecord(): expected 1 entry for key='", key, "' from table='", dbName, "', got ", rowCount, " entries\n");
+                    FLEX_LOG_ERROR("CoreAppDatabase::getRecord(): expected 1 entry for key='", key, "' from table='", m_name, "', got ", rowCount, " entries\n");
                     return false;
                 }
                 auto it = query.begin();
@@ -66,9 +68,9 @@ namespace flexd {
             return true;
         }
 
-        bool CoreAppDatabase::editRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& val, const std::string& key) {
+        bool CoreAppDatabase::editRecord(const std::string& appName, const std::string& appVer, std::string& val, const std::string& key) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
-            const std::string queryString = "UPDATE " + dbName + " SET " + key + "=\"" + val + "\" WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
+            const std::string queryString = "UPDATE " + m_name + " SET " + key + "=\"" + val + "\" WHERE AppName=\"" + appName + "\" AND AppVer=\"" + appVer + "\";";
             FLEX_LOG_TRACE("CoreAppDatabase::editRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
@@ -79,7 +81,7 @@ namespace flexd {
                 return false;
             }
             std::string tmp;
-            if (getRecord(dbName, name, ver, tmp, key)) {
+            if (getRecord(appName, appVer, tmp, key)) {
                 db.disconnect();
                 if (val == tmp) {
                     FLEX_LOG_TRACE("CoreAppDatabase::editRecord(): Success Edit");
@@ -93,11 +95,62 @@ namespace flexd {
             return false;
         }
 
-        bool CoreAppDatabase::addRecord(const std::string& dbName, const std::string& name, const std::string& ver) {
+        bool CoreAppDatabase::getTimeout(const std::string& appName, const std::string& appVer, time_t& timeout) {
+            constexpr auto sqliteFlags = SQLITE_OPEN_READONLY;
+            const std::string queryString = "SELECT Timeout FROM " + m_name + " WHERE AppName=\"" + appName + "\" AND AppVer=\"" + appVer + "\";";
+            FLEX_LOG_TRACE("CoreAppDatabase::getTimeout(): ", queryString);
+            try {
+                db.connect(m_path.c_str(), sqliteFlags);
+                sqlite3pp::query query(db, queryString.c_str());
+                const auto rowCount = std::distance(query.begin(), query.end());
+                if (rowCount != 1) {
+                    FLEX_LOG_ERROR("CoreAppDatabase::getTimeout(): expected 1 entry for key='Timeout' from table='", m_name, "', got ", rowCount, " entries\n");
+                    return false;
+                }
+                auto it = query.begin();
+                timeout = (*it).get<long long int>(0);
+            } catch (const sqlite3pp::database_error& e) {
+                FLEX_LOG_ERROR("CoreAppDatabase::getTimeout(): database error: ", e.what());
+                db.disconnect();
+                return false;
+            }
+            FLEX_LOG_TRACE("CoreAppDatabase::getTimeout(): Success return record: ", timeout);
+            db.disconnect();
+            return true;
+        }
+
+        bool CoreAppDatabase::editTimeout(const std::string& appName, const std::string& appVer, time_t timeout) {
+            constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
+            const std::string queryString = "UPDATE " + m_name + " SET Timeout=\"" + std::to_string(timeout) + "\" WHERE AppName=\"" + appName + "\" AND AppVer=\"" + appVer + "\";";
+            FLEX_LOG_TRACE("CoreAppDatabase::editTimeout(): ", queryString);
+            try {
+                db.connect(m_path.c_str(), sqliteFlags);
+                db.execute(queryString.c_str());
+            } catch (const sqlite3pp::database_error& e) {
+                FLEX_LOG_ERROR("CoreAppDatabase::editTimeout(): database error: ", e.what());
+                db.disconnect();
+                return false;
+            }
+            time_t tmp;
+            if (getTimeout(appName, appVer, tmp)) {
+                db.disconnect();
+                if (timeout == tmp) {
+                    FLEX_LOG_TRACE("CoreAppDatabase::editTimeout(): Success Edit");
+                    return true;
+                }
+                FLEX_LOG_ERROR("CoreAppDatabase::editTimeout(): Incorect Write");
+            } else {
+                FLEX_LOG_ERROR("CoreAppDatabase::editTimeout(): Cant read now write note");
+            }
+            db.disconnect();
+            return false;
+        }
+
+        bool CoreAppDatabase::addRecord(const std::string& appName, const std::string& appVer) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
             const std::string queryString = "INSERT INTO "
-                    + dbName + "(AppName, AppVer, Install, Uninstall, Start, Stop, Freeze, Unfreeze, UpdateDB, MD5) VALUES"
-                    " (\"" + name + "\", \"" + ver + "\",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \");";
+                    + m_name + "(AppName, AppVer, Install, Uninstall, Start, Stop, Freeze, Unfreeze, UpdateDB, Timeout, MD5) VALUES"
+                    " (\"" + appName + "\", \"" + appVer + "\",\" \",\" \",\" \",\" \",\" \",\" \",\" \",0,\" \");";
             FLEX_LOG_TRACE("CoreAppDatabase::addRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);
@@ -112,9 +165,9 @@ namespace flexd {
             return true;
         }
 
-        bool CoreAppDatabase::eraseRecord(const std::string& dbName, const std::string& name, const std::string& ver) {
+        bool CoreAppDatabase::eraseRecord(const std::string& appName, const std::string& appVer) {
             constexpr auto sqliteFlags = SQLITE_OPEN_READWRITE;
-            const std::string queryString = "DELETE FROM " + dbName + " WHERE AppName=\"" + name + "\" AND AppVer=\"" + ver + "\";";
+            const std::string queryString = "DELETE FROM " + m_name + " WHERE AppName=\"" + appName + "\" AND AppVer=\"" + appVer + "\";";
             FLEX_LOG_TRACE("CoreAppDatabase::eraseRecord(): ", queryString);
             try {
                 db.connect(m_path.c_str(), sqliteFlags);

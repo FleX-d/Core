@@ -35,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IAPP_H
 #define IAPP_H
 
-#include "FleXdLogger.h"
 #include "StateMachine.h"
 
 namespace flexd {

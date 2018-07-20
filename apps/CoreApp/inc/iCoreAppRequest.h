@@ -32,13 +32,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 8, 2018, 1:51 PM
  */
 
-#include "CoreAppTypes.h"
-#include "iCoreAppAck.h"
-#include <functional>
-#include <string>
-
 #ifndef ICOREAPPREQUEST_H
 #define ICOREAPPREQUEST_H
+
+#include "CoreAppTypes.h"
+#include "iCoreAppAck.h"
+#include <FleXdEpoll.h>
+#include <FleXdEvent.h>
+#include <FleXdTimer.h>
+#include <memory>
+#include <string>
+#include <atomic>
 
 namespace flexd {
     namespace core {
@@ -47,30 +51,45 @@ namespace flexd {
 
         /*AppName /<path>/<for contaier>/<appName>
          example /RSM/curl -> RSM-lxc container + curl app name */
-        class iCoreAppRequest {
+        class iCoreAppRequest : public flexd::icl::ipc::FleXdEvent {
         public:
-            explicit iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onAck, const std::string& name, const std::string& ver);
-            virtual ~iCoreAppRequest() = default;
+            explicit iCoreAppRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, RqstType::Enum type, const std::string& name, const std::string& ver, time_t timeout);
+            virtual ~iCoreAppRequest();
 
-            const RqstType::Enum getType() const;
+            RqstType::Enum getType() const;
             const std::string& getName() const;
             const std::string& getVersion() const;
+            bool isDone() const;
+
+            bool setTimeout(flexd::icl::ipc::FleXdEpoll& rqstPoller, time_t timeout);
+            bool prepareRqst();
 
             void onAck(const iCoreAppAck& ack);
-
-            virtual void accept(Visitor& v) = 0; /*TODO*/
-
             void setOnAck(std::function<void(const iCoreAppAck&) > onAck);
+            void onRequestDone(bool result);
+            void setOnRequestDone(std::function<void(bool)> onRequestDone);
+
+            virtual void accept(Visitor& v) = 0;
+            virtual bool validate(Visitor& v) = 0;
+            virtual void onEvent() override;
 
             iCoreAppRequest(const iCoreAppRequest&) = default;
             iCoreAppRequest& operator=(const iCoreAppRequest&) = default;
+
         private:
+            void onTimer();
+
+        private:
+            std::unique_ptr<flexd::icl::ipc::FleXdTimer> m_timer;
             const RqstType::Enum m_type;
-            std::function<void(const iCoreAppAck&) > m_onAck;
             const std::string m_name;
             const std::string m_version;
+            std::function<void(bool)> m_onRequestDone;
+            std::function<void(const iCoreAppAck&)> m_onAck;
+            std::atomic_bool m_done;
         };
-        typedef iCoreAppRequest* iCoreAppRequest_t;
+        typedef std::shared_ptr<iCoreAppRequest> pSharediCoreAppRequest_t;
+
     } // namespace core
 } // namespace flexd
 

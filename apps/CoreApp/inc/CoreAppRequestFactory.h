@@ -32,38 +32,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 20, 2018, 10:48 AM
  */
 
-
 #ifndef COREAPPREQUESTFACTORY_H
 #define COREAPPREQUESTFACTORY_H
 
 #include "iCoreAppRequest.h"
-#include "JsonObj.h"
-#include "CoreAppTypes.h"
-#include "InstallRequest.h"
-#include "UpdateRequest.h"
-#include "UnfreezeRequest.h"
-#include "FreezeRequest.h"
-#include "StopRequest.h"
-#include "StartRequest.h"
-#include "UninstallRequest.h"
-#include "InvalidRequest.h"
-#include "Base64.h"
-
 
 namespace flexd {
     namespace core {
+        namespace CoreAppRequestFactory {
 
-        class CoreAppRequestFactory {
-        public:
-            explicit CoreAppRequestFactory();
-            ~CoreAppRequestFactory() = default;
+            pSharediCoreAppRequest_t makeRqst(flexd::icl::ipc::FleXdEpoll& rqstPoller, uint8_t& Operation, const std::string& Message, const std::string& AppID, time_t timeout = 0L);
 
-            iCoreAppRequest_t makeRqst(uint8_t& Operation, const std::string& Message, const std::string& AppID) const;
-
-        private:
-
-        };
-
+        }
     } // namespace core
 } // namespace flexd
 

@@ -33,106 +33,92 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CoreAppRequestValidator.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
+        namespace CoreAppRequestValidator {
 
-        CoreAppRequestValidator::CoreAppRequestValidator() {
+            //TODO finish verification request
+
+            bool validateRequestInstall(const InstallRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Install");
+                if(rqt.getType()!=RqstType::Enum::install)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestUninstall(const UninstallRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Uninstall");
+                if(rqt.getType()!=RqstType::Enum::uninstall)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestStart(const StartRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Start");
+                if(rqt.getType()!=RqstType::Enum::start)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestStop(const StopRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Stop");
+                if(rqt.getType()!=RqstType::Enum::stop)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestFreeze(const FreezeRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Freeze");
+                if(rqt.getType()!=RqstType::Enum::freeze)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestUnfreeze(const UnfreezeRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Unfreeze");
+                if(rqt.getType()!=RqstType::Enum::unfreeze)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
+            bool validateRequestUpdate(const UpdateRequest& rqt) {
+                FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Update");
+                if(rqt.getType()!=RqstType::Enum::update)
+                    return false;
+                if(rqt.getName()=="")
+                    return false;
+                if(rqt.getVersion()=="")
+                    return false;
+                return true;
+            }
+
         }
-
-        /*TODO verification request*/
-        template<class T>
-        bool CoreAppRequestValidator::validRequest(const T& rqt) {
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Type not found");
-            return false;
-        }
-
-
-        /*Function for template*/
-        bool CoreAppRequestValidator::validRequestInstall(const InstallRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Install");
-            if(rqt.getType()!=RqstType::Enum::install)
-                return false;
-            /*if(rqt.getBase64()=="")
-                return false;*/
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestUninstall(const UninstallRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Uninstall");
-            if(rqt.getType()!=RqstType::Enum::unintall)
-                return false;
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestStart(const StartRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Start");
-            if(rqt.getType()!=RqstType::Enum::start)
-                return false;
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestStop(const StopRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Stop");
-            if(rqt.getType()!=RqstType::Enum::stop)
-                return false;
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestFreeze(const FreezeRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Freeze");
-            if(rqt.getType()!=RqstType::Enum::freeze)
-                return false;
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestUnfreeze(const UnfreezeRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Unfreeze");
-            if(rqt.getType()!=RqstType::Enum::unfreeze)
-                return false;
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-        bool CoreAppRequestValidator::validRequestUpdate(const UpdateRequest& rqt){
-            FLEX_LOG_TRACE("CoreAppRequestValidator::validRequest(): Update");
-            if(rqt.getType()!=RqstType::Enum::update)
-                return false;
-            /*if(rqt.getBase64()=="")
-                return false;*/
-            if(rqt.getName()=="")
-                return false;
-            if(rqt.getVersion()=="")
-                return false;
-            return true;
-        }
-
-
-
     }
 }

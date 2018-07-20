@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   StartRequest.cpp
  * Author: Peter Kocity
  *
@@ -34,19 +34,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StartRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        StartRequest::StartRequest(const std::string& name, const std::string& ver)
-        : iCoreAppRequest(RqstType::Enum::start, nullptr, name, ver) {
+        StartRequest::StartRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::start, name, ver, timeout) {
         }
 
         void StartRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("StartRequest::accept(): Visiting");
             v.visit(this);
+        }
+
+        bool StartRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("StartRequest::validate(): Validating");
+            return v.validate(this);
         }
 
     }

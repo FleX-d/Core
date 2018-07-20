@@ -32,47 +32,69 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 8, 2018, 10:48 AM
  */
 
-
-#include "CoreAppExecutor.h"
-#include "CoreAppDatabase.h"
-#include "InstallRequest.h"
-#include "UninstallRequest.h"
-#include "StartRequest.h"
-#include "StopRequest.h"
-#include "FreezeRequest.h"
-#include "UnfreezeRequest.h"
-#include "UpdateRequest.h"
-#include "InvalidRequest.h"
-#include "iApp.h"
-#include "Visitor.h"
-
-
 #ifndef COREAPPMANAGER_H
 #define COREAPPMANAGER_H
+
+#include "iApp.h"
+#include "Visitor.h"
+#include "CoreAppExecutor.h"
+#include "CoreAppDatabase.h"
+#include "CoreAppRequestQueue.h"
+#include <FleXdEpoll.h>
+#include <map>
+#include <thread>
+#include <atomic>
+
+#define COREAPP_POLLER_MAXEVENTH 10
 
 namespace flexd {
     namespace core {
 
+        class InstallRequest;
+        class UninstallRequest;
+        class StartRequest;
+        class StopRequest;
+        class FreezeRequest;
+        class UnfreezeRequest;
+        class UpdateRequest;
+        class InvalidRequest;
+
         class CoreAppManager : public Visitor {
         public:
-            CoreAppManager(const std::string& dbPath);
-            virtual ~CoreAppManager() = default;
+            CoreAppManager(const std::string& dbPath, const std::string& dbName);
+            virtual ~CoreAppManager();
 
-            void onRequest(iCoreAppRequest& rqst);
+            void startRqstPollerThread();
+            void stopRqstPollerThread();
+            bool isWorkerThreadRunning() const;
+            bool onRequest(pSharediCoreAppRequest_t rqst);
+
+            const flexd::icl::ipc::FleXdEpoll& getRqstPoller() const;
+            flexd::icl::ipc::FleXdEpoll& getRqstPoller();
 
             virtual void visit(InstallRequest_t rqst) override;
+            virtual bool validate(InstallRequest_t rqst) override;
             virtual void visit(UninstallRequest_t rqst) override;
+            virtual bool validate(UninstallRequest_t rqst) override;
             virtual void visit(StartRequest_t rqst) override;
+            virtual bool validate(StartRequest_t rqst) override;
             virtual void visit(StopRequest_t rqst) override;
+            virtual bool validate(StopRequest_t rqst) override;
             virtual void visit(FreezeRequest_t rqst) override;
+            virtual bool validate(FreezeRequest_t rqst) override;
             virtual void visit(UnfreezeRequest_t rqst) override;
+            virtual bool validate(UnfreezeRequest_t rqst) override;
             virtual void visit(UpdateRequest_t rqst) override;
-            //virtual void visit(InvalidRequest_t rqst);
+            virtual bool validate(UpdateRequest_t rqst) override;
 
             CoreAppManager(const CoreAppManager& orig) = delete;
-            CoreAppManager operator=(const CoreAppManager& orig) = delete;
+            CoreAppManager& operator=(const CoreAppManager& orig) = delete;
 
         private:
+            bool prepareRequest(iCoreAppRequest& rqst);
+            void performRequests();
+            void onRequestDone(bool result);
+
             bool appExecute(const std::string& cmd);
             bool appExecute(const std::string& cmd, std::string& message, const std::string& path = "./");
             std::string getDbKey(RqstType::Enum e);
@@ -82,11 +104,17 @@ namespace flexd {
             bool findInList(std::string appName);
             bool changeStateInList(std::string appName, RqstType::Enum e);
 
+        private:
+            flexd::icl::ipc::FleXdEpoll m_rqstPoller;
             CoreAppExecutor m_exe;
-            const std::string m_dbName;
             CoreAppDatabase m_db;
+            CoreAppRequestQueue m_requests;
             std::map<std::string, iApp> m_apps;
+            std::thread m_rqstPollerThread;
+            std::thread m_workerThread;
+            std::atomic_bool m_safeStop;
         };
+
     } // namespace core
 } // namespace flexd
 

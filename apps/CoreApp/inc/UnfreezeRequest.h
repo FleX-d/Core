@@ -43,16 +43,14 @@ namespace flexd {
 
         class UnfreezeRequest : public iCoreAppRequest {
         public:
-            explicit UnfreezeRequest(const std::string& name, const std::string& ver);
+            explicit UnfreezeRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~UnfreezeRequest() = default;
 
             virtual void accept(Visitor &v) override;
+            virtual bool validate(Visitor &v) override;
 
             UnfreezeRequest(const UnfreezeRequest&) = default;
             UnfreezeRequest& operator=(const UnfreezeRequest&) = default;
-        private:
-
-
         };
         typedef UnfreezeRequest* UnfreezeRequest_t;
 

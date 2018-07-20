@@ -20,6 +20,7 @@ SET(privateHeaders
     ${CoreApp_SOURCE_DIR}/inc/CoreAppExecutor.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppManager.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestFactory.h
+    ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestQueue.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppRequestValidator.h
     ${CoreApp_SOURCE_DIR}/inc/CoreAppTypes.h
     ${CoreApp_SOURCE_DIR}/inc/FreezeRequest.h
@@ -48,6 +49,7 @@ SET(privateSources
     ${CoreApp_SOURCE_DIR}/src/CoreAppExecutor.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppManager.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestFactory.cpp
+    ${CoreApp_SOURCE_DIR}/src/CoreAppRequestQueue.cpp
     ${CoreApp_SOURCE_DIR}/src/CoreAppRequestValidator.cpp
     ${CoreApp_SOURCE_DIR}/src/FreezeRequest.cpp
     ${CoreApp_SOURCE_DIR}/src/iApp.cpp

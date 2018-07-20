@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StateMachine.h"
 #include "CoreAppTypes.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {

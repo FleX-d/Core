@@ -37,24 +37,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "iCoreAppRequest.h"
 
-
 namespace flexd {
     namespace core {
 
         class UpdateRequest : public iCoreAppRequest {
         public:
-            explicit UpdateRequest(const std::string& name, const std::string& ver, const std::string& path);
+            explicit UpdateRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, const std::string& path, time_t timeout = 0L);
             virtual ~UpdateRequest() = default;
 
             const std::string& getPath();
             virtual void accept(Visitor &v) override;
+            virtual bool validate(Visitor &v) override;
 
             UpdateRequest(const UpdateRequest&) = default;
             UpdateRequest& operator=(const UpdateRequest&) = default;
+
         private:
             const std::string m_path;
         };
         typedef UpdateRequest* UpdateRequest_t;
+
     } // namespace core
 } // namespace flexd
 

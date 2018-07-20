@@ -25,15 +25,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppExecutor.cpp
  * Author: Peter Kocity
  *
  * Created on February 8, 2018, 10:42 AM
  */
 
-#include "FleXdLogger.h"
 #include "CoreAppExecutor.h"
+#include <FleXdLogger.h>
 #include <stdio.h>
 
 
@@ -44,7 +44,8 @@ namespace flexd {
         }
 
         void CoreAppExecutor::runOsCmd(const std::string& cmd) const {
-            std::string newconsole = "konsole -e \"" + cmd + "\"";
+            //std::string newconsole = "konsole -e \"" + cmd + "\"";
+            std::string newconsole = cmd;
             FLEX_LOG_DEBUG("CoreAppExecutor::runOsCmd() executing command: ", newconsole);
             system(newconsole.c_str());
         }
@@ -59,7 +60,7 @@ namespace flexd {
             std::FILE * stream;
             const int max_buffer = 256;
             char buffer[max_buffer];
-            cmdHelp.append(" 2>&1"); //potlacenie error mesage
+            cmdHelp.append(" 2>&1"); //suppressing the error message
             stream = popen(cmdHelp.c_str(), "r");
             if (stream) {
                 while (!feof(stream))
@@ -70,5 +71,5 @@ namespace flexd {
         }
     }
 }
-    
+
 

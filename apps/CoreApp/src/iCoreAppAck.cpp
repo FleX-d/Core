@@ -33,7 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "iCoreAppAck.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
+
 
 namespace flexd {
     namespace core {

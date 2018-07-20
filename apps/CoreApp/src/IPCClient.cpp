@@ -32,49 +32,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "IPCClient.h"
+#include "CoreAppRequestFactory.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        IPCClient::IPCClient(flexd::icl::ipc::FleXdEpoll& poller)
-        : IPCInterface(poller) {
+        IPCClient::IPCClient(flexd::icl::ipc::FleXdEpoll& poller, flexd::icl::ipc::FleXdEpoll& rqstPoller)
+        : IPCInterface(poller),
+          m_rqstPoller(rqstPoller) {
         }
 
         IPCClient::~IPCClient() {
         }
 
-        void IPCClient::onRequest(iCoreAppRequest& rqst) {
-            if (m_onRequest) {
-                m_onRequest(rqst);
+        bool IPCClient::onRequest(pSharediCoreAppRequest_t rqst) {
+            if (rqst) {
+                //TODO action
+                return true;
+            } else {
+                FLEX_LOG_DEBUG("IPCClient::onRequest(): invalid parameter");
             }
+            return false;
         }
 
-        void IPCClient::setOnRequest(std::function<void(iCoreAppRequest&)> onRqst) {
+        void IPCClient::setOnRequest(std::function<bool(pSharediCoreAppRequest_t)> onRqst) {
             m_onRequest = onRqst;
         }
 
         void IPCClient::receiveRequestCoreMsg(uint8_t Operation, const std::string& Message, const std::string& AppID) {
             FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): incoming message ", Operation);
 
-            iCoreAppRequest_t rqst(m_factory.makeRqst(Operation, Message, AppID));
+            pSharediCoreAppRequest_t rqst(CoreAppRequestFactory::makeRqst(m_rqstPoller, Operation, Message, AppID));
+            if (rqst) {
+                FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): setting onAck function");
+                rqst->setOnAck(std::bind(&IPCClient::sendAck, this, std::placeholders::_1));
 
-            FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): setting onAck lambda function");
-            std::function<void(const iCoreAppAck&)> onAck = std::bind(&IPCClient::sendAck, this, std::placeholders::_1);
-            rqst->setOnAck(onAck);
-
-            /*check if request is not null or invalid, send error ack if is*/
-            if (rqst->getType() == flexd::core::RqstType::Enum::undefined) {
-                FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): bad request");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-            } else {
-                FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): send message to manager to execute");
-                /*execute in manager using sending lambda*/
-                if (m_onRequest) {
-                    m_onRequest(*rqst);
+                /*check if request is not null or invalid, send error ack if is*/
+                if (rqst->getType() == flexd::core::RqstType::Enum::undefined) {
+                    FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): bad request");
+                    rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
                 } else {
-                    onRequest(*rqst);
+                    FLEX_LOG_TRACE("IPCClient::receiveRequestCoreMsg(): send message to manager to execute");
+                    if ((m_onRequest && !m_onRequest(rqst)) || (!m_onRequest && !onRequest(rqst))) {
+                        FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): request failed");
+                        rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+                    }
                 }
+            } else {
+                FLEX_LOG_DEBUG("IPCClient::receiveRequestCoreMsg(): error creating request");
             }
         }
 

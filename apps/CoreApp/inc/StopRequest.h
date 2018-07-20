@@ -37,23 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "iCoreAppRequest.h"
 
-
 namespace flexd {
     namespace core {
 
         class StopRequest : public iCoreAppRequest {
         public:
-            explicit StopRequest(const std::string& name, const std::string& ver);
+            explicit StopRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~StopRequest() = default;
 
             virtual void accept(Visitor &v) override;
+            virtual bool validate(Visitor &v) override;
 
             StopRequest(const StopRequest&) = default;
             StopRequest& operator=(const StopRequest&) = default;
-        private:
-
-
-
         };
         typedef StopRequest* StopRequest_t;
     }

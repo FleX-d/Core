@@ -34,12 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IPCCLIENT_H
 #define IPCCLIENT_H
 
-
 #include "IPCInterface.h"
 #include "Base64.h"
-#include "CoreAppRequestFactory.h"
 #include "iCoreAppAck.h"
-#include "FleXdLogger.h"
 #include "iCoreAppRequest.h"
 
 namespace flexd {
@@ -47,11 +44,11 @@ namespace flexd {
 
         class IPCClient : public flexd::gen::IPCInterface {
         public:
-            IPCClient(flexd::icl::ipc::FleXdEpoll& poller);
+            IPCClient(flexd::icl::ipc::FleXdEpoll& poller, flexd::icl::ipc::FleXdEpoll& rqstPoller);
             virtual ~IPCClient();
 
-            virtual void onRequest(iCoreAppRequest& rqst);
-            void setOnRequest(std::function<void(iCoreAppRequest&)> onRqst);
+            virtual bool onRequest(pSharediCoreAppRequest_t rqst);
+            void setOnRequest(std::function<bool(pSharediCoreAppRequest_t)> onRqst);
 
             IPCClient(const IPCClient&) = delete;
             IPCClient& operator=(const IPCClient&) = delete;
@@ -62,8 +59,8 @@ namespace flexd {
             void sendAck(const iCoreAppAck& ack);
 
         private:
-            std::function<void(iCoreAppRequest&) > m_onRequest = nullptr;
-            CoreAppRequestFactory m_factory;
+            std::function<bool(pSharediCoreAppRequest_t)> m_onRequest = nullptr;
+            flexd::icl::ipc::FleXdEpoll& m_rqstPoller;
         };
 
     }//namespace core

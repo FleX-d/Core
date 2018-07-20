@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   UninstallRequest.cpp
  * Author: Peter Kocity
  *
@@ -34,19 +34,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "UninstallRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        UninstallRequest::UninstallRequest(const std::string& name, const std::string& ver)
-        : iCoreAppRequest(RqstType::Enum::unintall, nullptr, name, ver) {
+        UninstallRequest::UninstallRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::uninstall, name, ver, timeout) {
         }
 
         void UninstallRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("UninstallRequest::accept(): ");
             v.visit(this);
+        }
+
+        bool UninstallRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("UninstallRequest::validate(): Validating");
+            return v.validate(this);
         }
 
     }

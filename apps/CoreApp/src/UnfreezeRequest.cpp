@@ -34,18 +34,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "UnfreezeRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
+
 
 namespace flexd {
     namespace core {
 
-        UnfreezeRequest::UnfreezeRequest(const std::string& name, const std::string& ver) :
-        iCoreAppRequest(RqstType::Enum::unfreeze, nullptr, name, ver) {
+        UnfreezeRequest::UnfreezeRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::unfreeze, name, ver, timeout) {
         }
 
         void UnfreezeRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("UnfreezeRequest::accept(): ");
             v.visit(this);
+        }
+
+        bool UnfreezeRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("UnfreezeRequest::validate(): Validating");
+            return v.validate(this);
         }
     }
 }

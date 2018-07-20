@@ -35,12 +35,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdlib>
 #include <iostream>
-#include "FleXdLogger.h"
-#include "FleXdEpoll.h"
 #include "IPCClient.h"
 #include "CoreAppManager.h"
 #include "iCoreAppRequest.h"
-#include "FleXdEvent.h"
+#include <FleXdEpoll.h>
+#include <FleXdEvent.h>
+#include <FleXdLogger.h>
 
 int main(int argc, char** argv) {
     flexd::icl::ipc::FleXdEpoll poller(10);
@@ -61,9 +61,9 @@ int main(int argc, char** argv) {
         std::cout<<"  ▒▒▒  ▓▓▓    ║              ║"<<std::endl;
         std::cout<<"   ▒    ▓     ╚══════════════╝"<<std::endl;
 
-        flexd::core::CoreAppManager manager("/etc/CoreApp/CoreAppDb.db");
-        flexd::core::IPCClient client(poller);
-        client.setOnRequest([&manager](flexd::core::iCoreAppRequest& rqst){manager.onRequest(rqst);});
+        flexd::core::CoreAppManager manager("/etc/CoreApp/CoreAppDb.db", "CoreAppDb");
+        flexd::core::IPCClient client(poller, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst){ return manager.onRequest(rqst); });
         poller.loop();
     }
     return 0;

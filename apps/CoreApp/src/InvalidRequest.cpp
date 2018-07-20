@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   InvalidRequest.cpp
  * Author: Peter Kocity
  *
@@ -34,19 +34,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InvalidRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        InvalidRequest::InvalidRequest(const std::string& name, const std::string& ver)
-        : iCoreAppRequest(RqstType::Enum::undefined, nullptr, name, ver) {
+        InvalidRequest::InvalidRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::undefined, name, ver, timeout) {
         }
 
         void InvalidRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("InvalidRequest::accept(): Visiting");
             v.visit(this);
+        }
+
+        bool InvalidRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("InvalidRequest::validate(): Validating");
+            return v.validate(this);
         }
 
     }

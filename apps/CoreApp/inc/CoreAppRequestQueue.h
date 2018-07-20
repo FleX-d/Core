@@ -26,40 +26,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   InstallRequest.h
- * Author: Peter Kocity
+ * File:   CoreAppRequestQueue.h
+ * Author: Martin Strenger
  *
- * Created on February 8, 2018, 1:51 PM
+ * Created on July 9, 2018
  */
 
-#include "iCoreAppRequest.h"
+#ifndef COREAPPREQUESTQUEUE_H
+#define COREAPPREQUESTQUEUE_H
 
-#ifndef INSTALLREQUEST_H
-#define INSTALLREQUEST_H
+#include "iCoreAppRequest.h"
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 
 namespace flexd {
     namespace core {
 
-        class InstallRequest : public iCoreAppRequest {
+        class CoreAppRequestQueue {
         public:
-            explicit InstallRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, const std::string& path, time_t timeout = 0L);
-            virtual ~InstallRequest() = default;
+            CoreAppRequestQueue();
+            virtual ~CoreAppRequestQueue();
 
-            const std::string& getPath() const;
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            CoreAppRequestQueue(const CoreAppRequestQueue&) = delete;
+            CoreAppRequestQueue& operator=(const CoreAppRequestQueue&) = delete;
+            CoreAppRequestQueue(CoreAppRequestQueue&&) = delete;
+            CoreAppRequestQueue& operator=(CoreAppRequestQueue&&) = delete;
 
-            InstallRequest(const InstallRequest&) = default;
-            InstallRequest& operator=(const InstallRequest&) = default;
+            bool push(pSharediCoreAppRequest_t&& rqst);
+            pSharediCoreAppRequest_t front();
+            void pop();
+            void stopActions();
 
         private:
-            const std::string m_path;
+            std::queue<pSharediCoreAppRequest_t> m_requests;
+            mutable std::mutex m_mutex;
+            std::condition_variable m_condition;
+            std::atomic_bool m_safeStop;
         };
-        typedef InstallRequest* InstallRequest_t;
 
     } // namespace core
 } // namespace flexd
 
 
-#endif /* INSTALLREQUEST_H */
-
+#endif /* COREAPPREQUESTQUEUE_H */

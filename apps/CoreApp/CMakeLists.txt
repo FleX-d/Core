@@ -54,6 +54,7 @@ SET(privateHeaders
     inc/CoreAppExecutor.h
     inc/CoreAppManager.h
     inc/CoreAppRequestFactory.h
+    inc/CoreAppRequestQueue.h
     inc/CoreAppRequestValidator.h
     inc/CoreAppTypes.h
     inc/FreezeRequest.h
@@ -82,6 +83,7 @@ SET(privateSources
     src/CoreAppExecutor.cpp
     src/CoreAppManager.cpp
     src/CoreAppRequestFactory.cpp
+    src/CoreAppRequestQueue.cpp
     src/CoreAppRequestValidator.cpp
     src/FreezeRequest.cpp
     src/iApp.cpp

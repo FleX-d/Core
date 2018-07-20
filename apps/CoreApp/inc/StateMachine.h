@@ -32,10 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on April 20, 2018, 8:50 AM
  */
 
-//#ifndef STATEMACHINE_H
-//#define STATEMACHINE_H
+#ifndef STATEMACHINE_H
+#define STATEMACHINE_H
 
-#include "FleXdLogger.h"
 #include <memory>
 
 namespace flexd {
@@ -113,5 +112,5 @@ namespace flexd {
     }
 }
 
-//#endif /* STATEMACHINE_H */
+#endif /* STATEMACHINE_H */
 

@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Created on February 22, 2018, 1:47 PM
  */
 
-
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
+
 
 namespace flexd {
     namespace core {
@@ -46,42 +46,74 @@ namespace flexd {
         /*TODO*/
         void Visitor::visit(InstallRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): installrequest ");
+        }
 
+        bool Visitor::validate(InstallRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): installrequest ");
+            return false;
         }
 
         void Visitor::visit(UninstallRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): uninstallrequest ");
+        }
 
+        bool Visitor::validate(UninstallRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): uninstallrequest ");
+            return false;
         }
 
         void Visitor::visit(StartRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): startrequest ");
+        }
 
+        bool Visitor::validate(StartRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): startrequest ");
+            return false;
         }
 
         void Visitor::visit(StopRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): stoprequest ");
+        }
 
+        bool Visitor::validate(StopRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): stoprequest ");
+            return false;
         }
 
         void Visitor::visit(FreezeRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): freezerequest ");
+        }
 
+        bool Visitor::validate(FreezeRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): freezerequest ");
+            return false;
         }
 
         void Visitor::visit(UnfreezeRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): unfreezerequest ");
+        }
 
+        bool Visitor::validate(UnfreezeRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): unfreezerequest ");
+            return false;
         }
 
         void Visitor::visit(UpdateRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): updaterequest ");
+        }
 
+        bool Visitor::validate(UpdateRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): updaterequest ");
+            return false;
         }
 
         void Visitor::visit(InvalidRequest_t r) {
             FLEX_LOG_TRACE("Visitor::visit(): invalidrequest ");
+        }
 
+        bool Visitor::validate(InvalidRequest_t r) {
+            FLEX_LOG_TRACE("Visitor::validate(): invalidrequest ");
+            return false;
         }
 
     }

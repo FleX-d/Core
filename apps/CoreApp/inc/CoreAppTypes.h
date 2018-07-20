@@ -26,19 +26,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   CoreAppType.h
+ * File:   CoreAppTypes.h
  * Author: Peter Kocity
  *
  * Created on February 7, 2018, 2:31 PM
  */
 
-
-
-#ifndef COREAPPTYPE_H
-#define COREAPPTYPE_H
+#ifndef COREAPPTYPES_H
+#define COREAPPTYPES_H
 
 #include <iostream>
-
 
 namespace flexd {
     namespace core {
@@ -47,7 +44,7 @@ namespace flexd {
 
             enum Enum {
                 install = 0x00,
-                unintall,
+                uninstall,
                 start,
                 stop,
                 freeze,
@@ -82,5 +79,5 @@ namespace flexd {
     } // namespace core
 } // namespace flexd
 
-#endif /* COREAPPTYPE_H */
+#endif /* COREAPPTYPES_H */
 

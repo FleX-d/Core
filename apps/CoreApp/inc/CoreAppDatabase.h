@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppDatabase.h
  * Author: Peter Kocity
- * 
+ *
  * Created on Februar 7, 2018, 9:32 AM
  */
 
@@ -41,8 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sqlite3pp.h"
 #include <fstream>
 
-
-
 namespace flexd {
     namespace core {
 
@@ -50,18 +48,21 @@ namespace flexd {
         public:
             explicit CoreAppDatabase(const std::string& dbPath, const std::string& dbName);
             virtual ~CoreAppDatabase() = default;
-            
-            bool getRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& dest, const std::string& key);
-            bool editRecord(const std::string& dbName, const std::string& name, const std::string& ver, std::string& dest, const std::string& key);
-            bool addRecord(const std::string& dbName, const std::string& name, const std::string& ver);
-            bool eraseRecord(const std::string& dbName, const std::string& name, const std::string& ver);
+
+            bool getRecord(const std::string& appName, const std::string& appVer, std::string& dest, const std::string& key);
+            bool editRecord(const std::string& appName, const std::string& appVer, std::string& dest, const std::string& key);
+            bool getTimeout(const std::string& appName, const std::string& appVer, time_t& timeout);
+            bool editTimeout(const std::string& appName, const std::string& appVer, time_t timouet);
+            bool addRecord(const std::string& appName, const std::string& appVer);
+            bool eraseRecord(const std::string& appName, const std::string& appVer);
             bool fileExists(const std::string& filename);
-            
+
             CoreAppDatabase(const CoreAppDatabase&) = delete;
             CoreAppDatabase& operator=(const CoreAppDatabase&) = delete;
         private:
             sqlite3pp::database db;
             const std::string m_path;
+            const std::string m_name;
         };
     }//namespace core
 }//namespace flexd

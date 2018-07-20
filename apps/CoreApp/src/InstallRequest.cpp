@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   InstallRequest.h
  * Author: Peter Kocity
  *
@@ -35,15 +35,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InstallRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        InstallRequest::InstallRequest(const std::string& name, const std::string& ver, const std::string& path)
-        : iCoreAppRequest(RqstType::Enum::install, nullptr, name, ver),
-        m_path(path) {
+        InstallRequest::InstallRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, const std::string& path, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::install, name, ver, timeout),
+          m_path(path) {
             FLEX_LOG_TRACE("InstallRequest: ","path: ", m_path);
         }
 
@@ -55,6 +55,11 @@ namespace flexd {
         void InstallRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("InstallRequest::accept(): Visiting");
             v.visit(this);
+        }
+
+        bool InstallRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("InstallRequest::validate(): Validating");
+            return v.validate(this);
         }
 
     }

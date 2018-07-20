@@ -25,7 +25,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppRequest.cpp
  * Author: Peter Kocity
  *
@@ -33,20 +33,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "iCoreAppRequest.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 namespace flexd {
     namespace core {
 
-        iCoreAppRequest::iCoreAppRequest(RqstType::Enum type, std::function<void(const iCoreAppAck&) > onAck, const std::string& name, const std::string& ver)
-        : m_type(type),
-        m_onAck(onAck),
-        m_name(name),
-        m_version(ver) {
+        iCoreAppRequest::iCoreAppRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, RqstType::Enum type, const std::string& name, const std::string& ver, time_t timeout)
+        : flexd::icl::ipc::FleXdEvent(rqstPoller),
+          m_timer(timeout > 0 ? std::make_unique<flexd::icl::ipc::FleXdTimer>(rqstPoller, timeout, 0, false, std::bind(&iCoreAppRequest::onTimer, this)) : nullptr),
+          m_type(type),
+          m_name(name),
+          m_version(ver),
+          m_onRequestDone(nullptr),
+          m_onAck(nullptr),
+          m_done(false) {
             FLEX_LOG_TRACE("iCoreAppRequest: TYPE: ", m_type, " NAME: ", m_name, " VERSION: ", m_version);
         }
 
-        const RqstType::Enum iCoreAppRequest::getType() const {
+        iCoreAppRequest::~iCoreAppRequest() {
+        }
+
+        RqstType::Enum iCoreAppRequest::getType() const {
             FLEX_LOG_TRACE("iCoreAppRequest::getType(): ", m_type);
             return m_type;
         }
@@ -61,15 +68,86 @@ namespace flexd {
             return m_version;
         }
 
-        void iCoreAppRequest::onAck(const iCoreAppAck& ack) {
-            FLEX_LOG_TRACE("iCoreAppRequest::onAck(): sending lambda");
-            m_onAck(ack);
+        bool iCoreAppRequest::isDone() const {
+            FLEX_LOG_TRACE("iCoreAppRequest::isDone(): ", m_done.load());
+            return m_done.load();
         }
 
-        void iCoreAppRequest::setOnAck(std::function<void(const iCoreAppAck&) > onAck) {
-            FLEX_LOG_TRACE("iCoreAppRequest::setOnAck(): set lambda");
+        bool iCoreAppRequest::setTimeout(flexd::icl::ipc::FleXdEpoll& rqstPoller, time_t timeout) {
+            FLEX_LOG_TRACE("iCoreAppRequest::setTimeout(): ", timeout);
+            if (!m_timer) {
+                if (timeout > 0) {
+                    m_timer = std::make_unique<flexd::icl::ipc::FleXdTimer>(rqstPoller, timeout, 0, false, std::bind(&iCoreAppRequest::onTimer, this));
+                }
+                return true;
+            } else {
+                FLEX_LOG_DEBUG("iCoreAppRequest::setTimeout(): timer already set");
+            }
+            return false;
+        }
+
+        bool iCoreAppRequest::prepareRqst() {
+            FLEX_LOG_TRACE("iCoreAppRequest::prepareRqst(): preparing request for processing");
+            if (init()) {
+                if (m_timer) {
+                    if (m_timer->start()) {
+                        return true;
+                    } else {
+                        FLEX_LOG_DEBUG("iCoreAppRequest::prepareRqst(): timer start failed");
+                    }
+                } else {
+                    return true;
+                }
+            } else {
+                FLEX_LOG_DEBUG("iCoreAppRequest::prepareRqst(): event init failed");
+            }
+            return false;
+        }
+
+        void iCoreAppRequest::onAck(const iCoreAppAck& ack) {
+            FLEX_LOG_TRACE("iCoreAppRequest::onAck(): sending acknowledge");
+            if (m_onAck) {
+                m_onAck(ack);
+            }
+        }
+
+        void iCoreAppRequest::setOnAck(std::function<void(const iCoreAppAck&)> onAck) {
+            FLEX_LOG_TRACE("iCoreAppRequest::setOnAck(): setting acknowledge");
             m_onAck = onAck;
         }
 
+        void iCoreAppRequest::onRequestDone(bool result) {
+            if (m_onRequestDone) {
+                FLEX_LOG_TRACE("iCoreAppRequest::onRequestDone(): executing post action");
+                m_onRequestDone(result);
+            } else {
+                FLEX_LOG_TRACE("iCoreAppRequest::onRequestDone(): no post action");
+            }
+        }
+
+        void iCoreAppRequest::setOnRequestDone(std::function<void(bool)> onRequestDone) {
+            FLEX_LOG_TRACE("iCoreAppRequest::setOnRequestDone(): setting post action");
+            m_onRequestDone = onRequestDone;
+        }
+
+        void iCoreAppRequest::onEvent() {
+            FLEX_LOG_TRACE("iCoreAppRequest::onEvent()");
+            if (m_timer && !m_timer->stop()) {
+                FLEX_LOG_ERROR("iCoreAppRequest::onEvent(): cannot stop timer");
+            }
+            onAck(iCoreAppAck(RqstAck::Enum::success, m_name, m_version));
+            onRequestDone(true);
+            m_done.store(true);
+        }
+
+        void iCoreAppRequest::onTimer() {
+            FLEX_LOG_TRACE("iCoreAppRequest::onTimer()");
+            if (!flexd::icl::ipc::FleXdEvent::uninit()) {
+                FLEX_LOG_ERROR("iCoreAppRequest::onTimer(): cannot uninit event");
+            }
+            onAck(iCoreAppAck(RqstAck::Enum::fail, m_name, m_version));
+            onRequestDone(false);
+            m_done.store(true);
+        }
     }
 }

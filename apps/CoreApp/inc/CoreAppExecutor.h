@@ -25,21 +25,18 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
+/*
  * File:   CoreAppExecutor.h
  * Author: Peter Kocity
  *
  * Created on February 8, 2018, 10:42 AM
  */
 
-
-#include <string>
-#include <iostream>
-
-
 #ifndef COREAPPEXECUTOR_H
 #define COREAPPEXECUTOR_H
 
+#include <string>
+#include <iostream>
 
 namespace flexd {
     namespace core {

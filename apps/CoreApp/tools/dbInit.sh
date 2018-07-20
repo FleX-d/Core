@@ -15,26 +15,28 @@ CREATE TABLE CoreAppDb (
 	Freeze		TEXT NOT NULL,
 	Unfreeze	TEXT NOT NULL,
 	UpdateDB	TEXT NOT NULL,
+	Timeout		BIGINT NOT NULL,
 	MD5		TEXT NOT NULL
 );
 
 INSERT INTO CoreAppDb(
-ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,MD5) 
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,Timeout,MD5) 
 VALUES (
 NULL,
 'test1',
 'test1',
-'echo install; dpkg -i ',
+'echo install; sh ',
 'echo uninstall; dpkg -r test1 ',
 'echo start; echo lxc or docker command',
 'echo stop; echo lxc or docker command',
 'echo freeze; echo lxc or docker command',
 'echo unfreeze; echo lxc or docker command',
 'echo update; dpkg -i ',
+0,
 '');
 
 INSERT INTO CoreAppDb(
-ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,MD5) 
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,Timeout,MD5) 
 VALUES (
 NULL,
 'test2',
@@ -46,10 +48,11 @@ NULL,
 'echo freeze; echo lxc or docker command',
 'echo unfreeze; echo lxc or docker command',
 'echo update; dpkg -i ',
+0,
 '');
 
 INSERT INTO CoreAppDb(
-ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,MD5) 
+ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,Timeout,MD5) 
 VALUES (
 NULL,
 'test3',
@@ -61,6 +64,7 @@ NULL,
 'echo freeze; echo lxc or docker command',
 'echo unfreeze; echo lxc or docker command',
 'echo update; dpkg -i ',
+0,
 '');
 
 .save /etc/CoreApp/CoreAppDb.db

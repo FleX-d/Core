@@ -35,19 +35,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FreezeRequest.h"
 #include "Visitor.h"
-#include "FleXdLogger.h"
+#include <FleXdLogger.h>
 
 
 namespace flexd {
     namespace core {
 
-        FreezeRequest::FreezeRequest(const std::string& name, const std::string& ver) :
-        iCoreAppRequest(RqstType::Enum::freeze, nullptr, name, ver) {
+        FreezeRequest::FreezeRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout /*= 0L*/)
+        : iCoreAppRequest(rqstPoller, RqstType::Enum::freeze, name, ver, timeout) {
         }
 
         void FreezeRequest::accept(Visitor &v) {
             FLEX_LOG_TRACE("FreezeRequest::accept(): Visiting");
             v.visit(this);
         }
+
+        bool FreezeRequest::validate(Visitor &v) {
+            FLEX_LOG_TRACE("FreezeRequest::validate(): Validating");
+            return v.validate(this);
+        }
+
     }
 }
