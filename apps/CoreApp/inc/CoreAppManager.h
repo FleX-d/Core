@@ -72,19 +72,19 @@ namespace flexd {
             const flexd::icl::ipc::FleXdEpoll& getRqstPoller() const;
             flexd::icl::ipc::FleXdEpoll& getRqstPoller();
 
-            virtual void visit(InstallRequest_t rqst) override;
+            virtual bool visit(InstallRequest_t rqst) override;
             virtual bool validate(InstallRequest_t rqst) override;
-            virtual void visit(UninstallRequest_t rqst) override;
+            virtual bool visit(UninstallRequest_t rqst) override;
             virtual bool validate(UninstallRequest_t rqst) override;
-            virtual void visit(StartRequest_t rqst) override;
+            virtual bool visit(StartRequest_t rqst) override;
             virtual bool validate(StartRequest_t rqst) override;
-            virtual void visit(StopRequest_t rqst) override;
+            virtual bool visit(StopRequest_t rqst) override;
             virtual bool validate(StopRequest_t rqst) override;
-            virtual void visit(FreezeRequest_t rqst) override;
+            virtual bool visit(FreezeRequest_t rqst) override;
             virtual bool validate(FreezeRequest_t rqst) override;
-            virtual void visit(UnfreezeRequest_t rqst) override;
+            virtual bool visit(UnfreezeRequest_t rqst) override;
             virtual bool validate(UnfreezeRequest_t rqst) override;
-            virtual void visit(UpdateRequest_t rqst) override;
+            virtual bool visit(UpdateRequest_t rqst) override;
             virtual bool validate(UpdateRequest_t rqst) override;
 
             CoreAppManager(const CoreAppManager& orig) = delete;

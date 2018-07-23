@@ -43,16 +43,22 @@ namespace flexd {
 
         class iCoreAppAck {
         public:
+            iCoreAppAck();
             explicit iCoreAppAck(RqstAck::Enum ack, const std::string& name, const std::string& ver, const std::string& msg = "");
             virtual ~iCoreAppAck() = default;
+
+            void reset();
 
             virtual const RqstAck::Enum getType() const;
             virtual const std::string& getName() const;
             virtual const std::string& getVersion() const;
             virtual const std::string& getMessage() const;
 
-            iCoreAppAck(iCoreAppAck&) = default;
-            iCoreAppAck& operator=(const iCoreAppAck&) = default;
+            iCoreAppAck(const iCoreAppAck&);
+            iCoreAppAck& operator=(const iCoreAppAck&);
+            iCoreAppAck(iCoreAppAck&&);
+            iCoreAppAck& operator=(iCoreAppAck&&);
+
         private:
             RqstAck::Enum m_ack;
             std::string m_name;

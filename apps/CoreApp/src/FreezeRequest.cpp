@@ -45,12 +45,12 @@ namespace flexd {
         : iCoreAppRequest(rqstPoller, RqstType::Enum::freeze, name, ver, timeout) {
         }
 
-        void FreezeRequest::accept(Visitor &v) {
+        bool FreezeRequest::accept(Visitor& v) {
             FLEX_LOG_TRACE("FreezeRequest::accept(): Visiting");
-            v.visit(this);
+            return v.visit(this);
         }
 
-        bool FreezeRequest::validate(Visitor &v) {
+        bool FreezeRequest::validate(Visitor& v) {
             FLEX_LOG_TRACE("FreezeRequest::validate(): Validating");
             return v.validate(this);
         }

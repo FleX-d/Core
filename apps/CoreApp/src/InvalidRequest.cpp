@@ -44,12 +44,12 @@ namespace flexd {
         : iCoreAppRequest(rqstPoller, RqstType::Enum::undefined, name, ver, timeout) {
         }
 
-        void InvalidRequest::accept(Visitor &v) {
+        bool InvalidRequest::accept(Visitor& v) {
             FLEX_LOG_TRACE("InvalidRequest::accept(): Visiting");
-            v.visit(this);
+            return v.visit(this);
         }
 
-        bool InvalidRequest::validate(Visitor &v) {
+        bool InvalidRequest::validate(Visitor& v) {
             FLEX_LOG_TRACE("InvalidRequest::validate(): Validating");
             return v.validate(this);
         }

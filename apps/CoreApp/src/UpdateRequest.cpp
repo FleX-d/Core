@@ -51,12 +51,12 @@ namespace flexd {
             return m_path;
         }
 
-        void UpdateRequest::accept(Visitor &v) {
+        bool UpdateRequest::accept(Visitor& v) {
             FLEX_LOG_TRACE("UpdateRequest::accept(): Visiting");
-            v.visit(this);
+            return v.visit(this);
         }
 
-        bool UpdateRequest::validate(Visitor &v) {
+        bool UpdateRequest::validate(Visitor& v) {
             FLEX_LOG_TRACE("UpdateRequest::validate(): Validating");
             return v.validate(this);
         }

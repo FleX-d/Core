@@ -53,9 +53,9 @@
 #define TEST_COREAPP_DB         std::string(getenv("HOME")) + std::string("/tmp/CoreApp/TestCoreAppDb.db")
 #define TEST_COREAPP_DB_NAME    "TestCoreAppDb"
 #define TEST_ID                 "Test"
-#define TEST_VERSION            "Test"
 #define TEST_ID_TIMEOUT         "Test_timeout"
-#define TEST_VERSION_TIMEOUT    "Test_timeout"
+#define TEST_ID_TIMEOUT2        "Test_timeout2"
+#define TEST_ID_TIMEOUT3        "Test_timeout3"
 #define TEST_UNUSED             "unused"
 #define TEST_PATH               "/some_path/TEST"
 
@@ -148,7 +148,7 @@ namespace {
         }
         EXPECT_TRUE(dockerApp.m_rqstAck.valid);
         EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
-        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.message, std::string("install\nsh: 1: ") + std::string(TEST_PATH) + std::string(": not found\n"));
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
 
         poller.endLoop();
@@ -183,7 +183,7 @@ namespace {
         }
         EXPECT_TRUE(dockerApp.m_rqstAck.valid);
         EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
-        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT);
 
         poller.endLoop();
@@ -218,8 +218,9 @@ namespace {
         }
         EXPECT_TRUE(dockerApp.m_rqstAck.valid);
         EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
-        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "uninstall\n");
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
         poller.endLoop();
         poller2.endLoop();
         handlerPoller.join();
@@ -252,8 +253,9 @@ namespace {
         }
         EXPECT_TRUE(dockerApp.m_rqstAck.valid);
         EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
-        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT);
+
         poller.endLoop();
         poller2.endLoop();
         handlerPoller.join();
@@ -288,6 +290,7 @@ namespace {
         EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
         EXPECT_EQ(dockerApp.m_rqstAck.message, "");
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
         poller.endLoop();
         poller2.endLoop();
         handlerPoller.join();
@@ -320,7 +323,432 @@ namespace {
         }
         EXPECT_TRUE(dockerApp.m_rqstAck.valid);
         EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Stoprequest_normal) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
         EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::stop, TEST_UNUSED, TEST_ID);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Stoprequest_timeout) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID_TIMEOUT2);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT2);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::stop, TEST_UNUSED, TEST_ID_TIMEOUT2);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT2);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Freezerequest_normal) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::freeze, TEST_UNUSED, TEST_ID);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Freezerequest_timeout) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID_TIMEOUT2);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT2);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::freeze, TEST_UNUSED, TEST_ID_TIMEOUT2);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT2);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Unfreezerequest_normal) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::freeze, TEST_UNUSED, TEST_ID);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::unfreeze, TEST_UNUSED, TEST_ID);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Unfreezerequest_timeout) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::start, TEST_UNUSED, TEST_ID_TIMEOUT3);
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT3);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::freeze, TEST_UNUSED, TEST_ID_TIMEOUT3);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, "");
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT3);
+
+        dockerApp.m_rqstAck.reset();
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::unfreeze, TEST_UNUSED, TEST_ID_TIMEOUT3);
+        count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT3);
+
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Updaterequest_normal) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::update, TEST_PATH, TEST_ID);
+
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_TRUE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, std::string("update\nsh: 1: ") + std::string(TEST_PATH) + std::string(": not found\n"));
+        EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID);
+        poller.endLoop();
+        poller2.endLoop();
+        handlerPoller.join();
+        handlerPoller2.join();
+    }
+
+    TEST(Manager, Updaterequest_timeout) {
+        flexd::icl::ipc::FleXdEpoll poller(10);
+        flexd::icl::ipc::FleXdEpoll poller2(10);
+        std::thread handlerPoller([&poller](void) { poller.loop(); });
+        std::thread handlerPoller2([&poller2](void) { poller2.loop(); });
+
+        DockerAppDummy dockerApp(poller);
+        flexd::core::CoreAppManager manager(TEST_COREAPP_DB, TEST_COREAPP_DB_NAME);
+        flexd::core::IPCClient client(poller2, manager.getRqstPoller());
+        client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst) { return manager.onRequest(rqst); });
+        rcvMsgCalled.store(false);
+        dockerApp.sendRqst(flexd::core::RqstType::Enum::update, TEST_PATH, TEST_ID_TIMEOUT);
+
+        uint8_t count = 0;
+        while(!rcvMsgCalled.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if(++count >= 20) {
+                poller.endLoop();
+                poller2.endLoop();
+                handlerPoller.join();
+                handlerPoller2.join();
+                ASSERT_TRUE(count < 20);
+            }
+        }
+        EXPECT_TRUE(dockerApp.m_rqstAck.valid);
+        EXPECT_FALSE(dockerApp.m_rqstAck.operationAck);
+        EXPECT_EQ(dockerApp.m_rqstAck.message, COREAPP_RQST_TIMEOUT_MESSAGE);
         EXPECT_EQ(dockerApp.m_rqstAck.appID, TEST_ID_TIMEOUT);
         poller.endLoop();
         poller2.endLoop();
@@ -328,28 +756,4 @@ namespace {
         handlerPoller2.join();
     }
 
-//TODO problem with machine state, need to switch to correct state first (running before stop, etc.)
-//     TEST(Manager, Stoprequest_normal) {
-//     }
-//
-//     TEST(Manager, Stoprequest_timeout) {
-//     }
-//
-//     TEST(Manager, Freezerequest_normal) {
-//     }
-//
-//     TEST(Manager, Freezerequest_timeout) {
-//     }
-//
-//     TEST(Manager, Unfreezerequest_normal) {
-//     }
-//
-//     TEST(Manager, Unfreezerequest_timeout) {
-//     }
-//
-//     TEST(Manager, Updaterequest_normal) {
-//     }
-//
-//     TEST(Manager, Updaterequest_timeout) {
-//     }
 }

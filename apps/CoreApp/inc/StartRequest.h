@@ -45,8 +45,8 @@ namespace flexd {
             explicit StartRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~StartRequest() = default;
 
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            virtual bool accept(Visitor& v) override;
+            virtual bool validate(Visitor& v) override;
 
             StartRequest(const StartRequest&) = default;
             StartRequest& operator=(const StartRequest&) = default;

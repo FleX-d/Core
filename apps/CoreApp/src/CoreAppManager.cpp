@@ -95,23 +95,23 @@ namespace flexd {
             return m_rqstPoller;
         }
 
-        void CoreAppManager::visit(InstallRequest_t rqst) {
+        bool CoreAppManager::visit(InstallRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(InstallRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest):", command);
 
@@ -119,20 +119,21 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string msg;
             if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
-                return;
+                rqst->setAck(RqstAck::Enum::success, msg);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion(), msg));
+            rqst->setAck(RqstAck::Enum::fail, msg);
+            return false;
         }
 
         bool CoreAppManager::validate(InstallRequest_t rqst) {
@@ -143,23 +144,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestInstall(*rqst);
         }
 
-        void CoreAppManager::visit(UninstallRequest_t rqst) {
+        bool CoreAppManager::visit(UninstallRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(UninstallRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UninstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UninstallRequest):", command);
 
@@ -167,20 +168,21 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UninstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string msg;
             if (appExecute(command, msg)) {
                 eraseFromList(rqst->getName());
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UninstallRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
-                return;
+                rqst->setAck(RqstAck::Enum::success, msg);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UninstallRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion(), msg));
+            rqst->setAck(RqstAck::Enum::fail, msg);
+            return true;
         }
 
         bool CoreAppManager::validate(UninstallRequest_t rqst) {
@@ -191,23 +193,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestUninstall(*rqst);
         }
 
-        void CoreAppManager::visit(StartRequest_t rqst) {
+        bool CoreAppManager::visit(StartRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(StartRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StartRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StartRequest):", command);
 
@@ -215,18 +217,19 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StartRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StartRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::success);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StartRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+            rqst->setAck(RqstAck::Enum::fail);
+            return false;
         }
 
         bool CoreAppManager::validate(StartRequest_t rqst) {
@@ -237,23 +240,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestStart(*rqst);
         }
 
-        void CoreAppManager::visit(StopRequest_t rqst) {
+        bool CoreAppManager::visit(StopRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(StopRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StopRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StopRequest):", command);
 
@@ -261,18 +264,19 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StopRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StopRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::success);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(StopRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+            rqst->setAck(RqstAck::Enum::fail);
+            return false;
         }
 
         bool CoreAppManager::validate(StopRequest_t rqst) {
@@ -283,23 +287,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestStop(*rqst);
         }
 
-        void CoreAppManager::visit(FreezeRequest_t rqst) {
+        bool CoreAppManager::visit(FreezeRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(FreezeRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(FreezeRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(FreezeRequest):", command);
 
@@ -307,18 +311,19 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(FreezeRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(FreezeRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::success);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(FreezeRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+            rqst->setAck(RqstAck::Enum::fail);
+            return false;
         }
 
         bool CoreAppManager::validate(FreezeRequest_t rqst) {
@@ -329,23 +334,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestFreeze(*rqst);
         }
 
-        void CoreAppManager::visit(UnfreezeRequest_t rqst) {
+        bool CoreAppManager::visit(UnfreezeRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(UnfreezeRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UnfreezeRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UnfreezeRequest):", command);
 
@@ -353,18 +358,19 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UnfreezeRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             if (appExecute(command)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UnfreezeRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::success);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UnfreezeRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
+            rqst->setAck(RqstAck::Enum::fail);
+            return false;
         }
 
         bool CoreAppManager::validate(UnfreezeRequest_t rqst) {
@@ -375,23 +381,23 @@ namespace flexd {
             return CoreAppRequestValidator::validateRequestUnfreeze(*rqst);
         }
 
-        void CoreAppManager::visit(UpdateRequest_t rqst) {
+        bool CoreAppManager::visit(UpdateRequest_t rqst) {
             if (!rqst) {
                 FLEX_LOG_ERROR("CoreAppManager::visit(UpdateRequest) parameter is nullptr");
-                return;
+                return false;
             }
 
             if (!prepareRequest(*rqst)) {
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(InstallRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string command;
             if (!m_db.getRecord(rqst->getName(), rqst->getVersion(), command, getDbKey(rqst->getType()))){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UpdateRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UpdateRequest):", command);
 
@@ -399,20 +405,21 @@ namespace flexd {
                 addToList(rqst->getName());
             if (!changeStateInList(rqst->getName(), rqst->getType())){
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UpdateRequest): sending ack(fail)");
-                rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion()));
-                return;
+                rqst->setAck(RqstAck::Enum::fail);
+                return false;
             }
 
             std::string msg;
             if (appExecute(command, msg, rqst->getPath())) {
                 changeStateInList(rqst->getName(), RqstType::Enum::stop);
                 FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UpdateRequest): sending ack(success)");
-//                 rqst->onAck(iCoreAppAck(RqstAck::Enum::success, rqst->getName(), rqst->getVersion(), msg));
-                return;
+                 rqst->setAck(RqstAck::Enum::success, msg);
+                return true;
             }
             changeStateInList(rqst->getName(), RqstType::Enum::stop);
             FLEX_LOG_TRACE("CoreAppManager::tryProcessRequest(UpdateRequest): sending ack(fail)");
-            rqst->onAck(iCoreAppAck(RqstAck::Enum::fail, rqst->getName(), rqst->getVersion(), msg));
+            rqst->setAck(RqstAck::Enum::fail, msg);
+            return false;
         }
 
         bool CoreAppManager::validate(UpdateRequest_t rqst) {
@@ -466,7 +473,7 @@ namespace flexd {
             if (result) {
                 //TODO request done with success
             } else {
-                //TODO timer expired, terminate actions
+                //TODO error or timer expired, terminate actions
             }
             FLEX_LOG_TRACE("CoreAppManager::onRequestDone(): deleting request from queue");
             m_requests.pop();

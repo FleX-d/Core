@@ -46,8 +46,8 @@ namespace flexd {
             virtual ~InstallRequest() = default;
 
             const std::string& getPath() const;
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            virtual bool accept(Visitor& v) override;
+            virtual bool validate(Visitor& v) override;
 
             InstallRequest(const InstallRequest&) = default;
             InstallRequest& operator=(const InstallRequest&) = default;

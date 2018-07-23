@@ -45,8 +45,8 @@ namespace flexd {
             explicit StopRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~StopRequest() = default;
 
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            virtual bool accept(Visitor& v) override;
+            virtual bool validate(Visitor& v) override;
 
             StopRequest(const StopRequest&) = default;
             StopRequest& operator=(const StopRequest&) = default;

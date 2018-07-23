@@ -44,74 +44,82 @@ namespace flexd {
             FLEX_LOG_TRACE("Visitor: ");
         }
         /*TODO*/
-        void Visitor::visit(InstallRequest_t r) {
+        bool Visitor::visit(InstallRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): installrequest ");
+            return false;
         }
 
-        bool Visitor::validate(InstallRequest_t r) {
+        bool Visitor::validate(InstallRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): installrequest ");
             return false;
         }
 
-        void Visitor::visit(UninstallRequest_t r) {
+        bool Visitor::visit(UninstallRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): uninstallrequest ");
+            return false;
         }
 
-        bool Visitor::validate(UninstallRequest_t r) {
+        bool Visitor::validate(UninstallRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): uninstallrequest ");
             return false;
         }
 
-        void Visitor::visit(StartRequest_t r) {
+        bool Visitor::visit(StartRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): startrequest ");
+            return false;
         }
 
-        bool Visitor::validate(StartRequest_t r) {
+        bool Visitor::validate(StartRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): startrequest ");
             return false;
         }
 
-        void Visitor::visit(StopRequest_t r) {
+        bool Visitor::visit(StopRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): stoprequest ");
+            return false;
         }
 
-        bool Visitor::validate(StopRequest_t r) {
+        bool Visitor::validate(StopRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): stoprequest ");
             return false;
         }
 
-        void Visitor::visit(FreezeRequest_t r) {
+        bool Visitor::visit(FreezeRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): freezerequest ");
+            return false;
         }
 
-        bool Visitor::validate(FreezeRequest_t r) {
+        bool Visitor::validate(FreezeRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): freezerequest ");
             return false;
         }
 
-        void Visitor::visit(UnfreezeRequest_t r) {
+        bool Visitor::visit(UnfreezeRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): unfreezerequest ");
+            return false;
         }
 
-        bool Visitor::validate(UnfreezeRequest_t r) {
+        bool Visitor::validate(UnfreezeRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): unfreezerequest ");
             return false;
         }
 
-        void Visitor::visit(UpdateRequest_t r) {
+        bool Visitor::visit(UpdateRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): updaterequest ");
+            return false;
         }
 
-        bool Visitor::validate(UpdateRequest_t r) {
+        bool Visitor::validate(UpdateRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): updaterequest ");
             return false;
         }
 
-        void Visitor::visit(InvalidRequest_t r) {
+        bool Visitor::visit(InvalidRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::visit(): invalidrequest ");
+            return false;
         }
 
-        bool Visitor::validate(InvalidRequest_t r) {
+        bool Visitor::validate(InvalidRequest_t rqst) {
             FLEX_LOG_TRACE("Visitor::validate(): invalidrequest ");
             return false;
         }

@@ -41,11 +41,13 @@ namespace flexd {
         iCoreAppRequest::iCoreAppRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, RqstType::Enum type, const std::string& name, const std::string& ver, time_t timeout)
         : flexd::icl::ipc::FleXdEvent(rqstPoller),
           m_timer(timeout > 0 ? std::make_unique<flexd::icl::ipc::FleXdTimer>(rqstPoller, timeout, 0, false, std::bind(&iCoreAppRequest::onTimer, this)) : nullptr),
+          m_ack(nullptr),
           m_type(type),
           m_name(name),
           m_version(ver),
           m_onRequestDone(nullptr),
           m_onAck(nullptr),
+          m_ackMutex(),
           m_done(false) {
             FLEX_LOG_TRACE("iCoreAppRequest: TYPE: ", m_type, " NAME: ", m_name, " VERSION: ", m_version);
         }
@@ -104,6 +106,14 @@ namespace flexd {
             return false;
         }
 
+        void iCoreAppRequest::setAck(RqstAck::Enum ack, const std::string& msg /*= ""*/) {
+            FLEX_LOG_TRACE("iCoreAppRequest::setAck(): ", ack, msg);
+            std::lock_guard<std::mutex> lock(m_ackMutex);
+            if (!m_ack) {
+                m_ack = std::make_unique<iCoreAppAck>(ack, m_name, m_version, msg);
+            }
+        }
+
         void iCoreAppRequest::onAck(const iCoreAppAck& ack) {
             FLEX_LOG_TRACE("iCoreAppRequest::onAck(): sending acknowledge");
             if (m_onAck) {
@@ -135,8 +145,11 @@ namespace flexd {
             if (m_timer && !m_timer->stop()) {
                 FLEX_LOG_ERROR("iCoreAppRequest::onEvent(): cannot stop timer");
             }
-            onAck(iCoreAppAck(RqstAck::Enum::success, m_name, m_version));
-            onRequestDone(true);
+            {
+                std::lock_guard<std::mutex> lock(m_ackMutex);
+                onRequestDone(m_ack ? (m_ack->getType() == RqstAck::Enum::success) : false);
+                onAck(m_ack ? *m_ack : iCoreAppAck());
+            }
             m_done.store(true);
         }
 
@@ -145,8 +158,11 @@ namespace flexd {
             if (!flexd::icl::ipc::FleXdEvent::uninit()) {
                 FLEX_LOG_ERROR("iCoreAppRequest::onTimer(): cannot uninit event");
             }
-            onAck(iCoreAppAck(RqstAck::Enum::fail, m_name, m_version));
-            onRequestDone(false);
+            {
+                std::lock_guard<std::mutex> lock(m_ackMutex);
+                onRequestDone(false);
+                onAck(iCoreAppAck(RqstAck::Enum::fail, m_name, m_version, COREAPP_RQST_TIMEOUT_MESSAGE));
+            }
             m_done.store(true);
         }
     }

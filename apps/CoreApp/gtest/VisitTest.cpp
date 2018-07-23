@@ -42,9 +42,8 @@ TEST(Visitor, Test)
 {
     flexd::icl::ipc::FleXdEpoll poller(10);
     flexd::core::Visitor v;
-    flexd::core::UnfreezeRequest_t r = new flexd::core::UnfreezeRequest(poller, "Snake","1.01");
-    v.visit(r);
-    r->accept(v);
-    delete r;
-    ASSERT_TRUE(true);
+    flexd::core::UnfreezeRequest rqst(poller, "Snake","1.01");
+
+    ASSERT_FALSE(v.visit(&rqst));
+    ASSERT_FALSE(rqst.accept(v));
 }

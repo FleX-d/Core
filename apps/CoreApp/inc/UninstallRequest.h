@@ -45,8 +45,8 @@ namespace flexd {
             explicit UninstallRequest(flexd::icl::ipc::FleXdEpoll& rqstPoller, const std::string& name, const std::string& ver, time_t timeout = 0L);
             virtual ~UninstallRequest() = default;
 
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            virtual bool accept(Visitor& v) override;
+            virtual bool validate(Visitor& v) override;
 
             UninstallRequest(const UninstallRequest&) = default;
             UninstallRequest& operator=(const UninstallRequest&) = default;

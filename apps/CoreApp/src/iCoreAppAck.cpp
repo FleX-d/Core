@@ -39,32 +39,85 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace flexd {
     namespace core {
 
+        iCoreAppAck::iCoreAppAck()
+        : m_ack(RqstAck::Enum::undefined),
+          m_name(),
+          m_version(),
+          m_message()
+        {
+            FLEX_LOG_TRACE("iCoreAppAck: empty");
+        }
+
         iCoreAppAck::iCoreAppAck(RqstAck::Enum ack, const std::string& name, const std::string& ver, const std::string& msg)
         : m_ack(ack),
-        m_name(name),
-        m_version(ver),
-        m_message(msg)
+          m_name(name),
+          m_version(ver),
+          m_message(msg)
         {
             FLEX_LOG_TRACE("iCoreAppAck: NAME: ",m_name, " VERSION: ", m_version, " Type: ", m_ack);
         }
 
+        iCoreAppAck::iCoreAppAck(const iCoreAppAck& other)
+        : m_ack(other.m_ack),
+          m_name(other.m_name),
+          m_version(other.m_version),
+          m_message(other.m_message) {
+        }
+
+        iCoreAppAck& iCoreAppAck::operator=(const iCoreAppAck& other) {
+            if (this != &other) {
+                m_ack = other.m_ack;
+                m_name = other.m_name;
+                m_version = other.m_version;
+                m_message = other.m_message;
+            }
+            return *this;
+        }
+
+        iCoreAppAck::iCoreAppAck(iCoreAppAck&& other)
+        : m_ack(other.m_ack),
+          m_name(other.m_name),
+          m_version(other.m_version),
+          m_message(other.m_message) {
+              other.reset();
+        }
+
+        iCoreAppAck& iCoreAppAck::operator=(iCoreAppAck&& other) {
+            if (this != &other) {
+                m_ack = other.m_ack;
+                m_name = std::move(other.m_name);
+                m_version = std::move(other.m_version);
+                m_message = std::move(other.m_message);
+                other.reset();
+            }
+            return *this;
+        }
+
+        void iCoreAppAck::reset() {
+            FLEX_LOG_TRACE("iCoreAppAck::reset()");
+            m_ack = RqstAck::Enum::undefined;
+            m_name = "";
+            m_version = "";
+            m_message = "";
+        }
+
         const RqstAck::Enum iCoreAppAck::getType() const {
-            FLEX_LOG_TRACE("iCoreAppAck::getType(): ",m_ack);
+            FLEX_LOG_TRACE("iCoreAppAck::getType(): ", m_ack);
             return m_ack;
         }
 
         const std::string& iCoreAppAck::getName() const {
-            FLEX_LOG_TRACE("iCoreAppAck::getName(): ",m_name);
+            FLEX_LOG_TRACE("iCoreAppAck::getName(): ", m_name);
             return m_name;
         }
 
         const std::string& iCoreAppAck::getVersion() const {
-            FLEX_LOG_TRACE("iCoreAppAck::getVersion(): ",m_version);
+            FLEX_LOG_TRACE("iCoreAppAck::getVersion(): ", m_version);
             return m_version;
         }
 
         const std::string& iCoreAppAck::getMessage() const {
-            FLEX_LOG_TRACE("iCoreAppAck::getMessage(): ",m_message);
+            FLEX_LOG_TRACE("iCoreAppAck::getMessage(): ", m_message);
             return m_message;
         }
 

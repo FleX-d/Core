@@ -46,8 +46,8 @@ namespace flexd {
             virtual ~UpdateRequest() = default;
 
             const std::string& getPath();
-            virtual void accept(Visitor &v) override;
-            virtual bool validate(Visitor &v) override;
+            virtual bool accept(Visitor& v) override;
+            virtual bool validate(Visitor& v) override;
 
             UpdateRequest(const UpdateRequest&) = default;
             UpdateRequest& operator=(const UpdateRequest&) = default;

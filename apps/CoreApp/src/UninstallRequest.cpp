@@ -44,12 +44,12 @@ namespace flexd {
         : iCoreAppRequest(rqstPoller, RqstType::Enum::uninstall, name, ver, timeout) {
         }
 
-        void UninstallRequest::accept(Visitor &v) {
+        bool UninstallRequest::accept(Visitor& v) {
             FLEX_LOG_TRACE("UninstallRequest::accept(): ");
-            v.visit(this);
+            return v.visit(this);
         }
 
-        bool UninstallRequest::validate(Visitor &v) {
+        bool UninstallRequest::validate(Visitor& v) {
             FLEX_LOG_TRACE("UninstallRequest::validate(): Validating");
             return v.validate(this);
         }

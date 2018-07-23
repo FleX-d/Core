@@ -2,17 +2,39 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-## [0.0.6] - 2018-07-04
+## [0.0.6] - 2018-07-23
 ### Added
-- CoreAppRequestQueue [Martin Strenger]
-- All requests are performed in a separate thread
+- Added copy/move ctor and operator= for iCoreAppAck [Martin Strenger]
+- Added synchronized iCoreAppAck member variable to iCoreAppRequest to store and send operation result [Martin Strenger]
+
+### Changed
+- Changed visitor visit() function return type to bool [Martin Strenger]
+- Changed VisitTest unit tests [Martin Strenger]
+- Changed shell script for test database initialization and finished ManagerTest unit tests [Martin Strenger]
+- Rebuilt ack sending [Martin Strenger]
+
+### Removed
+- None
+
+## [0.0.6] - 2018-07-20
+### Added
+- Added class CoreAppRequestQueue [Martin Strenger]
+- New shell script for test database (needed by unit tests) [Martin Strenger]
+- Added "Timeout" record to database [Martin Strenger]
+- Added functions for "Timeout" record to CoreAppDatabase class [Martin Strenger]
+- Added validate functions to visitor and manager [Martin Strenger]
+- Added FleXdEvent and FleXdTimer functionality to iCoreAppRequest [Martin Strenger]
 
 ### Changed
 - Refactoring [Martin Strenger]
 - Fixed memory leakes [Martin Strenger]
+- Partially updated and fixed unit tests [Martin Strenger]
+- Changes to iCoreAppRequest class regarding multithreading [Martin Strenger]
+- Changes to IPCClient class regarding multithreading [Martin Strenger]
 
 ### Removed
-- None
+- Removed CoreAppRequestFactory class, all funcions moved to namespace CoreAppRequestFactory [Martin Strenger]
+- Removed CoreAppRequestValidator class, all funcions moved to namespace CoreAppRequestValidator [Martin Strenger]
 
 ## [0.0.6] - 2018-07-04
 ### Added

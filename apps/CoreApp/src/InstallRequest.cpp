@@ -52,12 +52,12 @@ namespace flexd {
             return m_path;
         }
 
-        void InstallRequest::accept(Visitor &v) {
+        bool InstallRequest::accept(Visitor& v) {
             FLEX_LOG_TRACE("InstallRequest::accept(): Visiting");
-            v.visit(this);
+            return v.visit(this);
         }
 
-        bool InstallRequest::validate(Visitor &v) {
+        bool InstallRequest::validate(Visitor& v) {
             FLEX_LOG_TRACE("InstallRequest::validate(): Validating");
             return v.validate(this);
         }

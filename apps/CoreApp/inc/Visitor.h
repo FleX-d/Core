@@ -51,22 +51,22 @@ namespace flexd{
         public:
             explicit Visitor();
             ~Visitor() = default;
-            virtual void visit(InstallRequest_t r);
-            virtual bool validate(InstallRequest_t r);
-            virtual void visit(UninstallRequest_t r);
-            virtual bool validate(UninstallRequest_t r);
-            virtual void visit(StartRequest_t r);
-            virtual bool validate(StartRequest_t r);
-            virtual void visit(StopRequest_t r);
-            virtual bool validate(StopRequest_t r);
-            virtual void visit(FreezeRequest_t r);
-            virtual bool validate(FreezeRequest_t r);
-            virtual void visit(UnfreezeRequest_t r);
-            virtual bool validate(UnfreezeRequest_t r);
-            virtual void visit(UpdateRequest_t r);
-            virtual bool validate(UpdateRequest_t r);
-            virtual void visit(InvalidRequest_t r);
-            virtual bool validate(InvalidRequest_t r);
+            virtual bool visit(InstallRequest_t rqst);
+            virtual bool validate(InstallRequest_t rqst);
+            virtual bool visit(UninstallRequest_t rqst);
+            virtual bool validate(UninstallRequest_t rqst);
+            virtual bool visit(StartRequest_t rqst);
+            virtual bool validate(StartRequest_t rqst);
+            virtual bool visit(StopRequest_t rqst);
+            virtual bool validate(StopRequest_t rqst);
+            virtual bool visit(FreezeRequest_t rqst);
+            virtual bool validate(FreezeRequest_t rqst);
+            virtual bool visit(UnfreezeRequest_t rqst);
+            virtual bool validate(UnfreezeRequest_t rqst);
+            virtual bool visit(UpdateRequest_t rqst);
+            virtual bool validate(UpdateRequest_t rqst);
+            virtual bool visit(InvalidRequest_t rqst);
+            virtual bool validate(InvalidRequest_t rqst);
 
             Visitor(Visitor&) = default;
             Visitor& operator=(Visitor&) = default;

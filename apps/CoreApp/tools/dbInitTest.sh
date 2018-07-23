@@ -51,6 +51,38 @@ VALUES (
 	' '
 );
 
+INSERT INTO TestCoreAppDb(ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,Timeout,MD5) 
+VALUES (
+	NULL,
+	'Test_timeout2',
+	'Test_timeout2',
+	'echo install;',
+	'echo uninstall;',
+	'echo start;',
+	'echo stop; sleep 3;',
+	'echo freeze; sleep 3;',
+	'echo unfreeze;',
+	'echo update;',
+	1,
+	' '
+);
+
+INSERT INTO TestCoreAppDb(ID,AppName,AppVer,Install,Uninstall,Start,Stop,Freeze,Unfreeze,UpdateDB,Timeout,MD5) 
+VALUES (
+	NULL,
+	'Test_timeout3',
+	'Test_timeout3',
+	'echo install;',
+	'echo uninstall;',
+	'echo start;',
+	'echo stop;',
+	'echo freeze;',
+	'echo unfreeze; sleep 3;',
+	'echo update;',
+	1,
+	' '
+);
+
 .save /home/$USER/tmp/CoreApp/TestCoreAppDb.db
 .exit
 EOF
