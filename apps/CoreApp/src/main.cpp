@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
         flexd::core::IPCClient client(poller, manager.getRqstPoller());
         client.setOnRequest([&manager](flexd::core::pSharediCoreAppRequest_t rqst){ return manager.onRequest(rqst); });
         poller.loop();
+        FLEX_LOG_UNINIT();
     }
     return 0;
 }
