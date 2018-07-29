@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <thread>
-#include <Logger.h>
 
 using namespace flexd::icl::ipc;
 
