@@ -50,6 +50,7 @@ namespace flexd {
                 std::string getPath();
                 int getTimeoutValue();
                 void setTimeoutValue(int value);
+                void resetTimer();
             
             private:
                 void sendCreateMsg();
