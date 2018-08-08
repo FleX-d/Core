@@ -24,55 +24,75 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   FleXdWatchdog.h
+ * File:   FleXdWatchdog.cpp
  * Author: Branislav Podkonicky
  *
  * Created on July 29, 2018, 09:45 AM
  */
 
-#ifndef FLEXDWATCHDOG_H
-#define FLEXDWATCHDOG_H
-
-#include "FleXdWatchdogEvent.h"
-#include <FleXdEpoll.h>
-#include <FleXdTimer.h>
+#include "FleXdWatchdog.h"
+#include <FleXdLogger.h>
+#include <sys/inotify.h>
+#include <unistd.h>
 
 namespace flexd {
     namespace icl {
         namespace ipc {
             
-            class FleXdWatchdog {  
+            FleXdWatchdog::FleXdWatchdog(FleXdEpoll& poller, int fd, std::string path)
+            : m_poller(poller),
+            m_fd(fd),
+            m_path(path),
+            m_timeout(60),
+            m_timer(m_poller, 1, 0, true, [&]{ this->onTimer(); }){
+                std::vector<std::string> pathVector;
+                pathVector.push_back(path);
+                m_timer.start(); 
+                sendCreateMsg();
+            }
             
-            public:
-                explicit FleXdWatchdog(FleXdEpoll& poller, int fd, std::string path);
-                virtual ~FleXdWatchdog();
-               
-                std::string getPath();
-                int getTimeoutValue();
-                void setTimeoutValue(int value);
-                void resetTimer();
+            FleXdWatchdog::~FleXdWatchdog() {
+                m_timer.stop();
+                sendDeleteMsg();
+            }
             
-            private:
-                void sendCreateMsg();
-                void sendDeleteMsg();
-                void sendRestartMsg();
-                void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::string> folders);
-                void onTimer();
+            std::string FleXdWatchdog::getPath(){
+                return m_path;
+            }
             
-            protected:
-                FleXdEpoll& m_poller;
-                int m_fd;
-                std::string m_path;
-                int m_wd;
-                int m_timeout;
-                FleXdTimer m_timer;
-                std::unique_ptr<FleXdWatchdogEvent> m_event;
-            };
+            void FleXdWatchdog::onTimer(){
+                this->setTimeoutValue(this->getTimeoutValue() - 1);
+                FLEX_LOG_INFO("FleXdWatchdog::onTimer() timeout value = ", m_timeout);
+                if (this->m_timeout == 0){
+                    sendRestartMsg();
+                    this->m_timer.stop();
+                }
+            }
+            
+            int FleXdWatchdog::getTimeoutValue(){
+                return m_timeout;
+            }
+            
+            void FleXdWatchdog::setTimeoutValue(int value) {
+                m_timeout = value;
+            }
+            
+            void FleXdWatchdog::resetTimer() {
+                m_timeout = 60;
+            }
+            
+            void FleXdWatchdog::sendCreateMsg(){
+                FLEX_LOG_INFO("FleXdWatchdog::sendCreateMsg \n");
+            }
+            
+            void FleXdWatchdog::sendDeleteMsg(){
+                FLEX_LOG_INFO("FleXdWatchdog::sendDeleteMsg \n");
+            }
+            
+            void FleXdWatchdog::sendRestartMsg(){
+                FLEX_LOG_INFO("FleXdWatchdog::sendRestartMsg \n");
+            }
             
         } // namespace ipc
     } // namespace icl
 } // namespace flexd
-
-
-#endif /* FLEXDWATCHDOG_H */
-
