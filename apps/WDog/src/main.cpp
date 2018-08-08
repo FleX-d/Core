@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <thread>
+#include <string>
 
 using namespace flexd::icl::ipc;
 
@@ -75,16 +76,37 @@ static void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::strin
                     actualFolder = folders.at(i).c_str();
                 }
             } 
-            std::string newWatch = actualFolder + "/" + event->name;
-            
-            if (event->mask & IN_CREATE){
-                printf("IN_CREATE: ");
-                watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, fd, newWatch));
+            if (event->mask & IN_CREATE ) {
+                std::string fileName = event->name;
+                std::string fileType = fileName.substr(fileName.length() - 3, fileName.length());
+                std::string newWatch = actualFolder + "/" + event->name;
+                FLEX_LOG_INFO("EVENT NAME: ", event->name, " \n");
+                FLEX_LOG_INFO("TYPE OF THE FILE: ", fileType, "\n");
+                FLEX_LOG_INFO("actual folder + event.name: %s \n", newWatch.c_str());
+                if (!fileType.compare("txt")) {
+                    FLEX_LOG_INFO("IN_CREATE: ");
+                    watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, fd, newWatch));
+                }
             }
-            if (event->mask & IN_DELETE){
-                printf("IN_DELETE: ");
+            if (event->mask & IN_DELETE) {
+                std::string fileName = event->name;
+                std::string fileType = fileName.substr(fileName.length() - 3, fileName.length());
+                std::string newWatch = actualFolder + "/" + event->name;
+                FLEX_LOG_INFO("EVENT NAME: ", event->name, " \n");
+                FLEX_LOG_INFO("TYPE OF THE FILE: ", fileType, "\n");
+                FLEX_LOG_INFO("actual folder + event.name: ", newWatch.c_str(), " \n");
+                if (!fileType.compare("txt")) {
+                    FLEX_LOG_INFO("IN_DELETE !@#");
+                        for (auto it = watchdogs.begin(); it != watchdogs.end(); ) {                         
+                        if (!newWatch.compare((*it)->getPath()) ){
+                            watchdogs.erase(it);
+                        }
+                        else {
+                            ++it;
+                        }
+                    }                   
+                }
             }
-            printf("actual folder + event.name: %s\n", newWatch.c_str());
         }
     }
 }
@@ -92,6 +114,7 @@ static void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::strin
 int main(int argc, char** argv) {
     FleXdEpoll poller(10);
     FLEX_LOG_INIT(poller, "FleX-d_Watchdog");
+    FLEX_LOG_INFO("main was started \n");
     
     ini::INIParser::getInstance().parseFiles("../resources/config.ini");
     std::string watchedDirectoriesString = ini::INIParser::getInstance().get("watched_directories:path", std::string(""));
@@ -120,6 +143,7 @@ int main(int argc, char** argv) {
         wd[i] = inotify_add_watch(fd, charPtr,
                  IN_CREATE | IN_DELETE);
         if (wd[i] == -1) {
+            FLEX_LOG_INFO(" \n");
             fprintf(stderr, "Cannot watch '%s'\n", watchedDirectories.at(i).c_str());
             perror("inotify_add_watch");
             exit(EXIT_FAILURE);
@@ -131,10 +155,10 @@ int main(int argc, char** argv) {
     event.init();
     
     int i = 300;
-    printf("main loop was started \n");
+    FLEX_LOG_INFO("main loop was started \n");
     while (i--) {
         fflush(stdout);
-        printf("main loop \n");
+        FLEX_LOG_INFO("main loop  \n");
         sleep(1);
     }
     
