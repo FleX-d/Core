@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "FleXdWatchdogEvent.h"
+#include <FleXdLogger.h>
 #include <sys/eventfd.h>
 
 namespace flexd {
@@ -54,7 +55,7 @@ namespace flexd {
             }
             
             bool FleXdWatchdogEvent::init() {
-                printf("FleXdWatchdogEvent init was entered %d \n", m_fd);
+                FLEX_LOG_INFO("FleXdWatchdogEvent init was entered ", m_fd);
                 fflush(stdout);
                 if (m_fd > -1) {
                     m_poller.addEvent(m_fd, [this](FleXdEpoll::Event e) {
@@ -98,10 +99,10 @@ namespace flexd {
             }
             
             void FleXdWatchdogEvent::onEvent(FleXdEpoll::Event e) {
-                printf("FleXdWatchdogEvent::onEvent triggered \n");
+                FLEX_LOG_INFO("FleXdWatchdogEvent::onEvent triggered \n");
                 fflush(stdout);
                 if (e.type == EpollEvent::EpollIn && e.fd == m_fd) {
-                    printf("-------------------------- on Event ---------------");
+                    FLEX_LOG_INFO("-------------------------- on Event ---------------\n");
                     fflush(stdout);
                     m_onEvent(m_poller, m_fd, m_wd, m_folders);
                 }
