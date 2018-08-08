@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FLEXDWATCHDOG_H
 #define FLEXDWATCHDOG_H
 
-#include "FleXdWatchdogEvent.h"
 #include <FleXdEpoll.h>
 #include <FleXdTimer.h>
 
@@ -56,7 +55,6 @@ namespace flexd {
                 void sendCreateMsg();
                 void sendDeleteMsg();
                 void sendRestartMsg();
-                void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::string> folders);
                 void onTimer();
             
             protected:
@@ -66,7 +64,6 @@ namespace flexd {
                 int m_wd;
                 int m_timeout;
                 FleXdTimer m_timer;
-                std::unique_ptr<FleXdWatchdogEvent> m_event;
             };
             
         } // namespace ipc
