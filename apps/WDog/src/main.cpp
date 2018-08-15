@@ -41,6 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <thread>
 #include <string>
+#include <FleXdIPCConnector.h>
+#include "IPCInterface.h"
 
 using namespace flexd::icl::ipc;
 
@@ -83,7 +85,7 @@ static void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::strin
                 FLEX_LOG_INFO("EVENT NAME: ", event->name, " \n");
                 FLEX_LOG_INFO("TYPE OF THE FILE: ", fileType, "\n");
                 FLEX_LOG_INFO("actual folder + event.name: %s \n", newWatch.c_str());
-                if (!fileType.compare("txt")) {
+                if (!fileType.compare("pid")) {
                     FLEX_LOG_INFO("IN_CREATE: ");
                     watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, fd, newWatch));
                 }
@@ -95,7 +97,7 @@ static void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::strin
                 FLEX_LOG_INFO("EVENT NAME: ", event->name, " \n");
                 FLEX_LOG_INFO("TYPE OF THE FILE: ", fileType, "\n");
                 FLEX_LOG_INFO("actual folder + event.name: ", newWatch.c_str(), " \n");
-                if (!fileType.compare("txt")) {
+                if (!fileType.compare("pid")) {
                     FLEX_LOG_INFO("IN_DELETE !@#");
                         for (auto it = watchdogs.begin(); it != watchdogs.end(); ) {                         
                         if (!newWatch.compare((*it)->getPath()) ){
@@ -113,8 +115,28 @@ static void onEvent(FleXdEpoll& poller, int fd, int * wd, std::vector<std::strin
 
 int main(int argc, char** argv) {
     FleXdEpoll poller(10);
+    flexd::icl::ipc::FleXdTermEvent termEvent(poller);
+    
+    IPCInterface ipcInterface(100, poller);
+    ipcInterface.addPeer(111);
+    
+    uint8_t msgType(1);
+    std::vector<uint8_t> payload;
+    payload.push_back((char)1);
+    payload.push_back((char)2);
+    payload.push_back((char)3);
+    payload.push_back((char)4);
+    payload.push_back((char)5);
+           
+    FleXdIPCMsg msg(msgType, std::move(payload));
+    auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
+    //ipcInterface.send(111, msgPtr);
+    
+    ipcInterface.sendMsg(msgPtr, 111);
+    
+    
     FLEX_LOG_INIT(poller, "FleX-d_Watchdog");
-    FLEX_LOG_INFO("main was started \n");
+    FLEX_LOG_INFO("WatchDog main was started \n");
     
     ini::INIParser::getInstance().parseFiles("../resources/config.ini");
     std::string watchedDirectoriesString = ini::INIParser::getInstance().get("watched_directories:path", std::string(""));
