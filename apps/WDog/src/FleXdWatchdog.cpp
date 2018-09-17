@@ -39,37 +39,37 @@ namespace flexd {
     namespace icl {
         namespace ipc {
             
-            FleXdWatchdog::FleXdWatchdog(FleXdEpoll& poller, int fd, std::string path)
-            : m_poller(poller),
-            m_fd(fd),
-            m_path(path),
-            m_timeout(60),
-            m_timer(m_poller, 1, 0, true, [&]{ this->onTimer(); }){
+            FleXdWatchdog::FleXdWatchdog(FleXdEpoll& poller, IPCInterface& ipc, int fd, std::string path)
+                : m_poller(poller),
+                  m_timer(m_poller, 1, 0, true, [&]{ this->onTimer(); }),
+                  m_ipc(ipc),
+                  m_path(path),
+                  m_appName(""),
+                  m_fd(fd),
+                  m_timeout(60),
+                  m_valid(true) {
                 std::vector<std::string> pathVector;
                 pathVector.push_back(path);
+                int position =  m_path.rfind("/");
+                std::string pidFileName = m_path.substr(position+1);
+                m_appName = pidFileName.substr(0, pidFileName.length() - 4);
                 m_timer.start(); 
-                sendCreateMsg();
+                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> started.\n");
             }
             
             FleXdWatchdog::~FleXdWatchdog() {
                 m_timer.stop();
-                sendDeleteMsg();
             }
-            
-            std::string FleXdWatchdog::getPath(){
+             
+            std::string FleXdWatchdog::getPath() {
                 return m_path;
             }
             
-            void FleXdWatchdog::onTimer(){
-                this->setTimeoutValue(this->getTimeoutValue() - 1);
-                FLEX_LOG_INFO("FleXdWatchdog::onTimer() timeout value = ", m_timeout);
-                if (this->m_timeout == 0){
-                    sendRestartMsg();
-                    this->m_timer.stop();
-                }
+            std::string FleXdWatchdog::getAppName() {
+                return m_appName;
             }
             
-            int FleXdWatchdog::getTimeoutValue(){
+            int FleXdWatchdog::getTimeoutValue() {
                 return m_timeout;
             }
             
@@ -81,18 +81,29 @@ namespace flexd {
                 m_timeout = 60;
             }
             
-            void FleXdWatchdog::sendCreateMsg(){
-                FLEX_LOG_INFO("FleXdWatchdog::sendCreateMsg \n");
+            bool FleXdWatchdog::isValid() {
+                return m_valid;
             }
             
-            void FleXdWatchdog::sendDeleteMsg(){
-                FLEX_LOG_INFO("FleXdWatchdog::sendDeleteMsg \n");
+            void FleXdWatchdog::onTimer() {
+                this->setTimeoutValue(this->getTimeoutValue() - 1);
+                if (this->m_timeout == 0){
+                    sendRestartMsg();
+                    this->m_timer.stop();
+                }
+                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> restart in = ", m_timeout, " seconds.\n");
             }
             
-            void FleXdWatchdog::sendRestartMsg(){
-                FLEX_LOG_INFO("FleXdWatchdog::sendRestartMsg \n");
+            void FleXdWatchdog::sendRestartMsg() {
+                std::string payloadString{"FleX-d Watchdog : "};
+                uint8_t msgType(flexd::icl::ipc::FleXdIPCMsgTypes::IPCMsg);
+                payloadString += m_appName + " RESTART TRIGGERED!";
+                std::vector<uint8_t> payload(payloadString.begin(), payloadString.end());
+                auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
+                m_ipc.send(111, msgPtr);
+                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> RESTART TRIGGERED!\n");
+                m_valid = false;
             }
-            
         } // namespace ipc
     } // namespace icl
 } // namespace flexd
