@@ -33,43 +33,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FLEXDWATCHDOGEVENT_H
 #define FLEXDWATCHDOGEVENT_H
 
-#include "FleXdEpoll.h"
+#include "IPCInterface.h"
+#include <FleXdEpoll.h>
 #include <vector>
 
-struct itimerspec;
 namespace flexd {
     namespace icl {
         namespace ipc {
             
             class FleXdWatchdogEvent {
             private:
-                typedef std::function<void(FleXdEpoll& poller, int, int*, std::vector<std::string>)> WatchdogEventFunction;
+                typedef std::function<void(FleXdEpoll& poller, IPCInterface& ipc, int, int*, std::vector<std::string>)> WatchdogEventFunction;
+                void onEvent(FleXdEpoll::Event e);
+                
             public:
-                explicit FleXdWatchdogEvent(FleXdEpoll& poller, int fd, int * wdp, std::vector<std::string> folders, WatchdogEventFunction onEvent = nullptr);
+                explicit FleXdWatchdogEvent(FleXdEpoll& poller, IPCInterface& ipc, std::vector<std::string> folders, int fd, int * wdp, WatchdogEventFunction onEvent = nullptr);
                 virtual ~FleXdWatchdogEvent();
-            
+                FleXdWatchdogEvent(const FleXdEpoll&) = delete;
+                FleXdWatchdogEvent& operator=(const FleXdEpoll&) = delete;
+                FleXdWatchdogEvent(const FleXdEpoll&&) = delete;
+                FleXdWatchdogEvent& operator=(const FleXdEpoll&&) = delete;
                 bool init();
                 bool uninit();
                 bool trigger();
                 int getFd() const;
                 void setOnEvent(WatchdogEventFunction onEvent);
-                
-                FleXdWatchdogEvent(const FleXdEpoll&) = delete;
-                FleXdWatchdogEvent& operator=(const FleXdEpoll&) = delete;
-                FleXdWatchdogEvent(const FleXdEpoll&&) = delete;
-                FleXdWatchdogEvent& operator=(const FleXdEpoll&&) = delete;
-
                 virtual void onEvent() {}
-            
-            private:
-                void onEvent(FleXdEpoll::Event e);
             
             protected:
                 FleXdEpoll& m_poller;
-                WatchdogEventFunction m_onEvent;
+                IPCInterface& m_ipc;
+                std::vector<std::string> m_folders;
                 int m_fd;
                 int * m_wd;
-                std::vector<std::string> m_folders;
+                WatchdogEventFunction m_onEvent;
             };
         } // namespace ipc
     } // namespace icl
