@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018, Globallogic s.r.o.
+Copyright (c) 2017, Globallogic s.r.o.
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -24,10 +24,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   IPCInterface.h
+ * File:   main.cpp
  * Author: Branislav Podkonicky
  *
- * Created on August 15, 2018, 2:00 PM
+ * Created on July 29, 2018, 09:45 AM
  */
 
 #ifndef IPCINTERFACE_H
@@ -38,34 +38,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <FleXdIPCConnector.h>
 #include <FleXdLogger.h>
 
-//namespace flexd {
-  // namespace gen {
-    class IPCInterface : public flexd::icl::ipc::IPCConnector {
-    public:
-        IPCInterface (uint32_t id, flexd::icl::ipc::FleXdEpoll& poller);
-            virtual ~IPCInterface();
-            
-            void send(uint32_t peerID, std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> msg);
-            virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg msg) override;
-        
-            
-        virtual void onConnectPeer(uint32_t peerID, bool genericPeer) override {
-            std::cout << "onConnectPeer() -> " << peerID << ", generic = " << genericPeer <<  "\n";
-            uint8_t msgType(1);
-            std::vector<uint8_t> payload;
-            unsigned char myChar(1);
-            payload.push_back(myChar);
-           
-            auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
-            send(peerID, msgPtr);  
-        }   
-        uint32_t getTimestamp();
-            
-    private:
-        flexd::icl::ipc::FleXdEpoll& m_poller;
-        uint8_t m_counter;
-    };
- // }
+class IPCInterface : public flexd::icl::ipc::IPCConnector {
+public:
+    IPCInterface(uint32_t id, flexd::icl::ipc::FleXdEpoll& poller);
+    virtual ~IPCInterface();
+    void send(uint32_t peerID, std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> msg);
+    virtual void receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg msg) override {}
+    virtual void onBeforeRcvMsg(std::shared_ptr<const flexd::icl::ipc::FleXdIPCMsg> msg);
+    uint32_t getTimestamp();
+    virtual void onConnectPeer(uint32_t peerID, bool genericPeer) override {
+        std::cout << "onConnectPeer() -> " << peerID << ", generic = " << genericPeer << "\n";
+        uint8_t msgType(1);
+        std::vector<uint8_t> payload;
+        unsigned char myChar(1);
+        payload.push_back(myChar);
+        auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
+        send(peerID, msgPtr);
+    }
 
-//}
+private:
+    flexd::icl::ipc::FleXdEpoll& m_poller;
+    uint8_t m_counter;
+};
 #endif //IPCINTERFACE_H
