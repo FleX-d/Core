@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018, Globallogic s.r.o.
+Copyright (c) 2017, Globallogic s.r.o.
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -27,49 +27,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * File:   IPCInterface.cpp
  * Author: Branislav Podkonicky
  *
- * Created on August 15, 2018, 2:00 PM
+ * Created on July 29, 2018, 09:45 AM
  */
 
- #include "IPCInterface.h"
- #include <JsonObj.h>
- #include <vector>
- #include <ctime>
- #include <chrono>
+#include "IPCInterface.h"
+#include <JsonObj.h>
+#include <vector>
+#include <ctime>
+#include <chrono>
 
-    IPCInterface::IPCInterface (uint32_t id, flexd::icl::ipc::FleXdEpoll& poller)
-    :IPCConnector(id, poller, false, true),
-         m_poller(poller),
-         m_counter(0)
-    {
-    }
+IPCInterface::IPCInterface(uint32_t id, flexd::icl::ipc::FleXdEpoll& poller)
+: IPCConnector(id, poller, false, true),
+m_poller(poller),
+m_counter(0) {
+}
 
-    IPCInterface::~IPCInterface()
-    {
-    }
+IPCInterface::~IPCInterface() {
+}
 
-    void IPCInterface::receiveMsg(flexd::icl::ipc::pSharedFleXdIPCMsg msg)
-    {
-        FLEX_LOG_INFO("Dummy Core app has received a message");
-        try{
-            std::string str(msg->getPayload().begin(),msg->getPayload().end());
-                FLEX_LOG_INFO("\n Received message: " ,str , " \n");
-        }catch(...){
-            return;
-        }
+void IPCInterface::send(uint32_t peerID, std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> msg) {
+    if (sendMsg(msg, peerID)) {
+        m_counter++;
     }
+}
 
-    void IPCInterface::send(uint32_t peerID, std::shared_ptr<flexd::icl::ipc::FleXdIPCMsg> msg)
-    {
-        if(sendMsg(msg, peerID))
-        {
-            m_counter++;
-        }
-    }
-        
-    uint32_t IPCInterface::getTimestamp()
-    {
-        std::chrono::time_point<std::chrono::system_clock> p;
-        p = std::chrono::system_clock::now();
-        std::time_t time = std::chrono::duration_cast<std::chrono::milliseconds>(p.time_since_epoch()).count();
-        return static_cast<uint32_t> (time);
-    }
+void IPCInterface::onBeforeRcvMsg(std::shared_ptr<const flexd::icl::ipc::FleXdIPCMsg> msg) {
+    std::cout << "\n message was received: \n";
+    for (auto it = msg->getPayload().begin(); it != msg->getPayload().end(); ++it)
+        std::cout << ' ' << (int) *it;
+    std::cout << std::endl;
+};
+
+uint32_t IPCInterface::getTimestamp() {
+    std::chrono::time_point<std::chrono::system_clock> p;
+    p = std::chrono::system_clock::now();
+    std::time_t time = std::chrono::duration_cast<std::chrono::milliseconds>(p.time_since_epoch()).count();
+    return static_cast<uint32_t> (time);
+}
