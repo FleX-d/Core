@@ -6,6 +6,19 @@ message(STATUS "***" )
 message(STATUS "*  " ${PROJECT_NAME})
 message(STATUS "***" )
 
+if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "setting default value 'Debug' for CMAKE_BUILD_TYPE")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
+endif()
+
+set_property(
+    CACHE
+    CMAKE_BUILD_TYPE
+    PROPERTY STRINGS
+    "Debug"
+    "Release"
+)
+
 include(FindPkgConfig)
 find_package(PkgConfig REQUIRED)
 
@@ -48,11 +61,13 @@ endif (FLEXD_INIPARSER_FOUND)
 SET(privateHeaders
     inc/FleXdWatchdog.h
     inc/FleXdWatchdogEvent.h
+    inc/IPCInterface.h
 )
 
 SET(privateSources
     src/FleXdWatchdog.cpp
     src/FleXdWatchdogEvent.cpp
+    src/IPCInterface.cpp
     src/main.cpp
 )
 
