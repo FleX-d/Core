@@ -24,85 +24,90 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   FleXdWatchdog.cpp
+ * File:   FleXdWatchdogEvent.cpp
  * Author: Branislav Podkonicky
  *
  * Created on July 29, 2018, 09:45 AM
  */
 
-#include "FleXdWatchdog.h"
+#include "FleXdWatchdogEvent.h"
+#include "IPCInterface.h"
 #include <FleXdLogger.h>
-#include <sys/inotify.h>
-#include <unistd.h>
+#include <sys/eventfd.h>
 
 namespace flexd {
     namespace icl {
         namespace ipc {
             
-            FleXdWatchdog::FleXdWatchdog(FleXdEpoll& poller, IPCInterface& ipc, int fd, std::string path)
-                : m_poller(poller),
-                  m_timer(m_poller, 1, 0, true, [&]{ this->onTimer(); }),
-                  m_ipc(ipc),
-                  m_path(path),
-                  m_appName(""),
-                  m_fd(fd),
-                  m_timeout(60),
-                  m_valid(true) {
-                std::vector<std::string> pathVector;
-                pathVector.push_back(path);
-                int position =  m_path.rfind("/");
-                std::string pidFileName = m_path.substr(position+1);
-                m_appName = pidFileName.substr(0, pidFileName.length() - 4);
-                m_timer.start(); 
-                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> started.\n");
+            FleXdWatchdogEvent::FleXdWatchdogEvent(FleXdEpoll& poller, IPCInterface& ipc, std::vector<std::string> folders, int fd, int * wdp, WatchdogEventFunction onEvent)
+            : m_poller(poller),
+              m_ipc(ipc), 
+              m_folders(folders),
+              m_fd(fd),
+              m_wd(wdp), 
+              m_onEvent(onEvent)
+            {
+                fflush(stdout);
             }
             
-            FleXdWatchdog::~FleXdWatchdog() {
-                m_timer.stop();
-            }
-             
-            std::string FleXdWatchdog::getPath() {
-                return m_path;
-            }
-            
-            std::string FleXdWatchdog::getAppName() {
-                return m_appName;
-            }
-            
-            int FleXdWatchdog::getTimeoutValue() {
-                return m_timeout;
-            }
-            
-            void FleXdWatchdog::setTimeoutValue(int value) {
-                m_timeout = value;
-            }
-            
-            void FleXdWatchdog::resetTimer() {
-                m_timeout = 60;
-            }
-            
-            bool FleXdWatchdog::isValid() {
-                return m_valid;
-            }
-            
-            void FleXdWatchdog::onTimer() {
-                this->setTimeoutValue(this->getTimeoutValue() - 1);
-                if (this->m_timeout == 0){
-                    sendRestartMsg();
-                    this->m_timer.stop();
+            FleXdWatchdogEvent::~FleXdWatchdogEvent() {
+                fflush(stdout);
+                if (m_fd != -1) {
+                    //m_poller.rmEvent(m_fd);
                 }
-                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> restart in = ", m_timeout, " seconds.\n");
             }
             
-            void FleXdWatchdog::sendRestartMsg() {
-                std::string payloadString{"FleX-d Watchdog : "};
-                uint8_t msgType(flexd::icl::ipc::FleXdIPCMsgTypes::IPCMsg);
-                payloadString += m_appName + " RESTART TRIGGERED!";
-                std::vector<uint8_t> payload(payloadString.begin(), payloadString.end());
-                auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
-                m_ipc.send(111, msgPtr);
-                FLEX_LOG_INFO("FleX-d Watchdog : ", m_appName, " >> RESTART TRIGGERED!\n");
-                m_valid = false;
+            bool FleXdWatchdogEvent::init() {
+                FLEX_LOG_INFO("FleX-d Watchdog >> Event init was entered: ", m_fd, " \n");
+                fflush(stdout);
+                if (m_fd > -1) {
+                    m_poller.addEvent(m_fd, [this](FleXdEpoll::Event e) {
+                        onEvent(e);
+                    });
+                    return true;
+                }
+                return false;
+            }
+            
+            bool FleXdWatchdogEvent::uninit() {
+                fflush(stdout);
+                if (m_fd == -1) {
+                    return true;
+                }
+                if (m_poller.rmEvent(m_fd)) {
+                    m_fd = -1;
+                    return true;
+                };
+                return false;
+            }
+            
+            bool FleXdWatchdogEvent::trigger() {
+                fflush(stdout);
+                if (m_fd != -1) {
+                    if (::eventfd_write(m_fd, 1) == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            int FleXdWatchdogEvent::getFd() const {
+                fflush(stdout);
+                return m_fd;
+            }
+            
+            void FleXdWatchdogEvent::setOnEvent(WatchdogEventFunction onEvent) {
+                fflush(stdout);
+                m_onEvent = onEvent;
+            }
+            
+            void FleXdWatchdogEvent::onEvent(FleXdEpoll::Event e) {
+                FLEX_LOG_INFO("---------------FleXdWatchdogEvent::onEvent triggered --------------- \n");
+                fflush(stdout);
+                if (e.type == EpollEvent::EpollIn && e.fd == m_fd) {
+                    fflush(stdout);
+                    m_onEvent(m_poller, m_ipc, m_fd, m_wd, m_folders);
+                }
             }
         } // namespace ipc
     } // namespace icl
