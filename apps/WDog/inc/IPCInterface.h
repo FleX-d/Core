@@ -24,7 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- * File:   main.cpp
+ * File:   IPCInterface.h
  * Author: Branislav Podkonicky
  *
  * Created on July 29, 2018, 09:45 AM
