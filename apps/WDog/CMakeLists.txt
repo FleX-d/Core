@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(fleXdWatchdog VERSION "0.0.1")
+project(fleXdWatchdog VERSION "0.0.2")
 set(PROJECT_DESCRIPTION "Watchdog for FleX-d project")
 
 message(STATUS "***" )
