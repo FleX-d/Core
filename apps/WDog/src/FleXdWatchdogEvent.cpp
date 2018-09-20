@@ -31,32 +31,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "FleXdWatchdogEvent.h"
-#include <FleXdLogger.h>
 #include <sys/eventfd.h>
 
 namespace flexd {
     namespace icl {
         namespace ipc {
             
-            FleXdWatchdogEvent::FleXdWatchdogEvent(FleXdEpoll& poller, int fd, int * wdp, std::vector<std::string> folders, WatchdogEventFunction onEvent /*= nullptr*/)
+            FleXdWatchdogEvent::FleXdWatchdogEvent(FleXdEpoll& poller, IPCInterface& ipc, std::vector<std::string> folders, int fd, int * wdp, WatchdogEventFunction onEvent)
             : m_poller(poller),
-              m_onEvent(onEvent),
+              m_ipc(ipc), 
+              m_folders(folders),
               m_fd(fd),
               m_wd(wdp), 
-              m_folders(folders) {
-                fflush(stdout);
+              m_onEvent(onEvent)
+            {
             }
             
             FleXdWatchdogEvent::~FleXdWatchdogEvent() {
-                fflush(stdout);
                 if (m_fd != -1) {
-                    //m_poller.rmEvent(m_fd);
+                    m_poller.rmEvent(m_fd);
                 }
             }
             
             bool FleXdWatchdogEvent::init() {
-                FLEX_LOG_INFO("FleXdWatchdogEvent init was entered ", m_fd);
-                fflush(stdout);
                 if (m_fd > -1) {
                     m_poller.addEvent(m_fd, [this](FleXdEpoll::Event e) {
                         onEvent(e);
@@ -67,7 +64,6 @@ namespace flexd {
             }
             
             bool FleXdWatchdogEvent::uninit() {
-                fflush(stdout);
                 if (m_fd == -1) {
                     return true;
                 }
@@ -79,7 +75,6 @@ namespace flexd {
             }
             
             bool FleXdWatchdogEvent::trigger() {
-                fflush(stdout);
                 if (m_fd != -1) {
                     if (::eventfd_write(m_fd, 1) == 0) {
                         return true;
@@ -89,24 +84,19 @@ namespace flexd {
             }
             
             int FleXdWatchdogEvent::getFd() const {
-                fflush(stdout);
                 return m_fd;
             }
             
             void FleXdWatchdogEvent::setOnEvent(WatchdogEventFunction onEvent) {
-                fflush(stdout);
                 m_onEvent = onEvent;
             }
             
             void FleXdWatchdogEvent::onEvent(FleXdEpoll::Event e) {
-                FLEX_LOG_INFO("FleXdWatchdogEvent::onEvent triggered \n");
-                fflush(stdout);
                 if (e.type == EpollEvent::EpollIn && e.fd == m_fd) {
-                    FLEX_LOG_INFO("-------------------------- on Event ---------------\n");
-                    fflush(stdout);
-                    m_onEvent(m_poller, m_fd, m_wd, m_folders);
+                    m_onEvent(m_poller, m_ipc, m_fd, m_wd, m_folders);
                 }
             }
+            
         } // namespace ipc
     } // namespace icl
 } // namespace flexd
