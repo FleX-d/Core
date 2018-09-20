@@ -36,21 +36,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IPCInterface.h"
 #include <FleXdEpoll.h>
 #include <FleXdTimer.h>
-#include <FleXdIPCMsgTypes.h>
 
 namespace flexd {
     namespace icl {
         namespace ipc {
             
             class FleXdWatchdog {  
-            
             public:
-                explicit FleXdWatchdog(FleXdEpoll& poller, IPCInterface& ipc, int fd, std::string path);
+                explicit FleXdWatchdog(FleXdEpoll& poller, IPCInterface& ipc, std::string path, int timeout, int coreAppIpcId);
                 virtual ~FleXdWatchdog();
                 std::string getPath();
                 std::string getAppName();
-                int  getTimeoutValue();
-                void setTimeoutValue(int value);
+                int  getDefaultTimeoutValue();
+                void setDefaultTimeoutValue(int value);
+                int  getActualTimeoutValue();
+                void setActualTimeoutValue(int value);
                 void resetTimer();
                 bool isValid();
             
@@ -64,12 +64,15 @@ namespace flexd {
                 IPCInterface& m_ipc;
                 std::string m_path;
                 std::string m_appName;
-                int m_fd;
-                int m_timeout;
+                int m_defaultTimeout;
+                int m_actualTimeout;
+                int m_coreAppIpcId;
                 bool m_valid;
             };
+            
         } // namespace ipc
     } // namespace icl
 } // namespace flexd
 
 #endif /* FLEXDWATCHDOG_H */
+
