@@ -68,6 +68,7 @@ namespace flexd {
                 int * m_wd;
                 WatchdogEventFunction m_onEvent;
             };
+            
         } // namespace ipc
     } // namespace icl
 } // namespace flexd
