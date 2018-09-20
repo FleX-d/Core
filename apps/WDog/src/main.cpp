@@ -38,30 +38,98 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <FleXdEvent.h>
 #include <FleXdTimer.h>
 #include <FleXdLogger.h>
-#include <sys/inotify.h>
-#include <unistd.h>
-#include <thread>
-#include <string>
 #include <FleXdIPCConnector.h>
 #include <FleXdIPCMsgTypes.h>
+#include <sys/inotify.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <thread>
+#include <unistd.h>
 
 using namespace flexd::icl::ipc;
 
 static std::vector<std::unique_ptr<FleXdWatchdog>> watchdogs;
+static std::vector<std::string> watchedDirectories;
+static const std::string pathToConfigFile{"../resources/config.ini"};
+static int watchdogIpcId(100);
+static int coreAppIpcId(111);
+static int restartTimeout(60);
 
-void sendIpcMsgToCoreApp (IPCInterface & ipc, std::string appName, std::string msg){
-    FLEX_LOG_INFO("FleX-d Watchdog >> sendIpcMsgToCore: \n");
-    std::string payloadString{appName};
+void sendIpcMsgToCoreApp (IPCInterface & ipc, std::string appName, std::string msg) {
     uint8_t msgType(flexd::icl::ipc::FleXdIPCMsgTypes::IPCMsg);
-    payloadString += " ";
-    payloadString += msg;
+    std::string payloadString{appName + " >> " + msg};
     std::vector<uint8_t> payload(payloadString.begin(), payloadString.end());
     auto msgPtr = std::make_shared<flexd::icl::ipc::FleXdIPCMsg>(msgType, std::move(payload));
-    ipc.send(111, msgPtr);
+    ipc.send(coreAppIpcId, msgPtr);
+    FLEX_LOG_INFO("SendIpcMsgToCoreApp: ",  payloadString , "\n"); 
 }
 
-static void onEvent(FleXdEpoll& poller, IPCInterface& ipc, int fd, int * wd, std::vector<std::string> folders)
-{
+bool hasEnding (std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+std::vector<std::string> returnPidFilesPaths(char* dirPath) {
+    std::vector<std::string> pidFilesVector;
+    DIR *dir;
+    struct dirent *entry;
+    dir = opendir(dirPath);
+    if(!dir) {
+        return pidFilesVector;
+    }
+    while ( (entry = readdir(dir)) != NULL) {
+        if ( entry->d_name[0] !=  '.') {
+            std::string filePath = std::string(dirPath) + "/" + std::string(entry->d_name);
+            if ( hasEnding(filePath, ".pid")){
+                pidFilesVector.push_back(filePath);
+            }
+        }
+    }
+    return pidFilesVector;
+}
+
+void createWatchdogsForAllExistingPidFiles(FleXdEpoll& poller, IPCInterface & ipc, std::vector<std::string> pathVector) {
+    for (unsigned int i = 0; i < pathVector.size(); i++) {
+        std::string pathStr = pathVector.at(i);
+        char* dirPathPtr = &pathStr[0];
+        std::vector<std::string> filesPaths = returnPidFilesPaths(dirPathPtr);
+        for (unsigned j = 0; j < filesPaths.size(); j++){
+            watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, ipc, filesPaths.at(j), restartTimeout, coreAppIpcId));
+            std::string pidFileName = filesPaths.at(j).substr(filesPaths.at(j).rfind("/") + 1);
+            std::string appName = pidFileName.substr(0, pidFileName.length() - 4);
+            sendIpcMsgToCoreApp(ipc, appName, "application is running.");
+        }
+    }
+}
+
+void removeUnusedWatchdogsAndOldPidFiles() {
+    for (unsigned int it = 0; it < watchdogs.size(); it++) {
+        if (!watchdogs.at(it).get()->isValid()) {
+            std::remove(watchdogs.at(it).get()->getPath().c_str());
+            std::vector<std::unique_ptr<FleXdWatchdog>>::iterator nth = watchdogs.begin() + it;
+            watchdogs.erase(nth);
+        }
+    }
+}
+
+std::string getAppNameFromEventName(std::string eventName) {
+    std::string appName, helper;
+    if (eventName.at(0) == '.'){         
+        helper = eventName.substr(1, eventName.length());
+        appName = helper.substr(0, helper.find('.'));
+    } else {
+        appName = eventName.substr(0, eventName.find('.'));   
+    }
+    return appName;
+}
+
+static void onEvent(FleXdEpoll& poller, IPCInterface& ipc, int fd, int * wd, std::vector<std::string> folders) {
     char buf[4096]
             __attribute__((aligned(__alignof__(struct inotify_event))));
     const struct inotify_event *event;
@@ -87,70 +155,42 @@ static void onEvent(FleXdEpoll& poller, IPCInterface& ipc, int fd, int * wd, std
                 }
             } 
             std::string fileName = event->name;
-            std::string fileType, helper, appName, newWatch;
-            if (fileName.at(0) == '.'){
-                fileType = fileName.substr(fileName.length() - 3, fileName.length());
-                helper = fileName.substr(1, fileName.length());
-                FLEX_LOG_INFO("helper: ", helper, " \n");
-                appName = helper.substr(0, helper.find('.'));
-                newWatch = actualFolder + "/" + event->name;
-            } else {
-                fileType = fileName.substr(fileName.length() - 3, fileName.length());
-                appName = fileName.substr(0, fileName.find('.'));
-                newWatch = actualFolder + "/" + event->name;
-            }
-            FLEX_LOG_INFO("appName: ", appName, " \n");
-            FLEX_LOG_INFO("EVENT NAME: ", event->name, " \n");
-            FLEX_LOG_INFO("TYPE OF THE FILE: ", fileType, "\n");
-            FLEX_LOG_INFO("actual folder + event.name: ", newWatch.c_str(), " \n");
+            std::string appName, fileType, newWatch;
+            appName = getAppNameFromEventName(fileName);
+            fileType = fileName.substr(fileName.length() - 3, fileName.length());
+            newWatch = actualFolder + "/" + fileName;
             
             if (event->mask & IN_ALL_EVENTS) {
-                   for(unsigned int it = 0; it < watchdogs.size(); it++) {
-                        if (!watchdogs.at(it).get()->isValid()){
-                            std::vector<std::unique_ptr<FleXdWatchdog>>::iterator nth = watchdogs.begin() + it;
-                            watchdogs.erase(nth);
-                            FLEX_LOG_INFO("UNUSED WATCHDOG WAS REMOVED: ", appName, " \n");
-                        }
+                for (unsigned int it = 0; it < watchdogs.size(); it++) {
+                    if (!watchdogs.at(it).get()->getAppName().compare(appName)){
+                        watchdogs.at(it).get()->resetTimer();
+                        break;
                     }
-                
-                    FLEX_LOG_INFO("IN_ALL_EVENTS: ");
-                    for(unsigned int it = 0; it < watchdogs.size(); it++) {
-                        FLEX_LOG_INFO("------------COMPARE - appName: ", appName, " \n");
-                        FLEX_LOG_INFO("------------COMPARE - watchdogs.at(it).get()->getAppName(): ", watchdogs.at(it).get()->getAppName(), " \n");
-                        
-                        if (!watchdogs.at(it).get()->getAppName().compare(appName)){
-                            watchdogs.at(it).get()->resetTimer();
-                            FLEX_LOG_INFO("TIMER WAS RESET: \n");
-                            break;
-                        }
-                    }          
-                }
+                }          
+            }
             
-            if (!fileType.compare("pid")) {
-                FLEX_LOG_INFO("event mask: ", event->mask);
+            if (!fileType.compare("pid")) { 
                 
                 if (event->mask & IN_CREATE) {
-                    FLEX_LOG_INFO("IN_CREATE: ");
                     bool sendCreateMsg = true;
-                    for(unsigned int it = 0; it < watchdogs.size(); it++) {
+                    for (unsigned int it = 0; it < watchdogs.size(); it++) {
                         if (!watchdogs.at(it).get()->getAppName().compare(appName)){
                             sendCreateMsg = false;
                         }
                     }
                     if (sendCreateMsg){
-                        watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, ipc, fd, newWatch));
-                        sendIpcMsgToCoreApp(ipc, appName, "application started");
+                        watchdogs.push_back(std::make_unique<FleXdWatchdog>(poller, ipc, newWatch, restartTimeout, coreAppIpcId));
+                        sendIpcMsgToCoreApp(ipc, appName, "application started.");
                         break;
                     }
                 }
                 
                 if (event->mask & IN_DELETE) {
-                    FLEX_LOG_INFO("IN_DELETE: ");
-                    for(unsigned int it = 0; it < watchdogs.size(); it++) {
+                    for (unsigned int it = 0; it < watchdogs.size(); it++) {
                         if (!watchdogs.at(it).get()->getAppName().compare(appName)){
                             std::vector<std::unique_ptr<FleXdWatchdog>>::iterator nth = watchdogs.begin() + it;
                             watchdogs.erase(nth);
-                            sendIpcMsgToCoreApp(ipc, fileName, "application closed");
+                            sendIpcMsgToCoreApp(ipc, fileName, "application closed.");
                             break;
                         }
                     }          
@@ -160,18 +200,20 @@ static void onEvent(FleXdEpoll& poller, IPCInterface& ipc, int fd, int * wd, std
     }
 }
 
-std::vector<std::string> parseWatchedDirsFromConfig(std::string pathToConfigFile){
-    std::vector<std::string> dirsVector;
+void loadConfiguration() {
     ini::INIParser::getInstance().parseFiles(pathToConfigFile);
+    int helperInt = 0;
     std::string watchedDirectoriesString = ini::INIParser::getInstance().get("watched_directories:path", std::string(""));
     std::istringstream stream(watchedDirectoriesString);
     for (std::string line; std::getline(stream, line);) {
-        dirsVector.push_back(line);
+        watchedDirectories.push_back(line);
     }
-    return dirsVector;
+    watchdogIpcId = ini::INIParser::getInstance().get("ipc_settings:watchdogId", helperInt);
+    coreAppIpcId = ini::INIParser::getInstance().get("ipc_settings:coreAppId", helperInt);
+    restartTimeout = ini::INIParser::getInstance().get("timing:restartTimeout", helperInt);
 }
 
-int* inotifyWatchInit(int& fd, std::vector<std::string> watchedDirectories){
+int* inotifyWatchInit(int& fd, std::vector<std::string> watchedDirectories) {
     fd = inotify_init1(IN_NONBLOCK);
     if (fd == -1) {
         perror("inotify_init1");
@@ -198,23 +240,24 @@ int* inotifyWatchInit(int& fd, std::vector<std::string> watchedDirectories){
 }
 
 int main(int argc, char** argv) {
+    loadConfiguration();
     FleXdEpoll poller(10);
-    FLEX_LOG_INIT(poller, "FleX-d_Watchdog");
-    FLEX_LOG_INFO("WatchDog main was started \n");
-    IPCInterface ipcInterface(100, poller);
-    ipcInterface.addPeer(111);
+    FLEX_LOG_INIT(poller, "FleX-d_Watchdog");   
+    IPCInterface ipcInterface(watchdogIpcId, poller);
+    ipcInterface.addPeer(coreAppIpcId);
     
-    std::vector<std::string> watchedDirectories = parseWatchedDirsFromConfig("../resources/config.ini");
     int fd;
     int * wd = inotifyWatchInit(fd, watchedDirectories);
     FleXdWatchdogEvent event(poller, ipcInterface, watchedDirectories, fd, wd, onEvent);
     std::thread handlerPoller(&FleXdEpoll::loop, &poller);
     event.init();
     
-    int i = 300;
-    while (i--) {
+    createWatchdogsForAllExistingPidFiles(poller, ipcInterface, watchedDirectories);
+
+    while (true) {
         fflush(stdout);
         FLEX_LOG_INFO("main loop \n");
+        removeUnusedWatchdogsAndOldPidFiles();
         sleep(1);
     }
     
